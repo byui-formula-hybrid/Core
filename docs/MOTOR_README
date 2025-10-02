@@ -25,4 +25,9 @@ Motor Type: Emrax 208   - High voltage/ Liquid cooled
   Kt Constant [Nm/A]                     - 0.62 Nm   (Torque per amp)
 
 
+* How much it can output at a max of 2 min before overheating
+** Output it can run at indefinitly (given proper cooling)
+*** How fast the motor can spin before becoming a hazard
+
   
+
