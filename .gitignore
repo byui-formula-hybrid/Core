@@ -31,6 +31,9 @@ Desktop.ini
 /*.so
 /*.dylib
 
+# CMake testing artifacts
+/Testing/
+
 # CMake user-specific presets (machine-specific configuration)
 CMakeUserPresets.json
 
