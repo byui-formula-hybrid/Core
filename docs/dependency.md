@@ -47,7 +47,7 @@ struct Car {
 
 int main() {
     auto injector = di::make_injector(
-        di::bind<Engine>.to<Engine>().in(di::singleton)
+        di::bind<Engine>().to<Engine>().in(di::singleton)
     );
 
     auto car = injector.create<Car>();
