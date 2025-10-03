@@ -17,6 +17,34 @@ Modules included in Core:
 
 ---
 
+## Quick Start
+
+**New to the project?** Use our automated setup script to get started quickly:
+
+```bash
+# Clone the repository
+git clone <repository-url>
+cd Core
+
+# Run the automated setup script
+./.scripts/setup.sh
+```
+
+The setup script will:
+- ✅ Detect your operating system (macOS, Linux, Windows)
+- ✅ Check for required dependencies (CMake, Python, C++ compiler)
+- ✅ Offer to install missing dependencies automatically
+- ✅ Set up Python virtual environment with Conan
+- ✅ Run a test build to verify everything works
+
+### Manual Setup
+
+If you prefer manual setup or the automated script doesn't work for your system, see the detailed instructions below.
+
+> **Note:** All build scripts (`./.scripts/build.sh` and `./.scripts/test.sh`) now automatically check for required dependencies and will guide you to install them if missing.
+
+---
+
 ## Why Modular?
 
 Breaking the library into modules allows you to:

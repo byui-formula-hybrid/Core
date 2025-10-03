@@ -44,10 +44,41 @@ done
 # Exit immediately if a command exits with a non-zero status
 set -e
 
+# Function to check for required tools
+check_dependencies() {
+    local missing_deps=()
+    
+    if ! command -v cmake &> /dev/null; then
+        missing_deps+=("cmake")
+    fi
+    
+    if ! command -v python3 &> /dev/null && ! command -v python &> /dev/null; then
+        missing_deps+=("python")
+    fi
+    
+    if [ ${#missing_deps[@]} -ne 0 ]; then
+        echo "Error: Missing required dependencies: ${missing_deps[*]}"
+        echo ""
+        echo "To install missing dependencies automatically, run:"
+        echo "  ./.scripts/setup.sh"
+        echo ""
+        echo "Or install manually:"
+        for dep in "${missing_deps[@]}"; do
+            echo "  - $dep"
+        done
+        echo ""
+        echo "See README.md for detailed installation instructions"
+        exit 1
+    fi
+}
+
 echo "CoreLib Test Script"
 echo "=================="
 echo "Build Type: $BUILD_TYPE"
 echo ""
+
+# Check for required dependencies
+check_dependencies
 
 # Activate Python virtual environment
 if [ -d ".venv" ]; then
