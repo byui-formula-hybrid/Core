@@ -67,7 +67,7 @@ You can register multiple bindings when creating an injector. This allows you to
 auto injector = di::make_injector(
     di::bind<IThrottleController>.to<ThrottleController>().in(di::singleton),
     di::bind<IDisplay>.to<DisplayModule>().in(di::singleton),
-    di::bind<ISensorManager>.to<SensorManager>().in(di::shared)
+    di::bind<ISensorManager>().to<SensorManager>().in(di::shared)
 );
 ```
 
@@ -149,7 +149,7 @@ struct ThrottleController : IThrottleController {
 namespace di = boost::di;
 
 auto injector = di::make_injector(
-    di::bind<IThrottleController>.to<ThrottleController>().in(di::singleton)
+    di::bind<IThrottleController>().to<ThrottleController>().in(di::singleton)
 );
 ```
 
@@ -180,11 +180,11 @@ struct MockThrottleController : IThrottleController {
     void setThrottle(double value) override {
         // Do nothing or log for testing
     }
-}
+};
 
 // Injector for tests
 auto testInjector = di::make_injector(
-    di::bind<IThrottleController>.to<MockThrottleController>()
+    di::bind<IThrottleController>().to<MockThrottleController>()
 );
 ```
 
@@ -202,10 +202,9 @@ This workflow ensures **modular, testable, and maintainable code**, which is cru
 
 ## Resources
 
-* [Boost.DI Documentation](https://boost-experimental.github.io/di/)
+* [Boost.DI Documentation](https://boost-ext.github.io/di/)
 * [Boost.DI GitHub Repository](https://github.com/boost-experimental/di)
 * [Introduction to Dependency Injection (Wikipedia)](https://en.wikipedia.org/wiki/Dependency_injection)
-* [C++ DI Example Projects](https://boost-experimental.github.io/di/examples.html)
 
 ---
 
