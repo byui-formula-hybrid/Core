@@ -241,6 +241,320 @@ deactivate
 
 ---
 
+## Recommended VS Code Extensions
+
+To enhance your development experience with this C++ CMake project, we recommend installing the following VS Code extensions. These extensions provide better code navigation, debugging, and build integration.
+
+### Essential Extensions
+
+#### C/C++ Development
+- **[C/C++](https://marketplace.visualstudio.com/items?itemName=ms-vscode.cpptools)** (`ms-vscode.cpptools`)
+  - IntelliSense, debugging, and code browsing for C/C++
+  - **Required** for proper C++ language support
+
+- **[C/C++ Extension Pack](https://marketplace.visualstudio.com/items?itemName=ms-vscode.cpptools-extension-pack)** (`ms-vscode.cpptools-extension-pack`)
+  - Includes C/C++ tools, CMake Tools, and other useful extensions
+  - **Recommended** as a convenient bundle
+
+#### Build System Support
+- **[CMake Tools](https://marketplace.visualstudio.com/items?itemName=ms-vscode.cmake-tools)** (`ms-vscode.cmake-tools`)
+  - CMake integration with build, debug, and project configuration
+  - **Essential** for this CMake-based project
+
+- **[CMake](https://marketplace.visualstudio.com/items?itemName=twxs.cmake)** (`twxs.cmake`)
+  - CMake language support with syntax highlighting and completion
+  - **Recommended** for editing CMakeLists.txt files
+
+### Code Quality & Formatting
+
+- **[clangd](https://marketplace.visualstudio.com/items?itemName=llvm-vs-code-extensions.vscode-clangd)** (`llvm-vs-code-extensions.vscode-clangd`)
+  - Advanced C++ language server with better IntelliSense than the default
+  - **Optional but recommended** - disable C/C++ IntelliSense if using this
+
+- **[C/C++ Clang Command Adapter](https://marketplace.visualstudio.com/items?itemName=mitaki28.vscode-clang)** (`mitaki28.vscode-clang`)
+  - Clang-based code completion and diagnostics
+  - **Alternative** to clangd extension
+
+### Testing & Debugging
+
+- **[Test Explorer UI](https://marketplace.visualstudio.com/items?itemName=hbenl.vscode-test-explorer)** (`hbenl.vscode-test-explorer`)
+  - Unified test runner interface
+  - **Recommended** for running Google Test suites
+
+- **[C++ TestMate](https://marketplace.visualstudio.com/items?itemName=matepek.vscode-catch2-test-adapter)** (`matepek.vscode-catch2-test-adapter`)
+  - Test adapter for Google Test and other C++ testing frameworks
+  - **Recommended** for integrated test running
+
+### Git & Version Control
+
+- **[GitLens](https://marketplace.visualstudio.com/items?itemName=eamodio.gitlens)** (`eamodio.gitlens`)
+  - Enhanced Git capabilities with blame annotations and history
+  - **Recommended** for collaborative development
+
+### Python Support (for Conan)
+
+- **[Python](https://marketplace.visualstudio.com/items?itemName=ms-python.python)** (`ms-python.python`)
+  - Python language support for Conan scripts and build automation
+  - **Recommended** since this project uses Conan
+
+### Additional Utilities
+
+- **[Better Comments](https://marketplace.visualstudio.com/items?itemName=aaron-bond.better-comments)** (`aaron-bond.better-comments`)
+  - Color-coded comment annotations (TODO, FIXME, etc.)
+  - **Optional** but helpful for code documentation
+
+- **[indent-rainbow](https://marketplace.visualstudio.com/items?itemName=oderwat.indent-rainbow)** (`oderwat.indent-rainbow`)
+  - Color-coded indentation levels
+  - **Optional** but helpful for readability
+
+### Quick Installation
+
+You can install all essential extensions at once by running these commands in VS Code's integrated terminal:
+
+```bash
+# Essential extensions
+code --install-extension ms-vscode.cpptools-extension-pack
+code --install-extension ms-vscode.cmake-tools
+code --install-extension twxs.cmake
+
+# Testing extensions
+code --install-extension hbenl.vscode-test-explorer
+code --install-extension matepek.vscode-catch2-test-adapter
+
+# Python support
+code --install-extension ms-python.python
+
+# Git enhancement
+code --install-extension eamodio.gitlens
+```
+
+### VS Code Workspace Settings
+
+Consider adding these settings to your workspace configuration (`.vscode/settings.json`):
+
+```json
+{
+    "cmake.buildDirectory": "${workspaceFolder}/build",
+    "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
+    "python.defaultInterpreterPath": "./.venv/bin/python",
+    "files.associations": {
+        "*.h": "cpp",
+        "*.hpp": "cpp"
+    }
+}
+```
+
+### Extension Compatibility Notes
+
+- If you choose to use **clangd**, disable the default C/C++ IntelliSense to avoid conflicts:
+  ```json
+  {
+      "C_Cpp.intelliSenseEngine": "Disabled"
+  }
+  ```
+
+- For **CMake Tools** to work properly with Conan, ensure your build directory matches the Conan output folder structure.
+
+---
+
+## CMake Presets Setup
+
+CMake presets provide a standardized way to configure build settings across different IDEs and development environments. This project uses presets to integrate with Conan and provide consistent build configurations.
+
+### Understanding CMake Presets in This Project
+
+This project uses two types of preset files:
+
+- **`CMakePresets.json`** - Generated by Conan, contains project-wide configurations
+- **`CMakeUserPresets.json`** - User-specific overrides (ignored by git)
+
+### Setting Up CMake Presets
+
+#### 1. Generate Conan Presets (Required)
+
+Before using presets, you must generate them with Conan:
+
+```bash
+# Activate virtual environment
+source .venv/bin/activate  # Linux/macOS
+# .venv\Scripts\activate   # Windows
+
+# Generate presets for Release configuration
+conan install . --output-folder=build/Release --build=missing -s build_type=Release
+
+# Generate presets for Debug configuration (optional)
+conan install . --output-folder=build/Debug --build=missing -s build_type=Debug
+```
+
+This creates `CMakePresets.json` files in the build directories that contain:
+- Conan toolchain configuration
+- Compiler settings
+- Library paths
+- Build type configurations
+
+#### 2. Create User Presets (Optional)
+
+Create a `CMakeUserPresets.json` file in the project root for personal customizations:
+
+```json
+{
+    "version": 4,
+    "vendor": {
+        "conan": {}
+    },
+    "include": [
+        "build/Release/generators/CMakePresets.json"
+    ],
+    "configurePresets": [
+        {
+            "name": "default-release",
+            "inherits": "conan-release",
+            "displayName": "Release Build",
+            "description": "Release build with Conan dependencies"
+        },
+        {
+            "name": "default-debug", 
+            "inherits": "conan-debug",
+            "displayName": "Debug Build",
+            "description": "Debug build with Conan dependencies",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug"
+            }
+        }
+    ],
+    "buildPresets": [
+        {
+            "name": "build-release",
+            "configurePreset": "default-release",
+            "displayName": "Build Release"
+        },
+        {
+            "name": "build-debug",
+            "configurePreset": "default-debug", 
+            "displayName": "Build Debug"
+        }
+    ],
+    "testPresets": [
+        {
+            "name": "test-release",
+            "configurePreset": "default-release",
+            "displayName": "Test Release",
+            "output": {
+                "outputOnFailure": true
+            }
+        },
+        {
+            "name": "test-debug",
+            "configurePreset": "default-debug",
+            "displayName": "Test Debug",
+            "output": {
+                "outputOnFailure": true
+            }
+        }
+    ]
+}
+```
+
+### IDE Integration
+
+#### VS Code with CMake Tools
+
+1. **Install CMake Tools extension** (covered in VS Code Extensions section)
+
+2. **Configure workspace settings** in `.vscode/settings.json`:
+   ```json
+   {
+       "cmake.buildDirectory": "${workspaceFolder}/build",
+       "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
+       "cmake.generator": "Unix Makefiles",
+       "cmake.preferredGenerators": ["Unix Makefiles", "Ninja"]
+   }
+   ```
+
+3. **Select a preset**:
+   - Open Command Palette (`Cmd+Shift+P` / `Ctrl+Shift+P`)
+   - Run "CMake: Select Configure Preset"
+   - Choose your desired preset (e.g., "default-release")
+
+4. **Build and test**:
+   - Use `Cmd+Shift+P` → "CMake: Build" 
+   - Use `Cmd+Shift+P` → "CMake: Run Tests"
+
+#### Visual Studio
+
+1. **Open the project folder** in Visual Studio
+2. **Presets are automatically detected** from `CMakeUserPresets.json`
+3. **Select preset** from the configuration dropdown
+4. **Build** using standard Visual Studio build commands
+
+#### CLion
+
+1. **Open project** in CLion
+2. **Go to File → Settings → Build, Execution, Deployment → CMake**
+3. **Select "Use CMake presets"**
+4. **Choose your preset** from the dropdown
+
+### Using Presets with Command Line
+
+You can also use presets directly with CMake:
+
+```bash
+# Configure using a preset
+cmake --preset default-release
+
+# Build using a preset  
+cmake --build --preset build-release
+
+# Run tests using a preset
+ctest --preset test-release
+```
+
+### Preset Best Practices
+
+#### What to Include in User Presets
+- Personal build directories
+- IDE-specific configurations
+- Custom compiler flags for development
+- Personal debugging settings
+
+#### What NOT to Include in User Presets
+- Absolute paths (use variables like `${sourceDir}`)
+- Team-wide settings (these belong in the main project configuration)
+- Sensitive information
+
+### Troubleshooting Presets
+
+#### Common Issues
+
+**"No presets found"**
+- Ensure you've run `conan install` to generate the base presets
+- Check that `CMakeUserPresets.json` includes the correct Conan preset paths
+
+**"Preset inheritance failed"**
+- Verify the included preset files exist in the specified paths
+- Make sure the inherited preset names match exactly
+
+**"Toolchain not found"**
+- Confirm Conan generated the toolchain files
+- Check that the toolchain path in the preset is correct
+
+#### Regenerating Presets
+
+If you encounter issues, regenerate the Conan presets:
+
+```bash
+# Clean and regenerate
+rm -rf build/
+source .venv/bin/activate
+conan install . --output-folder=build/Release --build=missing -s build_type=Release
+```
+
+### Alternative: Using Build Scripts
+
+If you prefer not to use presets, the provided build scripts (`./.scripts/build.sh` and `./.scripts/test.sh`) handle all configuration automatically and are often simpler for new contributors.
+
+---
+
 ## Building the Library
 
 The Core library provides a flexible build script that allows you to build the entire project or specific modules in different configurations.

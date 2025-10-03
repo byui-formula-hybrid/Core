@@ -31,6 +31,9 @@ Desktop.ini
 /*.so
 /*.dylib
 
+# CMake user-specific presets (machine-specific configuration)
+CMakeUserPresets.json
+
 # Visual Studio
 
 *.vcxproj.user
