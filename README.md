@@ -33,13 +33,14 @@ cd Core
 The setup script will:
 - ✅ Detect your operating system (macOS, Linux, Windows)
 - ✅ Check for required dependencies (CMake, Python, C++ compiler)
+- ✅ Install pinned versions for consistency across development environments
 - ✅ Offer to install missing dependencies automatically
 - ✅ Set up Python virtual environment with Conan
 - ✅ Run a test build to verify everything works
 
 ### Manual Setup
 
-If you prefer manual setup or the automated script doesn't work for your system, see the detailed instructions below.
+If you prefer manual setup or the automated script doesn't work for your system, see the detailed instructions below. **Important:** Please follow the version requirements exactly to ensure consistency with other developers.
 
 > **Note:** All build scripts (`./.scripts/build.sh` and `./.scripts/test.sh`) now automatically check for required dependencies and will guide you to install them if missing.
 
@@ -106,6 +107,7 @@ Before building and testing Core, make sure the following software is installed 
 sudo apt update
 
 # Install build essentials, CMake, GCC, and Python
+# Note: For specific versions (GCC 11+, Python 3.11+), see version requirements above
 sudo apt install build-essential cmake g++ python3 python3-venv python3-pip
 
 # Verify installations
@@ -136,7 +138,7 @@ xcode-select --install
 
 **Install required packages:**
 ```bash
-# Install CMake and Python
+# Install CMake and Python (pinned version for consistency)
 brew install cmake python@3.11
 
 # Verify installations
@@ -163,6 +165,7 @@ python3 --version
 
 3. **Install Python**:
    - Download from [Python.org](https://www.python.org/downloads/)
+   - **Recommended:** Download Python 3.11.x for consistency with team requirements
    - **Important:** Check "Add Python to PATH" during installation
    - Choose "Install for all users" if you have admin rights
 
@@ -204,29 +207,38 @@ python3 --version  # Linux/macOS
 python --version   # Windows
 
 # Check Python can create virtual environments
+# Check Python can create virtual environments
 python3 -m venv test_env && rm -rf test_env  # Linux/macOS
 python -m venv test_env && rmdir /s test_env # Windows
 ```
 
+> **Team Consistency Note:** The automated setup script (`./.scripts/setup.sh`) installs these exact versions automatically. If setting up manually, please ensure you meet the minimum version requirements listed above to maintain consistency across the development team.
+
+---
+```
+
 ### Minimum Version Requirements
 
+**For consistent development environments, we use pinned versions:**
+
 - **C++ Compiler**: 
-  - GCC 9+ or Clang 10+ (Linux/macOS)
-  - MSVC 2019+ or MinGW-w64 9+ (Windows)
-- **CMake**: 3.20 or later
-- **Python**: 3.8 or later
+  - GCC 11+ or Clang 14+ (Linux/macOS)
+  - MSVC 2022+ (Windows)
+- **CMake**: 3.24.0 or later (recommended: 3.28.1)
+- **Python**: 3.11.0 or later (recommended: 3.11.x)
+- **Conan**: 2.0.17 (automatically installed via requirements.txt)
 - **Operating System**:
   - Linux: Ubuntu 20.04+, CentOS 8+, or equivalent
   - macOS: 10.15 (Catalina) or later
   - Windows: Windows 10 or later
 
-> **Note:** Python packages (including Conan) will be installed in a virtual environment in the next section, not system-wide.
+> **Important:** These specific versions ensure consistency across all development environments. The automated setup script (`./.scripts/setup.sh`) will install these exact versions where possible.
 
 ---
 
 ## Python Setup Using Virtual Environment (venv)
 
-To ensure consistent Python versions and isolate dependencies, use a virtual environment.
+To ensure consistent Python versions and isolate dependencies, use a virtual environment. All Python dependencies are pinned to specific versions in `requirements.txt` for team consistency.
 
 ### 1. Create a Virtual Environment
 
@@ -251,8 +263,14 @@ source .venv/bin/activate
 ### 3. Install Required Python Tools Inside venv
 
 ```bash
+# Upgrade pip first
 pip install --upgrade pip
-pip install conan
+
+# Install dependencies with pinned versions
+pip install -r requirements.txt
+
+# Verify Conan installation
+conan --version
 ```
 
 ### 4. Using the Virtual Environment

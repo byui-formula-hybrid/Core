@@ -1,0 +1,4 @@
+# Python dependencies for Core project
+# Pin specific versions for consistency across development environments
+
+conan==2.0.17

@@ -6,6 +6,76 @@
 
 set -e
 
+# =============================================================================
+# VERSION CONFIGURATION
+# =============================================================================
+# Pin specific versions for consistency across development environments
+
+# Required versions (minimum)
+REQUIRED_CMAKE_VERSION="3.24.0"
+REQUIRED_PYTHON_VERSION="3.11.0"
+
+# Preferred/pinned versions for installation
+PINNED_CMAKE_VERSION="3.28.1"
+PINNED_PYTHON_VERSION="3.11"
+
+# Compiler version requirements
+MIN_GCC_VERSION="11"
+MIN_CLANG_VERSION="14"
+MIN_MSVC_VERSION="2022"
+
+# =============================================================================
+# VERSION COMPARISON UTILITIES
+# =============================================================================
+
+# Compare version strings (returns 0 if version1 >= version2)
+version_compare() {
+    local version1="$1"
+    local version2="$2"
+    
+    # Remove any non-numeric prefixes and suffixes
+    version1=$(echo "$version1" | sed 's/[^0-9.].*//')
+    version2=$(echo "$version2" | sed 's/[^0-9.].*//')
+    
+    if [ "$version1" = "$version2" ]; then
+        return 0
+    fi
+    
+    local IFS=.
+    local i ver1=($version1) ver2=($version2)
+    
+    # Fill empty fields with zeros
+    for ((i=${#ver1[@]}; i<${#ver2[@]}; i++)); do
+        ver1[i]=0
+    done
+    for ((i=${#ver2[@]}; i<${#ver1[@]}; i++)); do
+        ver2[i]=0
+    done
+    
+    # Compare version numbers
+    for ((i=0; i<${#ver1[@]}; i++)); do
+        if [[ ${ver1[i]} -gt ${ver2[i]} ]]; then
+            return 0
+        elif [[ ${ver1[i]} -lt ${ver2[i]} ]]; then
+            return 1
+        fi
+    done
+    
+    return 0
+}
+
+# Extract version number from command output
+extract_version() {
+    local cmd_output="$1"
+    local pattern="$2"
+    
+    if [ -n "$pattern" ]; then
+        echo "$cmd_output" | sed -n "s/$pattern/\1/p" | head -n1
+    else
+        echo "$cmd_output" | grep -oE '[0-9]+\.[0-9]+(\.[0-9]+)?' | head -n1
+    fi
+}
+
 # Colors for output
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -131,15 +201,12 @@ check_cmake() {
         CMAKE_VERSION=$(cmake --version | head -n1 | sed 's/cmake version //')
         print_success "CMake found: $CMAKE_VERSION"
         
-        # Check minimum version (3.20)
-        CMAKE_MAJOR=$(echo $CMAKE_VERSION | cut -d. -f1)
-        CMAKE_MINOR=$(echo $CMAKE_VERSION | cut -d. -f2)
-        
-        if [ "$CMAKE_MAJOR" -gt 3 ] || ([ "$CMAKE_MAJOR" -eq 3 ] && [ "$CMAKE_MINOR" -ge 20 ]); then
-            print_success "CMake version is sufficient (>= 3.20)"
+        # Check minimum version using version_compare
+        if version_compare "$CMAKE_VERSION" "$REQUIRED_CMAKE_VERSION"; then
+            print_success "CMake version is sufficient (>= $REQUIRED_CMAKE_VERSION)"
             return 0
         else
-            print_warning "CMake version $CMAKE_VERSION is too old (need >= 3.20)"
+            print_warning "CMake version $CMAKE_VERSION is too old (need >= $REQUIRED_CMAKE_VERSION)"
             return 1
         fi
     else
@@ -156,20 +223,18 @@ check_python() {
     for python_cmd in python3 python; do
         if command_exists $python_cmd; then
             PYTHON_VERSION=$($python_cmd --version 2>&1 | sed 's/Python //')
-            PYTHON_MAJOR=$(echo $PYTHON_VERSION | cut -d. -f1)
-            PYTHON_MINOR=$(echo $PYTHON_VERSION | cut -d. -f2)
             
-            if [ "$PYTHON_MAJOR" -eq 3 ] && [ "$PYTHON_MINOR" -ge 8 ]; then
+            if version_compare "$PYTHON_VERSION" "$REQUIRED_PYTHON_VERSION"; then
                 print_success "Python found: $PYTHON_VERSION ($python_cmd)"
                 PYTHON_CMD=$python_cmd
                 return 0
             else
-                print_warning "Python $PYTHON_VERSION is too old (need >= 3.8)"
+                print_warning "Python $PYTHON_VERSION is too old (need >= $REQUIRED_PYTHON_VERSION)"
             fi
         fi
     done
     
-    print_warning "Suitable Python (>= 3.8) not found"
+    print_warning "Suitable Python (>= $REQUIRED_PYTHON_VERSION) not found"
     return 1
 }
 
@@ -179,36 +244,68 @@ check_compiler() {
     
     if [[ "$OS" == "macos" ]]; then
         if command_exists clang++; then
-            CLANG_VERSION=$(clang++ --version | head -n1)
-            print_success "Clang++ found: $CLANG_VERSION"
-            return 0
-        elif command_exists g++; then
-            GCC_VERSION=$(g++ --version | head -n1)
-            print_success "G++ found: $GCC_VERSION"
-            return 0
+            CLANG_OUTPUT=$(clang++ --version 2>&1)
+            CLANG_VERSION=$(extract_version "$CLANG_OUTPUT")
+            if version_compare "$CLANG_VERSION" "$MIN_CLANG_VERSION"; then
+                print_success "Clang++ found: $CLANG_VERSION (sufficient)"
+                return 0
+            else
+                print_warning "Clang++ version $CLANG_VERSION is too old (need >= $MIN_CLANG_VERSION)"
+            fi
         fi
+        
+        if command_exists g++; then
+            GCC_OUTPUT=$(g++ --version 2>&1)
+            GCC_VERSION=$(extract_version "$GCC_OUTPUT")
+            if version_compare "$GCC_VERSION" "$MIN_GCC_VERSION"; then
+                print_success "G++ found: $GCC_VERSION (sufficient)"
+                return 0
+            else
+                print_warning "G++ version $GCC_VERSION is too old (need >= $MIN_GCC_VERSION)"
+            fi
+        fi
+        
     elif [[ "$OS" == "linux" ]]; then
         if command_exists g++; then
-            GCC_VERSION=$(g++ --version | head -n1)
-            print_success "G++ found: $GCC_VERSION"
-            return 0
-        elif command_exists clang++; then
-            CLANG_VERSION=$(clang++ --version | head -n1)
-            print_success "Clang++ found: $CLANG_VERSION"
-            return 0
+            GCC_OUTPUT=$(g++ --version 2>&1)
+            GCC_VERSION=$(extract_version "$GCC_OUTPUT")
+            if version_compare "$GCC_VERSION" "$MIN_GCC_VERSION"; then
+                print_success "G++ found: $GCC_VERSION (sufficient)"
+                return 0
+            else
+                print_warning "G++ version $GCC_VERSION is too old (need >= $MIN_GCC_VERSION)"
+            fi
         fi
+        
+        if command_exists clang++; then
+            CLANG_OUTPUT=$(clang++ --version 2>&1)
+            CLANG_VERSION=$(extract_version "$CLANG_OUTPUT")
+            if version_compare "$CLANG_VERSION" "$MIN_CLANG_VERSION"; then
+                print_success "Clang++ found: $CLANG_VERSION (sufficient)"
+                return 0
+            else
+                print_warning "Clang++ version $CLANG_VERSION is too old (need >= $MIN_CLANG_VERSION)"
+            fi
+        fi
+        
     elif [[ "$OS" == "windows" ]]; then
         if command_exists cl; then
             print_success "MSVC found"
             return 0
         elif command_exists g++; then
-            GCC_VERSION=$(g++ --version | head -n1)
-            print_success "G++ found: $GCC_VERSION"
-            return 0
+            GCC_OUTPUT=$(g++ --version 2>&1)
+            GCC_VERSION=$(extract_version "$GCC_OUTPUT")
+            if version_compare "$GCC_VERSION" "$MIN_GCC_VERSION"; then
+                print_success "G++ found: $GCC_VERSION (sufficient)"
+                return 0
+            else
+                print_warning "G++ version $GCC_VERSION is too old (need >= $MIN_GCC_VERSION)"
+            fi
         fi
     fi
     
     print_warning "No suitable C++ compiler found"
+    print_warning "Need: GCC $MIN_GCC_VERSION+, Clang $MIN_CLANG_VERSION+, or MSVC $MIN_MSVC_VERSION+"
     return 1
 }
 
@@ -257,21 +354,32 @@ install_macos_deps() {
         fi
     fi
     
-    # Install missing packages
+    # Install missing packages with pinned versions
     BREW_PACKAGES=""
     
     if ! check_cmake; then
-        BREW_PACKAGES="$BREW_PACKAGES cmake"
+        # Try to install specific version, fall back to latest if not available
+        print_status "Installing CMake version $PINNED_CMAKE_VERSION (or closest available)..."
+        if ! brew install "cmake@$PINNED_CMAKE_VERSION" 2>/dev/null; then
+            print_warning "Specific CMake version not available, installing latest..."
+            BREW_PACKAGES="$BREW_PACKAGES cmake"
+        fi
     fi
     
     if ! check_python; then
-        BREW_PACKAGES="$BREW_PACKAGES python@3.11"
+        BREW_PACKAGES="$BREW_PACKAGES python@$PINNED_PYTHON_VERSION"
     fi
     
     if [ -n "$BREW_PACKAGES" ]; then
         if ask_permission "Install missing packages via Homebrew:$BREW_PACKAGES?"; then
             print_status "Installing packages:$BREW_PACKAGES"
             brew install $BREW_PACKAGES
+            
+            # Link Python if needed
+            if [[ "$BREW_PACKAGES" == *"python@"* ]]; then
+                print_status "Linking Python $PINNED_PYTHON_VERSION..."
+                brew link --force python@$PINNED_PYTHON_VERSION || true
+            fi
         fi
     fi
 }
@@ -282,15 +390,39 @@ install_linux_deps() {
         APT_PACKAGES=""
         
         if ! check_cmake; then
+            # Try to get a recent CMake version
+            print_status "Checking for CMake PPA availability..."
+            if ! apt-cache show cmake | grep -q "Version.*$PINNED_CMAKE_VERSION" 2>/dev/null; then
+                print_status "Adding Kitware CMake PPA for newer versions..."
+                if ask_permission "Add Kitware APT repository for newer CMake?"; then
+                    sudo apt update
+                    sudo apt install -y software-properties-common
+                    wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null | gpg --dearmor - | sudo tee /usr/share/keyrings/kitware-archive-keyring.gpg >/dev/null
+                    echo 'deb [signed-by=/usr/share/keyrings/kitware-archive-keyring.gpg] https://apt.kitware.com/ubuntu/ jammy main' | sudo tee /etc/apt/sources.list.d/kitware.list >/dev/null
+                    sudo apt update
+                fi
+            fi
             APT_PACKAGES="$APT_PACKAGES cmake"
         fi
         
         if ! check_python; then
-            APT_PACKAGES="$APT_PACKAGES python3 python3-venv python3-pip"
+            # Try to install specific Python version
+            PYTHON_PKG="python$PINNED_PYTHON_VERSION"
+            if apt-cache show "$PYTHON_PKG" &>/dev/null; then
+                APT_PACKAGES="$APT_PACKAGES $PYTHON_PKG $PYTHON_PKG-venv $PYTHON_PKG-pip"
+            else
+                APT_PACKAGES="$APT_PACKAGES python3 python3-venv python3-pip"
+            fi
         fi
         
         if ! check_compiler; then
-            APT_PACKAGES="$APT_PACKAGES build-essential g++"
+            # Install newer GCC if available
+            GCC_PKG="gcc-$MIN_GCC_VERSION"
+            if apt-cache show "$GCC_PKG" &>/dev/null; then
+                APT_PACKAGES="$APT_PACKAGES $GCC_PKG g++-$MIN_GCC_VERSION"
+            else
+                APT_PACKAGES="$APT_PACKAGES build-essential g++"
+            fi
         fi
         
         if [ -n "$APT_PACKAGES" ]; then
@@ -299,6 +431,13 @@ install_linux_deps() {
                 sudo apt update
                 print_status "Installing packages:$APT_PACKAGES"
                 sudo apt install -y $APT_PACKAGES
+                
+                # Set up alternatives for newer GCC if installed
+                if [[ "$APT_PACKAGES" == *"gcc-$MIN_GCC_VERSION"* ]]; then
+                    print_status "Setting up GCC $MIN_GCC_VERSION as default..."
+                    sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-$MIN_GCC_VERSION 100
+                    sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-$MIN_GCC_VERSION 100
+                fi
             fi
         fi
         
