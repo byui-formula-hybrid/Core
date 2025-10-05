@@ -132,37 +132,34 @@ enum PumpFault {
 ## Hardware Interface
 
 ### PWM Control
-```
-Pump Type         | ESP32 Pin | PWM Channel | Frequency | Resolution
-------------------|-----------|-------------|-----------|------------
-Cooling Primary   | GPIO13    | Channel 0   | 20kHz     | 12-bit
-Cooling Secondary | GPIO14    | Channel 1   | 20kHz     | 12-bit
-Battery Cooling   | GPIO25    | Channel 2   | 20kHz     | 12-bit
-Motor Cooling     | GPIO26    | Channel 3   | 20kHz     | 12-bit
-```
+
+| Pump Type         | ESP32 Pin | PWM Channel | Frequency | Resolution |
+|-------------------|-----------|-------------|-----------|------------|
+| Cooling Primary   | GPIO13    | Channel 0   | 20kHz     | 12-bit     |
+| Cooling Secondary | GPIO14    | Channel 1   | 20kHz     | 12-bit     |
+| Battery Cooling   | GPIO25    | Channel 2   | 20kHz     | 12-bit     |
+| Motor Cooling     | GPIO26    | Channel 3   | 20kHz     | 12-bit     |
 
 ### Digital Control
-```
-Signal            | ESP32 Pin | Direction | Function
-------------------|-----------|-----------|------------------------
-Pump Enable 1     | GPIO16    | Output    | Primary pump enable
-Pump Enable 2     | GPIO17    | Output    | Secondary pump enable
-Fault Input 1     | GPIO18    | Input     | Primary pump fault
-Fault Input 2     | GPIO19    | Input     | Secondary pump fault
-Emergency Stop    | GPIO21    | Input     | Emergency shutdown
-```
+
+| Signal         | ESP32 Pin | Direction | Function               |
+|----------------|-----------|-----------|------------------------|
+| Pump Enable 1  | GPIO16    | Output    | Primary pump enable    |
+| Pump Enable 2  | GPIO17    | Output    | Secondary pump enable  |
+| Fault Input 1  | GPIO18    | Input     | Primary pump fault     |
+| Fault Input 2  | GPIO19    | Input     | Secondary pump fault   |
+| Emergency Stop | GPIO21    | Input     | Emergency shutdown     |
 
 ### Analog Monitoring
-```
-Parameter         | ESP32 Pin | Range     | Resolution | Sensor Type
-------------------|-----------|-----------|------------|------------------
-Flow Rate 1       | GPIO32    | 0-50 L/min| 12-bit     | Hall effect
-Flow Rate 2       | GPIO33    | 0-50 L/min| 12-bit     | Hall effect
-Pressure 1        | GPIO34    | 0-10 bar  | 12-bit     | Pressure transducer
-Pressure 2        | GPIO35    | 0-10 bar  | 12-bit     | Pressure transducer
-Pump Current 1    | GPIO36    | 0-20A     | 12-bit     | Current sensor
-Pump Current 2    | GPIO39    | 0-20A     | 12-bit     | Current sensor
-```
+
+| Parameter      | ESP32 Pin | Range      | Resolution | Sensor Type         |
+|----------------|-----------|------------|------------|---------------------|
+| Flow Rate 1    | GPIO32    | 0-50 L/min | 12-bit     | Hall effect         |
+| Flow Rate 2    | GPIO33    | 0-50 L/min | 12-bit     | Hall effect         |
+| Pressure 1     | GPIO34    | 0-10 bar   | 12-bit     | Pressure transducer |
+| Pressure 2     | GPIO35    | 0-10 bar   | 12-bit     | Pressure transducer |
+| Pump Current 1 | GPIO36    | 0-20A      | 12-bit     | Current sensor      |
+| Pump Current 2 | GPIO39    | 0-20A      | 12-bit     | Current sensor      |
 
 ## Implementation Details
 

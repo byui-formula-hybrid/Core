@@ -123,21 +123,20 @@ struct PedalSafetyStatus {
 ## Hardware Interface
 
 ### Analog Sensor Connections
-```
-Sensor               | ESP32 Pin | Voltage Range | Resolution
----------------------|-----------|---------------|------------
-Throttle Sensor 1    | GPIO36    | 0.5-4.5V     | 12-bit ADC
-Throttle Sensor 2    | GPIO39    | 0.5-4.5V     | 12-bit ADC  
-Brake Position       | GPIO34    | 0.5-4.5V     | 12-bit ADC
-Brake Pressure       | GPIO35    | 0-5V         | 12-bit ADC
-```
+
+| Sensor            | ESP32 Pin | Voltage Range | Resolution  |
+|-------------------|-----------|---------------|-------------|
+| Throttle Sensor 1 | GPIO36    | 0.5-4.5V      | 12-bit ADC  |
+| Throttle Sensor 2 | GPIO39    | 0.5-4.5V      | 12-bit ADC  |
+| Brake Position    | GPIO34    | 0.5-4.5V      | 12-bit ADC  |
+| Brake Pressure    | GPIO35    | 0-5V          | 12-bit ADC  |
 
 ### Digital Outputs
-```
-Signal               | ESP32 Pin | Function
----------------------|-----------|------------------------
-Brake Light          | GPIO2     | Brake light activation
-APPS Fault LED       | GPIO4     | APPS fault indicator
+
+| Signal         | ESP32 Pin | Function              |
+|----------------|-----------|----------------------|
+| Brake Light    | GPIO2     | Brake light activation |
+| APPS Fault LED | GPIO4     | APPS fault indicator   |
 Emergency Stop       | GPIO5     | Emergency stop output
 Throttle Enable      | GPIO16    | Throttle system enable
 ```

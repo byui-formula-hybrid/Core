@@ -21,27 +21,26 @@ This document defines the hardware interfaces, pinouts, and electrical specifica
 - **GND**: System ground reference
 
 ### Digital I/O Pins
-```
-GPIO Pin | Function              | Module        | Notes
----------|----------------------|---------------|--------
-GPIO2    | Built-in LED         | Core          | Status indicator
-GPIO4    | CAN TX               | CAN           | MCP2515 interface
-GPIO5    | CAN RX               | CAN           | MCP2515 interface
-GPIO12   | IMD Status           | IMD           | Digital input
-GPIO13   | Pump Control         | Pump          | PWM output
-GPIO14   | Brake Pressure       | Pedals        | Analog input
-GPIO15   | Throttle Position    | Pedals        | Analog input
-GPIO16   | Dashboard TX         | Dash          | UART communication
-GPIO17   | Dashboard RX         | Dash          | UART communication
-GPIO18   | SPI CLK              | Multiple      | Shared SPI bus
-GPIO19   | SPI MISO             | Multiple      | Shared SPI bus
-GPIO21   | I2C SDA              | Multiple      | Shared I2C bus
-GPIO22   | I2C SCL              | Multiple      | Shared I2C bus
-GPIO23   | SPI MOSI             | Multiple      | Shared SPI bus
-GPIO25   | Battery Voltage      | Battery       | Analog input
-GPIO26   | Battery Current      | Battery       | Analog input
-GPIO27   | Inverter Enable      | Inverter      | Digital output
-```
+
+| GPIO Pin | Function            | Module   | Notes                |
+|----------|---------------------|----------|----------------------|
+| GPIO2    | Built-in LED        | Core     | Status indicator     |
+| GPIO4    | CAN TX              | CAN      | MCP2515 interface    |
+| GPIO5    | CAN RX              | CAN      | MCP2515 interface    |
+| GPIO12   | IMD Status          | IMD      | Digital input        |
+| GPIO13   | Pump Control        | Pump     | PWM output           |
+| GPIO14   | Brake Pressure      | Pedals   | Analog input         |
+| GPIO15   | Throttle Position   | Pedals   | Analog input         |
+| GPIO16   | Dashboard TX        | Dash     | UART communication   |
+| GPIO17   | Dashboard RX        | Dash     | UART communication   |
+| GPIO18   | SPI CLK             | Multiple | Shared SPI bus       |
+| GPIO19   | SPI MISO            | Multiple | Shared SPI bus       |
+| GPIO21   | I2C SDA             | Multiple | Shared I2C bus       |
+| GPIO22   | I2C SCL             | Multiple | Shared I2C bus       |
+| GPIO23   | SPI MOSI            | Multiple | Shared SPI bus       |
+| GPIO25   | Battery Voltage     | Battery  | Analog input         |
+| GPIO26   | Battery Current     | Battery  | Analog input         |
+| GPIO27   | Inverter Enable     | Inverter | Digital output       |
 
 ### Analog Inputs (ADC)
 - **Resolution**: 12-bit (0-4095 counts)

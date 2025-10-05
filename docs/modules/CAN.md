@@ -70,17 +70,16 @@ struct CANMessage {
 - **Buffer size**: 3 transmit, 2 receive buffers
 
 ### Pin Connections
-```
-ESP32 Pin | MCP2515 Pin | Function
-----------|-------------|----------
-GPIO18    | SCK         | SPI Clock
-GPIO19    | SO          | SPI MISO
-GPIO23    | SI          | SPI MOSI
-GPIO5     | CS          | Chip Select
-GPIO4     | INT         | Interrupt
-VCC       | VDD         | 3.3V Power
-GND       | VSS         | Ground
-```
+
+| ESP32 Pin | MCP2515 Pin | Function  |
+|-----------|-------------|-----------|
+| GPIO18    | SCK         | SPI Clock |
+| GPIO19    | SO          | SPI MISO  |
+| GPIO23    | SI          | SPI MOSI  |
+| GPIO5     | CS          | Chip Select |
+| GPIO4     | INT         | Interrupt |
+| VCC       | VDD         | 3.3V Power |
+| GND       | VSS         | Ground    |
 
 ### CAN Transceiver (TJA1050)
 - **High-speed CAN**: ISO 11898 compliant
@@ -176,27 +175,25 @@ struct EmergencyStatusMsg {
 ## Communication Protocol
 
 ### Message Priorities
-```
-Priority | ID Range  | Description
----------|-----------|------------------
-0 (High) | 0x000-0x0FF | Emergency/Safety
-1        | 0x100-0x1FF | Battery/Power
-2        | 0x200-0x2FF | Motor Control
-3        | 0x300-0x3FF | Vehicle Systems
-4 (Low)  | 0x400-0x7FF | Diagnostics/Debug
-```
+
+| Priority | ID Range    | Description        |
+|----------|-------------|--------------------|
+| 0 (High) | 0x000-0x0FF | Emergency/Safety   |
+| 1        | 0x100-0x1FF | Battery/Power      |
+| 2        | 0x200-0x2FF | Motor Control      |
+| 3        | 0x300-0x3FF | Vehicle Systems    |
+| 4 (Low)  | 0x400-0x7FF | Diagnostics/Debug  |
 
 ### Transmission Schedule
-```
-Message Type        | Period | Priority
---------------------|--------|----------
-Emergency Status    | 10ms   | Highest
-Battery Status      | 50ms   | High
-Inverter Command    | 20ms   | High
-Pedal Positions     | 20ms   | High
-Dashboard Data      | 100ms  | Medium
-Diagnostic Data     | 1000ms | Low
-```
+
+| Message Type     | Period | Priority |
+|------------------|--------|----------|
+| Emergency Status | 10ms   | Highest  |
+| Battery Status   | 50ms   | High     |
+| Inverter Command | 20ms   | High     |
+| Pedal Positions  | 20ms   | High     |
+| Dashboard Data   | 100ms  | Medium   |
+| Diagnostic Data  | 1000ms | Low      |
 
 ### Error Handling
 ```cpp

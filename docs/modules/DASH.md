@@ -98,28 +98,26 @@ struct DisplayConfig {
 - **Cost**: Low cost option
 
 ### Button Interface
-```
-Button    | GPIO Pin | Function
-----------|----------|------------------
-UP        | GPIO32   | Menu navigation up
-DOWN      | GPIO33   | Menu navigation down
-LEFT      | GPIO25   | Menu navigation left
-RIGHT     | GPIO26   | Menu navigation right
-SELECT    | GPIO27   | Menu selection/enter
-BACK      | GPIO14   | Menu back/cancel
-MODE      | GPIO12   | Change drive mode
-```
+
+| Button | GPIO Pin | Function              |
+|--------|----------|-----------------------|
+| UP     | GPIO32   | Menu navigation up    |
+| DOWN   | GPIO33   | Menu navigation down  |
+| LEFT   | GPIO25   | Menu navigation left  |
+| RIGHT  | GPIO26   | Menu navigation right |
+| SELECT | GPIO27   | Menu selection/enter  |
+| BACK   | GPIO14   | Menu back/cancel      |
+| MODE   | GPIO12   | Change drive mode     |
 
 ### LED Indicators
-```
-LED       | GPIO Pin | Color  | Function
-----------|----------|--------|------------------
-POWER     | GPIO2    | Green  | System power
-READY     | GPIO4    | Blue   | System ready
-WARNING   | GPIO16   | Yellow | Warning condition
-FAULT     | GPIO17   | Red    | Fault condition
-IMD       | GPIO5    | Red    | IMD fault
-```
+
+| LED     | GPIO Pin | Color  | Function          |
+|---------|----------|--------|-------------------|
+| POWER   | GPIO2    | Green  | System power      |
+| READY   | GPIO4    | Blue   | System ready      |
+| WARNING | GPIO16   | Yellow | Warning condition |
+| FAULT   | GPIO17   | Red    | Fault condition   |
+| IMD     | GPIO5    | Red    | IMD fault         |
 
 ## Display Layout Design
 

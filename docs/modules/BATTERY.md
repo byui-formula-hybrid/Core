@@ -154,22 +154,24 @@ float calculateSOC() {
 ## CAN Message Definitions
 
 ### Battery Status Message (0x100)
-```
-Byte 0-1: Pack voltage (0.1V resolution)
-Byte 2-3: Pack current (0.1A resolution)
-Byte 4:   State of charge (1% resolution)
-Byte 5:   Maximum temperature (1°C offset by 40)
-Byte 6:   Battery status flags
-Byte 7:   Fault codes
-```
+
+| Byte  | Data                    | Resolution/Format     |
+|-------|-------------------------|----------------------|
+| 0-1   | Pack voltage            | 0.1V resolution      |
+| 2-3   | Pack current            | 0.1A resolution      |
+| 4     | State of charge         | 1% resolution        |
+| 5     | Maximum temperature     | 1°C offset by 40     |
+| 6     | Battery status flags    | Bit field            |
+| 7     | Fault codes             | Bit field            |
 
 ### Battery Details Message (0x101)
-```
-Byte 0-1: Min cell voltage (1mV resolution)
-Byte 2-3: Max cell voltage (1mV resolution)
-Byte 4-5: Remaining capacity (0.1Ah resolution)
-Byte 6-7: Time to empty (1 minute resolution)
-```
+
+| Byte  | Data                    | Resolution/Format     |
+|-------|-------------------------|----------------------|
+| 0-1   | Min cell voltage        | 1mV resolution       |
+| 2-3   | Max cell voltage        | 1mV resolution       |
+| 4-5   | Remaining capacity      | 0.1Ah resolution     |
+| 6-7   | Time to empty           | 1 minute resolution  |
 
 ## Fault Detection and Handling
 

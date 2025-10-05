@@ -62,11 +62,14 @@ Low (500-2047)    0x1F4-0x7FF   Status & Telemetry         Dashboard, logging
 | 4-7  | Reserved | 0x00 | - |
 
 **System Status Bits (Byte 2):**
-- Bit 0: System OK
-- Bit 1: Warning present
-- Bit 2: Fault present
-- Bit 3: Emergency stop active
-- Bit 4-7: Reserved
+
+| Bit | Description           | Status |
+|-----|-----------------------|--------|
+| 0   | System OK             | Active |
+| 1   | Warning present       | Active |
+| 2   | Fault present         | Active |
+| 3   | Emergency stop active | Active |
+| 4-7 | Reserved              | -      |
 
 ### **Control and Command Messages (0x064-0x1F3)**
 
@@ -87,13 +90,16 @@ Low (500-2047)    0x1F4-0x7FF   Status & Telemetry         Dashboard, logging
 | 6-7  | Reserved | 0x00 | - | - |
 
 **Pedal Status Bits (Byte 4):**
-- Bit 0: Throttle sensor 1 valid
-- Bit 1: Throttle sensor 2 valid
-- Bit 2: Brake sensor 1 valid
-- Bit 3: Brake sensor 2 valid
-- Bit 4: Plausibility check passed
-- Bit 5: Brake/throttle conflict
-- Bit 6-7: Reserved
+
+| Bit | Description               | Status |
+|-----|---------------------------|--------|
+| 0   | Throttle sensor 1 valid   | Valid  |
+| 1   | Throttle sensor 2 valid   | Valid  |
+| 2   | Brake sensor 1 valid      | Valid  |
+| 3   | Brake sensor 2 valid      | Valid  |
+| 4   | Plausibility check passed | Pass   |
+| 5   | Brake/throttle conflict   | Error  |
+| 6-7 | Reserved                  | -      |
 
 #### **0x110 - Motor Control Command**
 **Purpose:** Motor torque and speed commands
@@ -111,17 +117,23 @@ Low (500-2047)    0x1F4-0x7FF   Status & Telemetry         Dashboard, logging
 | 7    | Checksum | 0-255 | - | - |
 
 **Control Modes (Byte 4):**
-- 0x00: Disabled
-- 0x01: Torque control
-- 0x02: Speed control
-- 0x03: Position control
-- 0x04: Emergency stop
+
+| Value | Mode            | Description    |
+|-------|-----------------|----------------|
+| 0x00  | Disabled        | Motor disabled |
+| 0x01  | Torque control  | Direct torque  |
+| 0x02  | Speed control   | Speed regulation |
+| 0x03  | Position control| Position control |
+| 0x04  | Emergency stop  | Immediate stop |
 
 **Enable Flags (Byte 5):**
-- Bit 0: Motor enable
-- Bit 1: Regen enable
-- Bit 2: Torque limit active
-- Bit 3: Speed limit active
+
+| Bit | Description         | Status |
+|-----|---------------------|--------|
+| 0   | Motor enable        | Enable |
+| 1   | Regen enable        | Enable |
+| 2   | Torque limit active | Active |
+| 3   | Speed limit active  | Active |
 - Bit 4-7: Reserved
 
 #### **0x200 - Battery Status**
@@ -140,12 +152,15 @@ Low (500-2047)    0x1F4-0x7FF   Status & Telemetry         Dashboard, logging
 | 7    | Fault Code | 0-255 | code | - |
 
 **Status Flags (Byte 6):**
-- Bit 0: Charging allowed
-- Bit 1: Discharging allowed
-- Bit 2: Balancing active
-- Bit 3: Thermal warning
-- Bit 4: Voltage warning
-- Bit 5: Current warning
+
+| Bit | Description         | Status  |
+|-----|---------------------|---------|
+| 0   | Charging allowed    | Allowed |
+| 1   | Discharging allowed | Allowed |
+| 2   | Balancing active    | Active  |
+| 3   | Thermal warning     | Warning |
+| 4   | Voltage warning     | Warning |
+| 5   | Current warning     | Warning |
 - Bit 6: Fault present
 - Bit 7: Emergency stop
 
@@ -168,11 +183,14 @@ Low (500-2047)    0x1F4-0x7FF   Status & Telemetry         Dashboard, logging
 | 6-7  | Reserved | 0x00 | - | - |
 
 **System States (Byte 4):**
-- 0x00: Initialization
-- 0x01: Ready
-- 0x02: Drive
-- 0x03: Fault
-- 0x04: Emergency stop
+
+| Value | State          | Description       |
+|-------|----------------|-------------------|
+| 0x00  | Initialization | System starting   |
+| 0x01  | Ready          | Ready to drive    |
+| 0x02  | Drive          | Vehicle driving   |
+| 0x03  | Fault          | System fault      |
+| 0x04  | Emergency stop | Emergency state   |
 
 ## Communication Requirements
 

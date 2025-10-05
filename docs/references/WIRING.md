@@ -153,18 +153,17 @@ graph TD
 ```
 
 ### Power Requirements
-```
-Component                | Voltage | Current  | Power
-------------------------|---------|----------|--------
-ESP32 DevKit V1         | 5V      | 250mA    | 1.25W
-CAN Transceiver         | 5V      | 50mA     | 0.25W
-Display (OLED)          | 3.3V    | 30mA     | 0.1W
-Sensors (total)         | 3.3V    | 100mA    | 0.33W
-Status LEDs             | 3.3V    | 60mA     | 0.2W
-Total 3.3V Load         | 3.3V    | 440mA    | 1.45W
-Total 5V Load           | 5V      | 300mA    | 1.5W
-Total System Power      | -       | -        | 3.0W
-```
+
+| Component            | Voltage | Current | Power  |
+|----------------------|---------|---------|--------|
+| ESP32 DevKit V1      | 5V      | 250mA   | 1.25W  |
+| CAN Transceiver      | 5V      | 50mA    | 0.25W  |
+| Display (OLED)       | 3.3V    | 30mA    | 0.1W   |
+| Sensors (total)      | 3.3V    | 100mA   | 0.33W  |
+| Status LEDs          | 3.3V    | 60mA    | 0.2W   |
+| **Total 3.3V Load**  | 3.3V    | 440mA   | 1.45W  |
+| **Total 5V Load**    | 5V      | 300mA   | 1.5W   |
+| **Total System Power** | -     | -       | 3.0W   |
 
 ## Module Connection Diagrams
 

@@ -174,17 +174,16 @@ enum InverterFault {
 ## Hardware Interface
 
 ### Digital I/O Connections
-```
-Signal         | ESP32 Pin | Direction | Function
----------------|-----------|-----------|---------------------------
-Enable         | GPIO27    | Output    | Inverter enable control
-Fault          | GPIO12    | Input     | Fault status (active low)
-Ready          | GPIO14    | Input     | Ready status
-Emergency Stop | GPIO15    | Input     | Emergency stop input
-Precharge      | GPIO16    | Output    | Precharge control
-Contactor+     | GPIO17    | Output    | Positive contactor control
-Contactor-     | GPIO18    | Output    | Negative contactor control
-```
+
+| Signal         | ESP32 Pin | Direction | Function                    |
+|----------------|-----------|-----------|----------------------------|
+| Enable         | GPIO27    | Output    | Inverter enable control    |
+| Fault          | GPIO12    | Input     | Fault status (active low)  |
+| Ready          | GPIO14    | Input     | Ready status               |
+| Emergency Stop | GPIO15    | Input     | Emergency stop input       |
+| Precharge      | GPIO16    | Output    | Precharge control          |
+| Contactor+     | GPIO17    | Output    | Positive contactor control |
+| Contactor-     | GPIO18    | Output    | Negative contactor control |
 
 ### CAN Communication
 - **Command messages**: 20ms interval (50Hz)
@@ -193,14 +192,13 @@ Contactor-     | GPIO18    | Output    | Negative contactor control
 - **Baud rate**: 500kbps (Formula Hybrid standard)
 
 ### Analog Inputs
-```
-Parameter      | GPIO Pin | Range    | Resolution | Scaling
----------------|----------|----------|------------|------------------
-DC Bus Voltage | GPIO25   | 0-600V   | 12-bit     | 147:1 divider
-DC Bus Current | GPIO26   | ±200A    | 12-bit     | Hall sensor
-Motor Temp     | GPIO32   | -40-150°C| 12-bit     | NTC thermistor
-Inverter Temp  | GPIO33   | -40-150°C| 12-bit     | NTC thermistor
-```
+
+| Parameter      | GPIO Pin | Range     | Resolution | Scaling           |
+|----------------|----------|-----------|------------|-------------------|
+| DC Bus Voltage | GPIO25   | 0-600V    | 12-bit     | 147:1 divider     |
+| DC Bus Current | GPIO26   | ±200A     | 12-bit     | Hall sensor       |
+| Motor Temp     | GPIO32   | -40-150°C | 12-bit     | NTC thermistor    |
+| Inverter Temp  | GPIO33   | -40-150°C | 12-bit     | NTC thermistor    |
 
 ## Implementation Details
 
