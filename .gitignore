@@ -1,0 +1,92 @@
+# ESP32 Race Car Core Library - Git Ignore File
+
+# PlatformIO Build Artifacts
+.pio/
+.vscode/
+
+# Python Virtual Environment
+.venv/
+.env
+*.env.*
+__pycache__/
+*.pyc
+*.pyo
+
+# Build directories
+**/build/
+**/dist/
+
+# Node.js (if using web dashboard)
+**/node_modules/
+package-lock.json
+.npm/
+
+# Development Tools & IDEs
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Compiler & Build Outputs
+*.o
+*.obj
+*.elf
+*.bin
+*.hex
+*.map
+*.lss
+*.sym
+
+# Documentation Build
+docs/_build/
+docs/build/
+*.pdf
+
+# Logs & Debug Files
+*.log
+*.out
+debug/
+logs/
+
+# Test Results & Coverage
+test_results/
+coverage/
+*.gcov
+*.gcda
+*.gcno
+
+# Temporary & Cache Files
+tmp/
+temp/
+*.tmp
+*.cache
+.cache/
+
+# Hardware Simulation
+*.vcd
+*.fst
+simulation/
+
+# Secrets & Credentials
+secrets.h
+credentials.json
+*.key
+*.pem
+
+# Race Car Specific
+telemetry_data/
+calibration_data/
+race_logs/
+
+# Backup Files
+*.bak
+*.backup
+*_backup.*
+
+# Archive Files
+*.zip
+*.tar.gz
+*.rar
+*.7z
