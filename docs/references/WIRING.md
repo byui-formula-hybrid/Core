@@ -13,6 +13,82 @@ This document provides detailed electrical diagrams, wiring specifications, and 
 ## ESP32 DevKit V1 Complete Pinout
 
 ### Pin Assignment Overview
+
+```mermaid
+block-beta
+  columns 1
+  title["ESP32 DevKit V1 Pinout"]
+  space
+  
+  block:esp32_board
+    columns 2
+    
+    block:left_pins
+      columns 1
+      EN["EN"]
+      A0["ADC2_0/A0"]
+      A3["ADC2_3/A3"]
+      A6["ADC2_6/A6"]
+      A7["ADC2_7/A7"]
+      A4["ADC2_4/A4"]
+      A5["ADC2_5/A5"]
+      A8["ADC2_8/A8"]
+      VDD_3V3["3V3"]
+      GND_1["GND"]
+      D10["ADC2_9/A9/D10"]
+      D11["ADC2_8/A8/D11"]
+      D12["Touch9/A12/D12"]
+      D13["Touch8/A13/D13"]
+      GND_2["GND"]
+    end
+    
+    block:right_pins
+      columns 1
+      D0["D0/GPIO3 (Boot Button)"]
+      D1["D1/GPIO1 (TX0 - USB Serial)"]
+      D2["D2/GPIO2 (LED_BUILTIN)"]
+      D3["D3/GPIO3 (RX0 - USB Serial)"]
+      D4["D4/GPIO4 (CAN RX)"]
+      D5["D5/GPIO5 (CAN TX)"]
+      D6["D6/GPIO6 (Reserved)"]
+      D7["D7/GPIO7 (Reserved)"]
+      D8["D8/GPIO8 (Reserved)"]
+      D9["D9/GPIO9 (Reserved)"]
+      D10_R["D10/GPIO10 (Reserved)"]
+      D11_R["D11/GPIO11 (Reserved)"]
+      D12_R["D12/GPIO12 (IMD Status)"]
+      D13_R["D13/GPIO13 (Pump PWM)"]
+      D14["D14/GPIO14 (Brake Input)"]
+    end
+  end
+  
+  space
+  additional_title["Additional GPIO (bottom row):"]
+  
+  block:additional_pins
+    columns 4
+    D15["D15/GPIO15<br/>(Pedal Input)"]
+    D16["D16/GPIO16<br/>(Dashboard TX)"]
+    D17["D17/GPIO17<br/>(Dashboard RX)"]
+    D18["D18/GPIO18<br/>(SPI CLK)"]
+    D19["D19/GPIO19<br/>(SPI MISO)"]
+    D21["D21/GPIO21<br/>(I2C SDA)"]
+    D22["D22/GPIO22<br/>(I2C SCL)"]
+    D23["D23/GPIO23<br/>(SPI MOSI)"]
+    D25["D25/GPIO25<br/>(Battery Voltage)"]
+    D26["D26/GPIO26<br/>(Battery Current)"]
+    D27["D27/GPIO27<br/>(Inverter Enable)"]
+    D32["D32/GPIO32<br/>(Flow Sensor)"]
+    D33["D33/GPIO33<br/>(Pressure Sensor)"]
+    D34["D34/GPIO34<br/>(Temperature 1)"]
+  end
+  
+  style title fill:#E3F2FD,stroke:#1976D2,stroke-width:2px
+  style additional_title fill:#F3E5F5,stroke:#7B1FA2,stroke-width:1px
+  style left_pins fill:#E8F5E8,stroke:#388E3C,stroke-width:2px
+  style right_pins fill:#FFF3E0,stroke:#F57C00,stroke-width:2px
+  style additional_pins fill:#FFEBEE,stroke:#D32F2F,stroke-width:2px
+```
 ```
                     ESP32 DevKit V1
                   ┌─────────────────┐
@@ -93,84 +169,162 @@ Total System Power      | -       | -        | 3.0W
 ## Module Connection Diagrams
 
 ### CAN Bus Interface
-```
-ESP32 DevKit V1           MCP2515 CAN Controller         CAN Transceiver
-┌─────────────┐          ┌─────────────────────┐        ┌─────────────┐
-│             │          │                     │        │             │
-│ GPIO18 (SCK)├─────────►│ SCK                 │        │             │
-│ GPIO19(MISO)│◄─────────┤ SO                  │        │             │
-│ GPIO23(MOSI)├─────────►│ SI                  │        │             │
-│ GPIO5  (CS) ├─────────►│ CS                  │        │             │
-│ GPIO4 (INT) │◄─────────┤ INT                 │        │             │
-│             │          │                     │        │             │
-│        3.3V ├─────────►│ VDD                 │        │             │
-│         GND ├─────────►│ VSS                 │        │             │
-│             │          │                     │        │             │
-│             │          │                 TXD ├───────►│ TXD         │
-│             │          │                 RXD │◄───────┤ RXD         │
-│             │          │                     │        │             │
-└─────────────┘          └─────────────────────┘        │ CANH    ────┼──► To CAN Bus
-                                                        │ CANL    ────┼──► (120Ω term)
-                                                        │             │
-                                                        │        5V   │
-                                                        │       GND   │
-                                                        └─────────────┘
+
+```mermaid
+flowchart LR
+  subgraph ESP32["ESP32 DevKit V1"]
+    direction TB
+    GPIO18["GPIO18 (SCK)"]
+    GPIO19["GPIO19 (MISO)"]
+    GPIO23["GPIO23 (MOSI)"]
+    GPIO5["GPIO5 (CS)"]
+    GPIO4["GPIO4 (INT)"]
+    VDD_ESP["3.3V"]
+    GND_ESP["GND"]
+  end
+  
+  subgraph MCP2515["MCP2515 CAN Controller"]
+    direction TB
+    SCK["SCK"]
+    SO["SO"]
+    SI["SI"]
+    CS["CS"]
+    INT["INT"]
+    VDD_MCP["VDD"]
+    VSS["VSS"]
+    TXD["TXD"]
+    RXD["RXD"]
+  end
+  
+  subgraph CAN_Trans["CAN Transceiver"]
+    direction TB
+    TXD_TRANS["TXD"]
+    RXD_TRANS["RXD"]
+    CANH["CANH"]
+    CANL["CANL"]
+    VDD_TRANS["5V"]
+    GND_TRANS["GND"]
+  end
+  
+  GPIO18 --> SCK
+  GPIO19 --> SO
+  GPIO23 --> SI
+  GPIO5 --> CS
+  GPIO4 --> INT
+  VDD_ESP --> VDD_MCP
+  GND_ESP --> VSS
+  
+  TXD --> TXD_TRANS
+  RXD --> RXD_TRANS
+  
+  CANH --> CAN_BUS["CAN Bus<br/>(120Ω term)"]
+  CANL --> CAN_BUS
+  
+  style ESP32 fill:#E3F2FD,stroke:#1976D2,stroke-width:2px
+  style MCP2515 fill:#E8F5E8,stroke:#388E3C,stroke-width:2px  
+  style CAN_Trans fill:#FFF3E0,stroke:#F57C00,stroke-width:2px
+  style CAN_BUS fill:#F3E5F5,stroke:#7B1FA2,stroke-width:2px
 ```
 
 ### Battery Management Interface
-```
-ESP32 DevKit V1           Voltage Divider               Current Sensor
-┌─────────────┐          ┌─────────────────────┐        ┌─────────────┐
-│             │          │                     │        │             │
-│GPIO25 (ADC) │◄─────────┤ Output (0-3.3V)     │        │             │
-│             │          │                     │        │             │
-│        3.3V ├─────────►│ VRef                │        │             │
-│         GND ├─────────►│ GND                 │        │             │
-│             │          │                     │        │             │
-└─────────────┘          │ R1 = 180kΩ          │        │             │
-                         │ R2 = 1kΩ            │        │             │
-                         │ Ratio = 181:1       │        │             │
-Battery Pack ────────────┤ Input (0-600V)      │        │             │
-(400-600V)               │                     │        │             │
-                         └─────────────────────┘        │             │
-                                                        │ +15V    ────┼──► +15V Supply
-ESP32 DevKit V1                                         │ -15V    ────┼──► -15V Supply
-┌─────────────┐                                         │ +HV     ────┼──► Battery +
-│             │                                         │ -HV     ────┼──► Battery -
-│GPIO26 (ADC) │◄────────────────────────────────────────┤ Output      │
-│        3.3V ├────────────────────────────────────────►│ VRef        │
-│         GND ├────────────────────────────────────────►│ GND         │
-└─────────────┘                                         └─────────────┘
-                                                        Hall Effect
-                                                        Current Sensor
-                                                        (±200A range)
+
+```mermaid
+flowchart LR
+  subgraph ESP32_BMS["ESP32 DevKit V1"]
+    direction TB
+    GPIO25["GPIO25 (ADC)"]
+    GPIO26["GPIO26 (ADC)"]
+    VDD_3V3["3.3V"]
+    GND_ESP_BMS["GND"]
+  end
+  
+  subgraph VoltageDivider["Voltage Divider"]
+    direction TB
+    VD_OUTPUT["Output (0-3.3V)"]
+    VD_VREF["VRef"]
+    VD_GND["GND"]
+    VD_R1["R1 = 180kΩ"]
+    VD_R2["R2 = 1kΩ"]
+    VD_RATIO["Ratio = 181:1"]
+    VD_INPUT["Input (0-600V)"]
+  end
+  
+  subgraph CurrentSensor["Hall Effect Current Sensor"]
+    direction TB
+    CS_OUTPUT["Output"]
+    CS_VDD_POS["+15V"]
+    CS_VDD_NEG["-15V"]
+    CS_VREF["VRef"]
+    CS_GND["GND"]
+    CS_HV_POS["+HV"]
+    CS_HV_NEG["-HV"]
+    CS_RANGE["±200A range"]
+  end
+  
+  subgraph Battery["Battery Pack"]
+    BATT_POS["Battery + (400-600V)"]
+    BATT_NEG["Battery -"]
+  end
+  
+  GPIO25 --> VD_OUTPUT
+  GPIO26 --> CS_OUTPUT
+  VDD_3V3 --> VD_VREF
+  VDD_3V3 --> CS_VREF
+  GND_ESP_BMS --> VD_GND
+  GND_ESP_BMS --> CS_GND
+  
+  BATT_POS --> VD_INPUT
+  BATT_POS --> CS_HV_POS
+  BATT_NEG --> CS_HV_NEG
+  
+  style ESP32_BMS fill:#E3F2FD,stroke:#1976D2,stroke-width:2px
+  style VoltageDivider fill:#E8F5E8,stroke:#388E3C,stroke-width:2px
+  style CurrentSensor fill:#FFF3E0,stroke:#F57C00,stroke-width:2px
+  style Battery fill:#FFEBEE,stroke:#D32F2F,stroke-width:2px
 ```
 
 ### Pedal Position Interface
-```
-ESP32 DevKit V1           Throttle Sensors              Brake Sensor
-┌─────────────┐          ┌─────────────────────┐        ┌─────────────┐
-│             │          │                     │        │             │
-│GPIO36 (ADC) │◄─────────┤ Throttle 1 Output   │        │             │
-│GPIO39 (ADC) │◄─────────┤ Throttle 2 Output   │        │             │
-│             │          │                     │        │             │
-│        5V   ├─────────►│ Sensor Power        │        │             │
-│         GND ├─────────►│ Sensor Ground       │        │             │
-│             │          │                     │        │             │
-└─────────────┘          │ Range: 0.5-4.5V     │        │             │
-                         │ Type: Potentiometer │        │             │
-                         └─────────────────────┘        │             │
-                                                        │             │
-ESP32 DevKit V1                                         │             │
-┌─────────────┐                                         │             │
-│             │                                         │             │
-│GPIO34 (ADC) │◄────────────────────────────────────────┤ Output      │
-│        5V   ├────────────────────────────────────────►│ Power       │
-│         GND ├────────────────────────────────────────►│ Ground      │
-│             │                                         │             │
-└─────────────┘                                         │ Range: 0-5V │
-                                                        │ Type: Linear│
-                                                        └─────────────┘
+
+```mermaid
+flowchart LR
+  subgraph ESP32_Pedals["ESP32 DevKit V1"]
+    direction TB
+    GPIO36["GPIO36 (ADC)"]
+    GPIO39["GPIO39 (ADC)"]
+    GPIO34["GPIO34 (ADC)"]
+    VDD_5V["5V"]
+    GND_ESP_P["GND"]
+  end
+  
+  subgraph Throttle["Throttle Sensors"]
+    direction TB
+    THROTTLE1["Throttle 1 Output<br/>Range: 0.5-4.5V"]
+    THROTTLE2["Throttle 2 Output<br/>Range: 0.5-4.5V"]
+    THROTTLE_PWR["Sensor Power"]
+    THROTTLE_GND["Sensor Ground"]
+    THROTTLE_TYPE["Type: Potentiometer"]
+  end
+  
+  subgraph Brake["Brake Sensor"]
+    direction TB
+    BRAKE_OUT["Output<br/>Range: 0-5V"]
+    BRAKE_PWR["Power"]
+    BRAKE_GND["Ground"]
+    BRAKE_TYPE["Type: Linear"]
+  end
+  
+  GPIO36 --> THROTTLE1
+  GPIO39 --> THROTTLE2
+  GPIO34 --> BRAKE_OUT
+  
+  VDD_5V --> THROTTLE_PWR
+  VDD_5V --> BRAKE_PWR
+  GND_ESP_P --> THROTTLE_GND
+  GND_ESP_P --> BRAKE_GND
+  
+  style ESP32_Pedals fill:#E3F2FD,stroke:#1976D2,stroke-width:2px
+  style Throttle fill:#E8F5E8,stroke:#388E3C,stroke-width:2px
+  style Brake fill:#FFEBEE,stroke:#D32F2F,stroke-width:2px
 ```
 
 ### IMD Interface

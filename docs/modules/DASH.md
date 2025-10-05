@@ -124,37 +124,79 @@ IMD       | GPIO5    | Red    | IMD fault
 ## Display Layout Design
 
 ### Main Dashboard Screen
-```
-╔══════════════════════════════════════════════════════════════╗
-║  BYU-I Formula Hybrid                    12:34:56    [SOC]89% ║
-╠══════════════════════════════════════════════════════════════╣
-║                                                              ║
-║         Speed: 85.6 km/h           RPM: 3450                 ║
-║                                                              ║
-║    ┌─────────────────────┐    ┌─────────────────────┐        ║
-║    │   Battery Status    │    │   Motor Status      │        ║
-║    │  Voltage: 485.2V    │    │  Torque: 145 Nm     │        ║
-║    │  Current: 45.8A     │    │  Temp: 68°C         │        ║
-║    │  Power: 22.2kW      │    │  Efficiency: 92%    │        ║
-║    └─────────────────────┘    └─────────────────────┘        ║
-║                                                              ║
-║    Gear: D    Mode: SPORT    Range: 45.2km    Eff: 4.2km/kWh ║
-║                                                              ║
-╚══════════════════════════════════════════════════════════════╝
+
+```mermaid
+block-beta
+  columns 1
+  header["BYU-I Formula Hybrid                    12:34:56    [SOC]89%"]
+  space
+  
+  block:main_display
+    columns 3
+    speed["Speed: 85.6 km/h"] space rpm["RPM: 3450"]
+  end
+  
+  space
+  
+  block:status_panels
+    columns 2
+    
+    block:battery_status
+      columns 1
+      battery_title["Battery Status"]
+      voltage["Voltage: 485.2V"]
+      current["Current: 45.8A"]
+      power["Power: 22.2kW"]
+    end
+    
+    block:motor_status
+      columns 1
+      motor_title["Motor Status"]
+      torque["Torque: 145 Nm"]
+      temp["Temp: 68°C"]
+      efficiency["Efficiency: 92%"]
+    end
+  end
+  
+  space
+  footer["Gear: D    Mode: SPORT    Range: 45.2km    Eff: 4.2km/kWh"]
+  
+  style header fill:#E3F2FD,stroke:#1976D2,stroke-width:2px
+  style speed fill:#FFF3E0,stroke:#F57C00,stroke-width:2px
+  style rpm fill:#FFF3E0,stroke:#F57C00,stroke-width:2px
+  style battery_title fill:#E8F5E8,stroke:#388E3C,stroke-width:2px
+  style motor_title fill:#E8F5E8,stroke:#388E3C,stroke-width:2px
+  style footer fill:#F3E5F5,stroke:#7B1FA2,stroke-width:2px
 ```
 
 ### Warning/Alert Display
-```
-╔══════════════════════════════════════════════════════════════╗
-║                        ⚠️  WARNING  ⚠️                        ║
-║                                                              ║
-║                   HIGH BATTERY TEMPERATURE                   ║
-║                         89°C (Max: 85°C)                    ║
-║                                                              ║
-║                    Reducing Power to 75%                    ║
-║                                                              ║
-║                  [ACKNOWLEDGE] [DETAILS]                     ║
-╚══════════════════════════════════════════════════════════════╝
+
+```mermaid
+block-beta
+  columns 1
+  space
+  warning_header["⚠️  WARNING  ⚠️"]
+  space
+  alert_title["HIGH BATTERY TEMPERATURE"]
+  temp_reading["89°C (Max: 85°C)"]
+  space
+  action_taken["Reducing Power to 75%"]
+  space
+  
+  block:buttons
+    columns 2
+    acknowledge["[ACKNOWLEDGE]"]
+    details["[DETAILS]"]
+  end
+  
+  space
+  
+  style warning_header fill:#FFEBEE,stroke:#D32F2F,stroke-width:3px,color:#D32F2F
+  style alert_title fill:#FFF3E0,stroke:#F57C00,stroke-width:2px,color:#E65100
+  style temp_reading fill:#FFEBEE,stroke:#D32F2F,stroke-width:2px
+  style action_taken fill:#FFF3E0,stroke:#FF9800,stroke-width:2px
+  style acknowledge fill:#E8F5E8,stroke:#4CAF50,stroke-width:2px
+  style details fill:#E3F2FD,stroke:#2196F3,stroke-width:2px
 ```
 
 ## Data Types and Enumerations

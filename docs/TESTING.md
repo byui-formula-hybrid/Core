@@ -17,17 +17,31 @@ This document defines test procedures, validation protocols, and simulation stra
 ## Testing Framework Architecture
 
 ### Unit Testing (PlatformIO + Unity)
-```
-test/
-├── test_battery/           # Battery module tests
-├── test_can/              # CAN communication tests  
-├── test_core/             # Core utilities tests
-├── test_dash/             # Dashboard interface tests
-├── test_imd/              # IMD monitoring tests
-├── test_inverter/         # Inverter control tests
-├── test_pedals/           # Pedal systems tests
-├── test_pump/             # Pump control tests
-└── test_integration/      # Full system tests
+
+```mermaid
+flowchart TD
+  test_root["test/"]
+  
+  test_root --> test_battery["test_battery/<br/>Battery module tests"]
+  test_root --> test_can["test_can/<br/>CAN communication tests"]
+  test_root --> test_core["test_core/<br/>Core utilities tests"]
+  test_root --> test_dash["test_dash/<br/>Dashboard interface tests"]
+  test_root --> test_imd["test_imd/<br/>IMD monitoring tests"]
+  test_root --> test_inverter["test_inverter/<br/>Inverter control tests"]
+  test_root --> test_pedals["test_pedals/<br/>Pedal systems tests"]
+  test_root --> test_pump["test_pump/<br/>Pump control tests"]
+  test_root --> test_integration["test_integration/<br/>Full system tests"]
+  
+  style test_root fill:#E3F2FD,stroke:#1976D2,stroke-width:3px
+  style test_battery fill:#E8F5E8,stroke:#388E3C,stroke-width:2px
+  style test_can fill:#E8F5E8,stroke:#388E3C,stroke-width:2px
+  style test_core fill:#E8F5E8,stroke:#388E3C,stroke-width:2px
+  style test_dash fill:#E8F5E8,stroke:#388E3C,stroke-width:2px
+  style test_imd fill:#FFF3E0,stroke:#F57C00,stroke-width:2px
+  style test_inverter fill:#FFF3E0,stroke:#F57C00,stroke-width:2px
+  style test_pedals fill:#FFF3E0,stroke:#F57C00,stroke-width:2px
+  style test_pump fill:#FFF3E0,stroke:#F57C00,stroke-width:2px
+  style test_integration fill:#FFEBEE,stroke:#D32F2F,stroke-width:2px
 ```
 
 ### Test Execution Commands
@@ -221,12 +235,21 @@ jobs:
 ## Test Data Management
 
 ### Test Data Organization
-```
-test_data/
-├── sensor_recordings/     # Real sensor data for replay
-├── can_logs/             # CAN bus message logs
-├── benchmark_results/    # Performance benchmarks
-└── fault_scenarios/      # Documented fault conditions
+
+```mermaid
+flowchart TD
+  test_data_root["test_data/"]
+  
+  test_data_root --> sensor_recordings["sensor_recordings/<br/>Real sensor data for replay"]
+  test_data_root --> can_logs["can_logs/<br/>CAN bus message logs"]
+  test_data_root --> benchmark_results["benchmark_results/<br/>Performance benchmarks"]
+  test_data_root --> fault_scenarios["fault_scenarios/<br/>Documented fault conditions"]
+  
+  style test_data_root fill:#E3F2FD,stroke:#1976D2,stroke-width:3px
+  style sensor_recordings fill:#E8F5E8,stroke:#388E3C,stroke-width:2px
+  style can_logs fill:#FFF3E0,stroke:#F57C00,stroke-width:2px
+  style benchmark_results fill:#F3E5F5,stroke:#7B1FA2,stroke-width:2px
+  style fault_scenarios fill:#FFEBEE,stroke:#D32F2F,stroke-width:2px
 ```
 
 ### Data Collection
