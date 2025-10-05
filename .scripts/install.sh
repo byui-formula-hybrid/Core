@@ -99,6 +99,9 @@ else
     print_warning "No platformio.ini found. Run this script from the project root."
 fi
 
+# Install VS Code extensions
+install_recommended_extensions
+
 echo ""
 print_success "Installation complete!"
 echo ""
@@ -107,10 +110,12 @@ echo "1. Restart your terminal (or source your shell config)"
 echo "2. Run '.scripts/test.sh' to verify installation"
 echo "3. Run '.scripts/build.sh' to build the project"
 echo ""
-print_info "Recommended VS Code extensions:"
-echo "- PlatformIO IDE"
-echo "- C/C++ Extension Pack"
-echo "- Wokwi Simulator"
+print_info "Installed VS Code extensions:"
+echo "- PlatformIO IDE (platformio.platformio-ide)"
+echo "- C/C++ Extension Pack (ms-vscode.cpptools-extension-pack)"
+echo "- Wokwi Simulator (wokwi.wokwi-vscode)"
+echo "- Markdown Mermaid Preview (bierner.markdown-mermaid)"
+echo "- YAML Language Support (redhat.vscode-yaml)"
 echo ""
 print_info "Quick commands:"
 echo "- Test:  .scripts/test.sh"

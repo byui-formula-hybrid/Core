@@ -1,4 +1,60 @@
-# High-level architecture
+# Formula Hybrid Vehicle System Design
+
+## Purpose
+This document defines the **overall vehicle system design** for the Formula Hybrid race car, including major subsystems, vehicle-level architecture, and inter-component relationships. For ESP32 library internal structure, see `ARCHITECTURE.md`.
+
+## Safety Classification
+- [x] Safety Critical (vehicle system design affects driver and spectator safety)
+
+## Vehicle System Overview
+
+The Formula Hybrid vehicle combines internal combustion engine with electric drivetrain components, requiring sophisticated control and safety systems.
+
+> **Note:** This document covers the **overall vehicle system design** and major subsystems. For ESP32 library internal software structure, see [`ARCHITECTURE.md`](ARCHITECTURE.md).
+
+### **Major Vehicle Subsystems**
+
+```mermaid
+flowchart TD
+    subgraph "Vehicle Control Systems"
+        PB["Pedal Board<br/>(Safety Input)"]
+        BE["Brain ECU<br/>(Master Controller)"]
+        DI["Dashboard<br/>(Driver Interface)"]
+    end
+    
+    subgraph "Powertrain Systems"
+        ICE["Internal Combustion<br/>Engine"]
+        MGU["Motor Generator<br/>Unit (Electric)"]
+        INV["Motor Inverter<br/>(Power Electronics)"]
+    end
+    
+    subgraph "Energy & Safety Systems"
+        BMS["Battery Management<br/>System"]
+        IMD["Insulation Monitoring<br/>Device"]
+        PUMP["Cooling Pumps<br/>(Thermal Management)"]
+    end
+    
+    subgraph "Communication Network"
+        CAN["CAN Bus Network<br/>(Vehicle Communication)"]
+    end
+    
+    PB --> BE
+    BE --> DI
+    BE --> MGU
+    BE --> ICE
+    MGU <--> INV
+    INV <--> BMS
+    BMS --> IMD
+    BE --> PUMP
+    
+    BE <--> CAN
+    PB <--> CAN
+    DI <--> CAN
+    BMS <--> CAN
+    INV <--> CAN
+```
+
+## Vehicle Subsystem Details
 
 * **Pedal Board (Throttle / Brake inputs)**
 

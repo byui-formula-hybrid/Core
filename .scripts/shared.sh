@@ -218,38 +218,52 @@ install_platformio() {
     
     print_info "Installing PlatformIO Core..."
     
-    # Use pip to install PlatformIO (works on all platforms)
-    if command_exists python3; then
-        python3 -m pip install --user platformio
-    elif command_exists python; then
-        python -m pip install --user platformio
+    # Detect if we're in a virtual environment
+    if [ -n "$VIRTUAL_ENV" ] || [ -n "$CONDA_DEFAULT_ENV" ]; then
+        print_info "Virtual environment detected, installing in current environment..."
+        # Install in virtual environment (no --user flag)
+        if command_exists python3; then
+            python3 -m pip install platformio
+        elif command_exists python; then
+            python -m pip install platformio
+        else
+            print_error "Python not found! Please install Python first"
+            return 1
+        fi
     else
-        print_error "Python not found! Please install Python first"
-        return 1
+        # Install with --user flag for system Python
+        if command_exists python3; then
+            python3 -m pip install --user platformio
+        elif command_exists python; then
+            python -m pip install --user platformio
+        else
+            print_error "Python not found! Please install Python first"
+            return 1
+        fi
+        
+        # Add to PATH (platform-specific) - only needed for --user installs
+        case $OS in
+            macos|linux)
+                # Add to shell profile
+                local shell_profile=""
+                if [ -n "$ZSH_VERSION" ]; then
+                    shell_profile="$HOME/.zshrc"
+                elif [ -n "$BASH_VERSION" ]; then
+                    shell_profile="$HOME/.bashrc"
+                else
+                    shell_profile="$HOME/.profile"
+                fi
+                
+                if [ -f "$shell_profile" ]; then
+                    echo 'export PATH="$HOME/.local/bin:$PATH"' >> "$shell_profile"
+                    export PATH="$HOME/.local/bin:$PATH"
+                fi
+                ;;
+            windows)
+                print_warning "Please add %USERPROFILE%\\.platformio\\penv\\Scripts to your PATH"
+                ;;
+        esac
     fi
-    
-    # Add to PATH (platform-specific)
-    case $OS in
-        macos|linux)
-            # Add to shell profile
-            local shell_profile=""
-            if [ -n "$ZSH_VERSION" ]; then
-                shell_profile="$HOME/.zshrc"
-            elif [ -n "$BASH_VERSION" ]; then
-                shell_profile="$HOME/.bashrc"
-            else
-                shell_profile="$HOME/.profile"
-            fi
-            
-            if [ -f "$shell_profile" ]; then
-                echo 'export PATH="$HOME/.local/bin:$PATH"' >> "$shell_profile"
-                export PATH="$HOME/.local/bin:$PATH"
-            fi
-            ;;
-        windows)
-            print_warning "Please add %USERPROFILE%\\.platformio\\penv\\Scripts to your PATH"
-            ;;
-    esac
 }
 
 # Get shell configuration file
@@ -288,4 +302,126 @@ show_project_info() {
 init_script() {
     detect_os
     show_project_info
+}
+
+# Check if VS Code is installed
+check_vscode() {
+    case $OS in
+        macos)
+            [ -d "/Applications/Visual Studio Code.app" ] && command_exists code
+            ;;
+        linux)
+            command_exists code
+            ;;
+        windows)
+            command_exists code.cmd || command_exists code
+            ;;
+        *)
+            command_exists code
+            ;;
+    esac
+}
+
+# Install VS Code extension
+install_vscode_extension() {
+    local extension_id="$1"
+    local extension_name="$2"
+    
+    if ! check_vscode; then
+        print_warning "VS Code not found. Skipping extension installation."
+        return 1
+    fi
+    
+    print_info "Installing VS Code extension: $extension_name"
+    
+    case $OS in
+        windows)
+            if command_exists code.cmd; then
+                code.cmd --install-extension "$extension_id" --force
+            else
+                code --install-extension "$extension_id" --force
+            fi
+            ;;
+        *)
+            code --install-extension "$extension_id" --force
+            ;;
+    esac
+    
+    if [ $? -eq 0 ]; then
+        print_success "$extension_name installed"
+    else
+        print_warning "Failed to install $extension_name"
+    fi
+}
+
+# Uninstall VS Code extension
+uninstall_vscode_extension() {
+    local extension_id="$1"
+    local extension_name="$2"
+    
+    if ! check_vscode; then
+        return 0  # If VS Code isn't installed, extension is already "uninstalled"
+    fi
+    
+    print_info "Uninstalling VS Code extension: $extension_name"
+    
+    case $OS in
+        windows)
+            if command_exists code.cmd; then
+                code.cmd --uninstall-extension "$extension_id"
+            else
+                code --uninstall-extension "$extension_id"
+            fi
+            ;;
+        *)
+            code --uninstall-extension "$extension_id"
+            ;;
+    esac
+    
+    if [ $? -eq 0 ]; then
+        print_success "$extension_name uninstalled"
+    else
+        print_info "$extension_name was not installed or already removed"
+    fi
+}
+
+# Install all recommended VS Code extensions
+install_recommended_extensions() {
+    if ! check_vscode; then
+        print_warning "VS Code not found. Skipping extension installation."
+        return 1
+    fi
+    
+    print_info "Installing recommended VS Code extensions..."
+    
+    # Core development extensions
+    install_vscode_extension "platformio.platformio-ide" "PlatformIO IDE"
+    install_vscode_extension "ms-vscode.cpptools-extension-pack" "C/C++ Extension Pack"
+    install_vscode_extension "wokwi.wokwi-vscode" "Wokwi Simulator"
+    
+    # Documentation and visualization extensions
+    install_vscode_extension "bierner.markdown-mermaid" "Markdown Mermaid Preview"
+    install_vscode_extension "redhat.vscode-yaml" "YAML Language Support"
+    
+    print_success "VS Code extensions installation complete"
+}
+
+# Uninstall all project-specific VS Code extensions
+uninstall_project_extensions() {
+    if ! check_vscode; then
+        return 0  # If VS Code isn't installed, extensions are already "uninstalled"
+    fi
+    
+    print_info "Uninstalling project-specific VS Code extensions..."
+    
+    # Core development extensions
+    uninstall_vscode_extension "platformio.platformio-ide" "PlatformIO IDE"
+    uninstall_vscode_extension "ms-vscode.cpptools-extension-pack" "C/C++ Extension Pack"
+    uninstall_vscode_extension "wokwi.wokwi-vscode" "Wokwi Simulator"
+    
+    # Documentation and visualization extensions
+    uninstall_vscode_extension "bierner.markdown-mermaid" "Markdown Mermaid Preview"
+    uninstall_vscode_extension "redhat.vscode-yaml" "YAML Language Support"
+    
+    print_success "VS Code extensions uninstallation complete"
 }

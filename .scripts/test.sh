@@ -92,7 +92,7 @@ while [[ $# -gt 0 ]]; do
 done
 
 # Show project info
-print_info "Environment: native (with Arduino mocks)"
+print_info "Environment: native (unit testing only)"
 echo ""
 
 # Show test summary
