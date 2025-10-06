@@ -1,3 +1,9 @@
+# Formula Hybrid + Electric Rulebook Information Reguarding Software
+
+The following information reguarding the rules and regulations of the software has been extracted and placed in this document as a helpful reference for the software engineers of the team.  
+
+Reference to the actual rulebook are given at the end of the short summary incase further questions arise. 
+
 ## DO's (Allowed or Required Actions)
 
 **DO #1**  
