@@ -7,7 +7,7 @@ Motor Type: Emrax 208   - High voltage/ Liquid cooled
     - Max coolent temp - 50 C
     - Ambient* temp    - 30
 
-  Apporating voltage   - 50-690 V
+  Operating voltage   - 50-690 V
 
   Peak** power         - 86 kW at 6000 RPM
   Continuous*** power  - 52 kW
@@ -30,4 +30,5 @@ Motor Type: Emrax 208   - High voltage/ Liquid cooled
 *** How fast the motor can spin before becoming a hazard
 
   
+
 
