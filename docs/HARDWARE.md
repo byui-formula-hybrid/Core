@@ -8,7 +8,9 @@ This will document the designs for each board. It will document the limitations 
 PCBs that are customized to our needs
 
 ### Shared
-All of our custom boards have the following as part of the boards
+
+
+All of our custom boards have the following as part of the boards. 
 
 #### Micro Controller
 - ESP32
