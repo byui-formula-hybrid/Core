@@ -12,14 +12,14 @@ This is a PlatformIO-based ESP32 project for a race car with multiple modular co
 ├── src/                       # Main application source code
 │   └── main.cpp               # ESP32 application entry point
 ├── lib/                       # Custom race car module libraries
-│   ├── CanModule/             # CAN bus communication module
-│   ├── CoreModule/            # Core system functionality
-│   ├── DashModule/            # Dashboard and display module
-│   ├── InverterModule/        # Motor inverter control module
-│   ├── PumpModule/            # Cooling pump control module
-│   ├── PedalsModule/          # Accelerator/brake pedal module
-│   ├── BatteryModule/         # Battery monitoring module
-│   └── ImdModule/             # Insulation monitoring device module
+│   ├── can/                   # CAN bus communication module
+│   ├── core/                  # Core system functionality
+│   ├── dash/                  # Dashboard and display module
+│   ├── inverter/              # Motor inverter control module
+│   ├── pump/                  # Cooling pump control module
+│   ├── pedals/                # Accelerator/brake pedal module
+│   ├── battery/               # Battery monitoring module
+│   └── imd/                   # Insulation monitoring device module
 ├── include/                   # Shared headers and configuration
 │   ├── config.h               # Global configuration constants
 │   └── types.h                # Shared data structures
@@ -31,7 +31,8 @@ This is a PlatformIO-based ESP32 project for a race car with multiple modular co
 │   ├── test_pump/             # Pump module tests
 │   ├── test_pedals/           # Pedals module tests
 │   ├── test_battery/          # Battery module tests
-│   └── test_imd/              # IMD module tests
+│   ├── test_imd/              # IMD module tests
+│   └── mocks/                 # Mock objects for testing
 └── docs/                      # Project documentation
     ├── CANbus.md              # CAN bus protocol documentation
     ├── Design.md              # System design and architecture
@@ -40,43 +41,43 @@ This is a PlatformIO-based ESP32 project for a race car with multiple modular co
 
 ## Getting Started
 
-### Prerequisites
-- VS Code with PlatformIO extension
-- Python 3.7+ (for PlatformIO tools)
+> **💡 Important:** This project includes automated scripts that handle all setup, building, and testing. **Use the provided scripts instead of manual commands** for the best experience and to avoid common setup issues.
 
-### Setup
-1. Clone this repository
-2. Open the project folder in VS Code
-3. PlatformIO should automatically detect the project
-4. Build with: `pio run`
-5. Upload to ESP32: `pio run --target upload`
+### Quick Start (Recommended)
 
-### Testing
-Run unit tests for all modules:
+**New to the project? Start here:**
+
 ```bash
-pio test
+# 1. Clone the repository
+git clone <repository-url>
+cd Core
+
+# 2. Run the automated setup script
+./.scripts/install.sh
+
+# 3. Test that everything works
+./.scripts/test.sh
+
+# 4. Build for ESP32
+./.scripts/build.sh
 ```
 
-Run tests for a specific module:
-```bash
-pio test --filter test_can
-```
+The setup script will automatically:
+- ✅ Detect your operating system (macOS, Linux, Windows)
+- ✅ Install required dependencies (Python, PlatformIO, etc.)
+- ✅ Configure your development environment
+- ✅ Verify everything is working
 
-## Module Overview
+### All Available Scripts
 
-Each module in the `lib/` directory follows a consistent interface:
-- `ModuleName.h` - Header file with class definition
-- `ModuleName.cpp` - Implementation file
-- `bool begin()` - Initialize the module
-- `void update()` - Update module state (call in main loop)
+| Script | Purpose | Example Usage |
+|--------|---------|---------------|
+| `./.scripts/install.sh` | **Setup everything** | `./.scripts/install.sh` |
+| `./.scripts/test.sh` | **Run unit tests** | `./.scripts/test.sh --verbose` |
+| `./.scripts/build.sh` | **Build project** | `./.scripts/build.sh --upload` |
+| `./.scripts/uninstall.sh` | **Clean up** | `./.scripts/uninstall.sh` |
 
-## Contributing
-
-When adding new modules or features:
-1. Create the module in `lib/ModuleName/`
-2. Add corresponding tests in `test/test_module/`
-3. Update documentation in `docs/`
-4. Follow the existing naming conventions
+📚 **For detailed script options:** See [`.scripts/README.md`](.scripts/README.md)
 
 ## License
 

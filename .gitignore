@@ -90,3 +90,6 @@ race_logs/
 *.tar.gz
 *.rar
 *.7z
+
+# CMake Files
+**/CMakeUserPresets.json
