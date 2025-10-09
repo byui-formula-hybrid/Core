@@ -68,6 +68,21 @@ The setup script will automatically:
 - ✅ Configure your development environment
 - ✅ Verify everything is working
 
+## Windows Users: Git Bash Setup
+
+> **🪟 Windows Notice:**
+>
+> To run project scripts on Windows, you must first set up Git Bash:
+>
+> 1. Open PowerShell and run:
+>    ```powershell
+>    ./.scripts/setup-gitbash.ps1
+>    ```
+> 2. After setup, open a Git Bash terminal (not PowerShell or CMD).
+> 3. Run all project scripts (e.g., `build.sh`, `test.sh`, `install.sh`) in Git Bash using the same syntax as on macOS/Linux.
+>
+> This ensures all scripts work correctly and avoids shell compatibility issues.
+
 ### All Available Scripts
 
 | Script | Purpose | Example Usage |
