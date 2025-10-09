@@ -105,6 +105,7 @@ This project uses GitHub Actions for continuous integration with smart safeguard
 - **Smart Path Filtering**: Skips runs for documentation-only changes  
 - **Timeout Protection**: 10min tests, 15min builds, never hangs
 - **Multi-Runner Support**: Ubuntu (default), macOS, Windows fallback
+- **Auto-Cancel**: New commits stop previous runs, saving CI minutes
 - **Artifact Storage**: ESP32 firmware binaries saved for 7 days
 
 ### 🧪 **What Gets Tested**

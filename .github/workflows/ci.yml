@@ -1,6 +1,7 @@
 name: CI Pipeline
 
 # Concurrency control - cancel previous runs when new commits are pushed
+# This saves CI minutes by ensuring only the latest commit is tested
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
