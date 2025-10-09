@@ -8,33 +8,70 @@
 namespace Core {
 
 /**
- * @brief Test utilities for creating publishers with native lock strategies
+ * @brief Test implementation of publisher factory using native lock strategy
  * 
- * Uses NativeLockStrategy with std::mutex to provide real thread safety
- * during testing on native platforms.
+ * Provides thread-safe publishers for testing using std::mutex instead of FreeRTOS.
+ * This allows testing reactive behavior on the host platform.
  */
-class TestPublisherFactory {
+template<typename T>
+class TestPublisherFactory : public iPublisherFactory<T> {
 public:
+    /**
+     * @brief Create publisher with native lock strategy for testing
+     */
+    Publisher<T> create() override {
+        return Publisher<T>(std::unique_ptr<LockStrategy>(new NativeLockStrategy()));
+    }
+};
+
+/**
+ * @brief Test implementation of CurrentValueSubject factory using native lock strategy
+ */
+template<typename T>
+class TestCurrentValueSubjectFactory : public iCurrentValueSubjectFactory<T> {
+public:
+    /**
+     * @brief Create subject without initial value
+     */
+    CurrentValueSubject<T> create() override {
+        return CurrentValueSubject<T>(std::unique_ptr<LockStrategy>(new NativeLockStrategy()));
+    }
+    
+    /**
+     * @brief Create subject with initial value
+     */
+    CurrentValueSubject<T> create(const T& initial_value) override {
+        return CurrentValueSubject<T>(initial_value, std::unique_ptr<LockStrategy>(new NativeLockStrategy()));
+    }
+};
+
+/**
+ * @brief Convenience functions for common test scenarios
+ */
+class TestFactoryHelpers {
+public:
+    /**
+     * @brief Quick publisher creation for common test types
+     */
     template<typename T>
-    static Publisher<T> create() {
-        return PublisherFactory::create<T>(
-            std::unique_ptr<LockStrategy>(new NativeLockStrategy())
-        );
+    static Publisher<T> createPublisher() {
+        TestPublisherFactory<T> factory;
+        return factory.create();
+    }
+    
+    /**
+     * @brief Quick subject creation for common test types
+     */
+    template<typename T>
+    static CurrentValueSubject<T> createSubject() {
+        TestCurrentValueSubjectFactory<T> factory;
+        return factory.create();
     }
     
     template<typename T>
-    static CurrentValueSubject<T> createCurrentValueSubject() {
-        return CurrentValueSubjectFactory::create<T>(
-            std::unique_ptr<LockStrategy>(new NativeLockStrategy())
-        );
-    }
-    
-    template<typename T>
-    static CurrentValueSubject<T> createCurrentValueSubject(const T& initial_value) {
-        return CurrentValueSubjectFactory::create<T>(
-            initial_value,
-            std::unique_ptr<LockStrategy>(new NativeLockStrategy())
-        );
+    static CurrentValueSubject<T> createSubject(const T& initial_value) {
+        TestCurrentValueSubjectFactory<T> factory;
+        return factory.create(initial_value);
     }
 };
 

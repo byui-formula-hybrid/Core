@@ -81,6 +81,26 @@ public:
         return subscribers_.size();
     }
 
+    // Disable copy
+    Publisher(const Publisher&) = delete;
+    Publisher& operator=(const Publisher&) = delete;
+    
+    // Enable move
+    Publisher(Publisher&& other) noexcept 
+        : subscribers_(std::move(other.subscribers_)), 
+          next_id_(other.next_id_),
+          lock_strategy_(std::move(other.lock_strategy_)) {
+    }
+    
+    Publisher& operator=(Publisher&& other) noexcept {
+        if (this != &other) {
+            subscribers_ = std::move(other.subscribers_);
+            next_id_ = other.next_id_;
+            lock_strategy_ = std::move(other.lock_strategy_);
+        }
+        return *this;
+    }
+
 private:
     friend class Core::Subscription<T>;
     
@@ -91,17 +111,6 @@ private:
                 [id](const Subscriber& s) { return s.id == id; }),
             subscribers_.end()
         );
-    }
-    
-    // Disable copy
-    Publisher(const Publisher&) = delete;
-    Publisher& operator=(const Publisher&) = delete;
-    
-    // Enable move
-    Publisher(Publisher&& other) noexcept 
-        : subscribers_(std::move(other.subscribers_)), 
-          next_id_(other.next_id_),
-          lock_strategy_(std::move(other.lock_strategy_)) {
     }
 };
 

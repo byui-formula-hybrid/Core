@@ -7,22 +7,6 @@
  * This is the main header that consumers should include to access
  * all Core library functionality for reactive programming on ESP32.
  * 
- * Usage:
- *   #include <Core.h>
- *   using namespace Core;
- *   
- *   // For ESP32 with thread safety:
- *   auto lockStrategy = std::unique_ptr<LockStrategy>(new FreeRTOSLockStrategy());
- *   auto publisher = PublisherFactory::create<float>(std::move(lockStrategy));
- *   
- *   // For single-threaded or externally synchronized environments:
- *   auto publisher = PublisherFactory::createUnsafe<float>();
- *   
- *   auto subscription = publisher.sink([](float value) {
- *       Serial.println(value);
- *   });
- *   publisher.send(42.0f);
- * 
  * @version 1.0.0
  * @author Formula Hybrid Team
  */

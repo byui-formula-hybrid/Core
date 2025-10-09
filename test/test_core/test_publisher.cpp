@@ -1,8 +1,8 @@
 #include <unity.h>
 #include <memory>
 
-// Include test strategies and events
-#include "../mocks/strategies/NativeLockStrategy.h"
+// Include test helpers and events
+#include "../helpers/TestPublisherFactory.h"
 #include "../mocks/events/TestEvent.h"
 
 // Include the publisher components
@@ -17,9 +17,8 @@ void test_publisher_creation() {
 }
 
 void test_publisher_with_custom_lock_strategy() {
-    auto native_lock = std::unique_ptr<NativeLockStrategy>(new NativeLockStrategy());
-    
-    Publisher<int> publisher(std::move(native_lock));
+    // Use factory to create thread-safe publisher for testing
+    auto publisher = TestFactoryHelpers::createPublisher<int>();
     
     int received_value = 0;
     auto subscription = publisher.sink([&received_value](int value) {
@@ -84,7 +83,7 @@ void test_publisher_automatic_unsubscribe() {
 }
 
 void test_current_value_subject() {
-    CurrentValueSubject<int> subject(25);
+    auto subject = TestFactoryHelpers::createSubject<int>(25);
     
     TEST_ASSERT_TRUE(subject.hasValue());
     TEST_ASSERT_EQUAL(25, subject.value());
@@ -104,7 +103,7 @@ void test_current_value_subject() {
 }
 
 void test_current_value_subject_no_initial_value() {
-    CurrentValueSubject<int> subject;
+    auto subject = TestFactoryHelpers::createSubject<int>();
     
     TEST_ASSERT_FALSE(subject.hasValue());
     
