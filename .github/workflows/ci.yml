@@ -1,0 +1,223 @@
+name: CI Pipeline
+
+# Concurrency control - cancel previous runs when new commits are pushed
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+on:
+  # Manual trigger - allows running the pipeline on-demand
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Runner environment preference'
+        required: false
+        default: 'ubuntu-latest'
+        type: choice
+        options:
+        - ubuntu-latest
+        - macos-latest
+        - windows-latest
+      
+  # Automatic triggers with path filtering
+  pull_request:
+    branches: [ main ]
+    paths-ignore:
+      - '**.md'           # Skip markdown files
+      - 'docs/**'         # Skip documentation
+      - '.gitignore'      # Skip git files
+      - 'LICENSE'         # Skip license
+      - '.vscode/**'      # Skip VS Code settings
+      - '.scripts/README.md'  # Skip script docs
+      
+  # Optional: Still allow push to main for releases
+  push:
+    branches: [ main ]
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - '.gitignore'
+      - 'LICENSE'
+      - '.vscode/**'
+      - '.scripts/README.md'
+
+env:
+  PLATFORMIO_CORE_DIR: ~/.platformio
+
+jobs:
+  test:
+    name: Native Tests
+    runs-on: ${{ github.event.inputs.environment || 'ubuntu-latest' }}
+    timeout-minutes: 10  # Reasonable timeout for unit tests
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+        
+    - name: Cache PlatformIO
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.platformio
+          ~/.cache/pip
+        key: ${{ runner.os }}-platformio-${{ hashFiles('**/platformio.ini') }}
+        restore-keys: |
+          ${{ runner.os }}-platformio-
+          
+    - name: Install PlatformIO
+      run: |
+        python -m pip install --upgrade pip
+        pip install platformio
+        
+    - name: Install PlatformIO dependencies
+      run: |
+        pio platform install espressif32
+        
+    - name: Run Native Tests
+      run: |
+        echo "Running native environment tests..."
+        pio test -e native --verbose
+        
+    - name: Test Results Summary
+      if: always()
+      run: |
+        if [ $? -eq 0 ]; then
+          echo "✅ All native tests passed!"
+        else
+          echo "❌ Some native tests failed!"
+          exit 1
+        fi
+        
+  build:
+    name: ESP32 Build
+    runs-on: ${{ github.event.inputs.environment || 'ubuntu-latest' }}
+    timeout-minutes: 15  # Reasonable timeout for ESP32 compilation
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+        
+    - name: Cache PlatformIO
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.platformio
+          ~/.cache/pip
+        key: ${{ runner.os }}-platformio-${{ hashFiles('**/platformio.ini') }}
+        restore-keys: |
+          ${{ runner.os }}-platformio-
+          
+    - name: Install PlatformIO
+      run: |
+        python -m pip install --upgrade pip
+        pip install platformio
+        
+    - name: Install ESP32 platform
+      run: |
+        pio platform install espressif32
+        
+    - name: Build ESP32 Firmware
+      run: |
+        echo "Building ESP32 firmware..."
+        pio run -e esp32dev --verbose
+        
+    - name: Verify build artifacts
+      run: |
+        ls -la .pio/build/esp32dev/
+        if [ -f ".pio/build/esp32dev/firmware.bin" ]; then
+          echo "✅ Firmware binary created successfully"
+          echo "📦 Firmware size: $(stat -c%s .pio/build/esp32dev/firmware.bin 2>/dev/null || stat -f%z .pio/build/esp32dev/firmware.bin) bytes"
+        else
+          echo "❌ Firmware binary not found!"
+          exit 1
+        fi
+        
+    - name: Upload Build Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: esp32-firmware-${{ runner.os }}
+        path: |
+          .pio/build/esp32dev/firmware.bin
+          .pio/build/esp32dev/firmware.elf
+          .pio/build/esp32dev/partitions.bin
+          .pio/build/esp32dev/bootloader.bin
+        retention-days: 7
+        
+  # Fallback job - runs if primary jobs fail due to runner issues
+  fallback:
+    name: Fallback Validation
+    if: failure() && github.event_name == 'workflow_dispatch'
+    needs: [test, build]
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+      fail-fast: false
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+        
+    - name: Install PlatformIO
+      run: |
+        python -m pip install --upgrade pip
+        pip install platformio
+        
+    - name: Quick Validation
+      run: |
+        echo "Running fallback validation on ${{ matrix.os }}..."
+        pio platform install espressif32
+        pio test -e native --verbose
+        pio run -e esp32dev
+        
+  validate:
+    name: Validation Summary
+    runs-on: ubuntu-latest
+    needs: [test, build]
+    if: always()
+    timeout-minutes: 2
+    
+    steps:
+    - name: Check Results
+      run: |
+        echo "=== CI Pipeline Results ==="
+        echo "Native Tests: ${{ needs.test.result }}"
+        echo "ESP32 Build: ${{ needs.build.result }}"
+        echo "Runner: ${{ github.event.inputs.environment || 'ubuntu-latest' }}"
+        echo "Trigger: ${{ github.event_name }}"
+        echo ""
+        
+        if [[ "${{ needs.test.result }}" == "success" && "${{ needs.build.result }}" == "success" ]]; then
+          echo "🎉 All validations passed!"
+          echo "✅ Native tests: PASSED"
+          echo "✅ ESP32 build: PASSED"
+          echo ""
+          echo "Ready for deployment! 🚀"
+          exit 0
+        else
+          echo "💥 Pipeline failed!"
+          echo "❌ Native tests: ${{ needs.test.result }}"
+          echo "❌ ESP32 build: ${{ needs.build.result }}"
+          echo ""
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            echo "💡 Manual run detected - consider trying a different runner if this was a timeout/runner issue"
+          fi
+          echo "Please check the logs above for details."
+          exit 1
+        fi

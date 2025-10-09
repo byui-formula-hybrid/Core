@@ -1,5 +1,7 @@
 # ESP32 Race Car Core Library
 
+[![CI Pipeline](https://github.com/byui-formula-hybrid/Core/actions/workflows/ci.yml/badge.svg)](https://github.com/byui-formula-hybrid/Core/actions/workflows/ci.yml)
+
 This is a PlatformIO-based ESP32 project for a race car with multiple modular components. Each component is implemented as a separate library for clean organization and easy testing.
 
 ## Project Structure
@@ -93,6 +95,39 @@ The setup script will automatically:
 | `./.scripts/uninstall.sh` | **Clean up** | `./.scripts/uninstall.sh` |
 
 📚 **For detailed script options:** See [`.scripts/README.md`](.scripts/README.md)
+
+## CI/CD Pipeline
+
+This project uses GitHub Actions for continuous integration with smart safeguards and efficiency optimizations.
+
+### 🚀 **Pipeline Features**
+- **Manual Trigger**: Run on-demand from GitHub Actions tab
+- **Smart Path Filtering**: Skips runs for documentation-only changes  
+- **Timeout Protection**: 10min tests, 15min builds, never hangs
+- **Multi-Runner Support**: Ubuntu (default), macOS, Windows fallback
+- **Artifact Storage**: ESP32 firmware binaries saved for 7 days
+
+### 🧪 **What Gets Tested**
+- **Native Tests**: All unit tests using Unity framework
+- **ESP32 Build**: Full firmware compilation and verification
+- **Cross-Platform**: Optional validation on multiple OS types
+
+### 📊 **Pipeline Triggers**
+- ✅ **Pull Requests** to `main` (automatic)
+- ✅ **Pushes** to `main` (releases)  
+- ✅ **Manual Runs** (on-demand via GitHub UI)
+- ❌ **Documentation** changes only (skipped)
+
+### 🛠️ **Usage**
+```bash
+# Local testing (saves CI minutes)
+./.scripts/ci-local.sh      # Simulate full pipeline
+
+# Manual trigger via GitHub:
+# Actions → CI Pipeline → Run workflow
+```
+
+**📚 Detailed Guide:** [`.github/workflows/README.md`](.github/workflows/README.md)
 
 ## License
 
