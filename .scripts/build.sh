@@ -6,22 +6,11 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # Source shared functions
 source "$SCRIPT_DIR/shared.sh"
 
-# Initialize
-init_script
-
+echo ""
 print_header "Build Script"
-# Activate .venv
-if [ -d ".venv" ]; then
-    source .venv/bin/activate
-else
-    print_error ".venv not found! Please run the install script first."
-    exit 1
-fi
+echo ""
 
-# Check if PlatformIO is installed
-if ! check_platformio; then
-    exit 1
-fi
+start_python_virtual_environment
 
 # Default values
 ENVIRONMENT="esp32dev"
@@ -34,7 +23,7 @@ show_help() {
     echo "Usage: $0 [OPTIONS]"
     echo ""
     echo "Options:"
-    echo "  -e, --env ENVIRONMENT    Build environment (esp32dev, wokwi)"
+    echo "  -e, --env ENVIRONMENT    Build environment (esp32dev, native)"
     echo "                          Note: 'native' is for testing only, use .scripts/test.sh"
     echo "  -c, --clean              Clean build files before building"
     echo "  -u, --upload             Upload to device after building"
@@ -46,7 +35,6 @@ show_help() {
     echo "  $0 --clean               # Clean build for ESP32"
     echo "  $0 --upload              # Build and upload to ESP32"
     echo "  $0 --upload --monitor    # Build, upload, and monitor"
-    echo "  $0 --env wokwi           # Build for Wokwi simulation"
     echo ""
     echo "For testing:"
     echo "  .scripts/test.sh         # Run unit tests (native environment)"
@@ -85,17 +73,17 @@ done
 
 # Validate environment
 case $ENVIRONMENT in
-    esp32dev|wokwi)
+    esp32dev)
         ;;
     native)
         print_warning "Native environment is for testing only"
         print_info "Use '.scripts/test.sh' to run tests"
-        print_info "Use '--env esp32dev' or '--env wokwi' for building"
+        print_info "Use '--env esp32dev' for building"
         exit 1
         ;;
     *)
         print_error "Invalid environment: $ENVIRONMENT"
-        echo "Valid environments: esp32dev, wokwi"
+        echo "Valid environments: esp32dev"
         echo "For testing, use: .scripts/test.sh"
         exit 1
         ;;
@@ -111,7 +99,7 @@ echo ""
 # Clean if requested
 if [ "$CLEAN" = true ]; then
     print_info "Cleaning build files..."
-    if python -m platformio run -e "$ENVIRONMENT" -t clean; then
+    if pio run -e "$ENVIRONMENT" -t clean; then
         print_success "Clean completed"
     else
         print_error "Clean failed"
@@ -122,12 +110,14 @@ fi
 
 # Build
 print_info "Building for $ENVIRONMENT..."
-if python -m platformio run -e "$ENVIRONMENT"; then
+if pio run -e "$ENVIRONMENT"; then
     echo ""
     print_success "Build successful!"
+    echo ""
 else
     echo ""
     print_error "Build failed!"
+    echo ""
     exit 1
 fi
 
@@ -136,7 +126,7 @@ if [ "$UPLOAD" = true ]; then
     if [ "$ENVIRONMENT" = "esp32dev" ]; then
         echo ""
         print_info "Uploading to ESP32..."
-        if python -m platformio run -e "$ENVIRONMENT" -t upload; then
+        if pio run -e "$ENVIRONMENT" -t upload; then
             print_success "Upload successful!"
         else
             print_error "Upload failed!"
@@ -154,26 +144,10 @@ if [ "$MONITOR" = true ]; then
         print_info "Starting serial monitor..."
         print_warning "Press Ctrl+C to exit monitor"
         echo ""
-        python -m platformio device monitor -e "$ENVIRONMENT"
+        pio device monitor -e "$ENVIRONMENT"
     else
         print_warning "Monitor only available for esp32dev environment"
     fi
 fi
 
-echo ""
-print_info "Quick commands:"
-echo "  Build ESP32:       .scripts/build.sh"
-echo "  Upload to ESP32:   .scripts/build.sh --upload"
-echo "  Upload + Monitor:  .scripts/build.sh --upload --monitor"
-echo "  Build for Wokwi:   .scripts/build.sh --env wokwi"
-echo "  Clean build:       .scripts/build.sh --clean"
-echo "  Run tests:         .scripts/test.sh"
-
-# Special instructions for Wokwi
-if [ "$ENVIRONMENT" = "wokwi" ]; then
-    echo ""
-    print_info "Wokwi Simulation Instructions:"
-    echo "1. Open diagram.json in VS Code"
-    echo "2. Press F1 → 'Wokwi: Start Simulator'"
-    echo "3. Interact with the simulated ESP32"
-fi
+stop_python_virtual_environment

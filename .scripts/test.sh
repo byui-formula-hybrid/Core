@@ -6,22 +6,11 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # Source shared functions
 source "$SCRIPT_DIR/shared.sh"
 
-# Initialize
-init_script
-
+echo ""
 print_header "Test Suite"
-# Activate .venv
-if [ -d ".venv" ]; then
-    source .venv/bin/activate
-else
-    print_error ".venv not found! Please run the install script first."
-    exit 1
-fi
+echo ""
 
-# Check if PlatformIO is installed
-if ! check_platformio; then
-    exit 1
-fi
+start_python_virtual_environment
 
 # Function to run tests
 run_tests() {
@@ -29,7 +18,7 @@ run_tests() {
     echo ""
     
     # Run tests with verbose output if requested
-    local cmd="python -m platformio test -e native"
+    local cmd="pio test -e native"
     if [ "$VERBOSE" = true ]; then
         cmd="$cmd -v"
     fi
@@ -111,7 +100,7 @@ echo ""
 if [ ! -z "$FILTER" ]; then
     print_info "Running filtered tests: $FILTER"
     echo ""
-    cmd="python -m platformio test -e native --filter $FILTER"
+    cmd="pio test -e native --filter $FILTER"
     if [ "$VERBOSE" = true ]; then
         cmd="$cmd -v"
     fi
@@ -145,3 +134,5 @@ if [ ! -z "$FILTER" ]; then
 else
     exit $TEST_RESULT
 fi
+
+stop_python_virtual_environment
