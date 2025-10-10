@@ -65,33 +65,33 @@ if ($pathEntries -notcontains $gitBinDir) {
 }
 
 # Step 4: Set Git Bash as default in Windows Terminal (if present)
-$terminalSettings = "$env:LOCALAPPDATA\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\settings.json"
-if (Test-Path $terminalSettings) {
-    Write-Host "Setting Git Bash as default shell in Windows Terminal..." -ForegroundColor Yellow
+# $terminalSettings = "$env:LOCALAPPDATA\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\settings.json"
+# if (Test-Path $terminalSettings) {
+#     Write-Host "Setting Git Bash as default shell in Windows Terminal..." -ForegroundColor Yellow
 
-    $json = Get-Content $terminalSettings | Out-String | ConvertFrom-Json
+#     $json = Get-Content $terminalSettings | Out-String | ConvertFrom-Json
 
-    # Find Git Bash profile or create one
-    $gitProfile = $json.profiles.list | Where-Object { $_.name -eq "Git Bash" }
-    if (-not $gitProfile) {
-        $gitProfile = [PSCustomObject]@{
-            name = "Git Bash"
-            commandline = "`"$gitBashPath`" --login -i"
-            icon = "C:\\Program Files\\Git\\mingw64\\share\\git\\git-for-windows.ico"
-            hidden = $false
-        }
-        $json.profiles.list += $gitProfile
-    }
+#     # Find Git Bash profile or create one
+#     $gitProfile = $json.profiles.list | Where-Object { $_.name -eq "Git Bash" }
+#     if (-not $gitProfile) {
+#         $gitProfile = [PSCustomObject]@{
+#             name = "Git Bash"
+#             commandline = "`"$gitBashPath`" --login -i"
+#             icon = "C:\\Program Files\\Git\\mingw64\\share\\git\\git-for-windows.ico"
+#             hidden = $false
+#         }
+#         $json.profiles.list += $gitProfile
+#     }
 
-    # Set as default
-    $json.profiles.default = "Git Bash"
+#     # Set as default
+#     $json.profiles.default = "Git Bash"
 
-    # Save back
-    $json | ConvertTo-Json -Depth 5 | Set-Content $terminalSettings -Encoding UTF8
-    Write-Host "Windows Terminal default shell set to Git Bash." -ForegroundColor Green
-} else {
-    Write-Host "Windows Terminal not detected. Skipping Terminal setup." -ForegroundColor DarkYellow
-}
+#     # Save back
+#     $json | ConvertTo-Json -Depth 5 | Set-Content $terminalSettings -Encoding UTF8
+#     Write-Host "Windows Terminal default shell set to Git Bash." -ForegroundColor Green
+# } else {
+#     Write-Host "Windows Terminal not detected. Skipping Terminal setup." -ForegroundColor DarkYellow
+# }
 
 Write-Host "`n✅ Git Bash setup complete!" -ForegroundColor Cyan
 Write-Host "You may need to restart your terminal or log out for changes to apply."
