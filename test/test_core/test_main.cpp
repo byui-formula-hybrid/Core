@@ -17,6 +17,7 @@ int main() {
     UNITY_BEGIN();
 
     run_publisher_tests();
+    run_value_subject_tests();
     
     return UNITY_END();
 }
