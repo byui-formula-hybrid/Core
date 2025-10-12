@@ -51,11 +51,35 @@ Contains several bits, including the Identifier Extension bit (IDE), which disti
 ### Data Field
 Carries the actual message payload. It can contain 0 to 8 bytes (64 bits) of data. 
 
+#### Example Mapping
+This table represents what the mapping of encoding might look like and how to interpret the data.
+| Byte # | Bits     | Signal Name         | Meaning                            | Example Value   |
+|--------|----------|---------------------|------------------------------------|-----------------|
+| Byte 0 | Bit 0    | Engine ON/OFF       | 0 = Off, 1 = On                    | 1 (engine on)   |
+| Byte 0 | Bit 1    | Check Engine Light  | 0 = Off, 1 = On                    | 0 (off)         |
+| Byte 0 | Bits 2–7 | Reserved            | Unused                             | 0               |
+| Byte 1–2 | All 16 | Engine RPM          | (Value ÷ 4) = RPM                  | 0x0FA0 → 4000   |
+| Byte 3 | All 8    | Coolant Temperature | Value – 40 = °C                    | 0x64 → 100 °C   |
+| Byte 4 | All 8    | Throttle Position   | Percent (0–255 = 0–100%)           | 0x80 → 50%      |
+| Byte 5 | All 8    | Vehicle Speed       | Value in km/h                      | 0x3C → 60 km/h  |
+| Byte 6 | All 8    | Fuel Level          | Percent (0–255 = 0–100%)           | 0xC8 → 80%      |
+| Byte 7 | All 8    | Reserved            | Not used (set to 0)                | 0x00            |
+
+#### Example Encoding
+This tables shows what the message in bytes and bits would look like.
+|Byte|0|1|2|3|4|5|6|7|
+|------|-|-|-|-|-|-|-|-|
+|Hex Value|01|0F|A0|64|80|3C|C8|00|
+|Bits|00000001|00001111|10100000|01100100|10000000|00111100|11001000|00000000|
+|Decoding|ON|4000 rpm| lower rpm value | 100 °C |50%|60 km/h|80%||
+
 ### Cycle Redundancy Check (CRC) Field
 Contains a Cyclic Redundancy Check value for error detection. It includes a CRC sequence and a CRC delimiter. 
 
+The Check Sum is found here and can be used to calculate that the message was properly recieved. The check sum is calculated by taking the hash of the bytes from the SOF to the end of the Data Field. **If a invalid check sum is found then the message can be considered corrupted and invalid.**
+
 ### Acknowledgement (ACK) Field
-The acknowledgment slot where a receiving node sends a dominant bit to confirm successful reception of the message. This field is followed by an ACK delimiter. 
+The acknowledgment slot where a receiving node sends a dominant bit to confirm successful reception of the message. This field is followed by an ACK delimiter. This is only required (included) if an acknowledgement is required from the receiver to be sent to the sender.
 
 ### End of Frame (EOF)
 Consists of seven recessive bits that signify the end of the message frame. 
