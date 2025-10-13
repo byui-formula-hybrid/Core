@@ -63,25 +63,25 @@ jobs:
       run: |
         echo "Fetching self-hosted runners for org ${OWNER}..."
         curl -s -H "Accept: application/vnd.github+json" -H "Authorization: Bearer $GITHUB_TOKEN" "https://api.github.com/orgs/${OWNER}/actions/runners" -o runners.json
-    python3 - <<'PY'
-import json, os
-data = json.load(open('runners.json'))
-avail = {'linux':'false', 'macos':'false', 'windows':'false'}
-for r in data.get('runners', []):
-  if r.get('status') != 'online':
-    continue
-  labels = [l.get('name','').lower() for l in r.get('labels', [])]
-  if 'linux' in labels:
-    avail['linux'] = 'true'
-  if 'macos' in labels or 'mac os' in labels or 'macos-latest' in labels:
-    avail['macos'] = 'true'
-  if 'windows' in labels:
-    avail['windows'] = 'true'
-with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
-  print(f"linux={avail['linux']}", file=f)
-  print(f"macos={avail['macos']}", file=f)
-  print(f"windows={avail['windows']}", file=f)
-PY
+        python3 - <<'PY'
+        import json, os
+        data = json.load(open('runners.json'))
+        avail = {'linux':'false', 'macos':'false', 'windows':'false'}
+        for r in data.get('runners', []):
+            if r.get('status') != 'online':
+                continue
+            labels = [l.get('name','').lower() for l in r.get('labels', [])]
+            if 'linux' in labels:
+                avail['linux'] = 'true'
+            if 'macos' in labels or 'mac os' in labels or 'macos-latest' in labels:
+                avail['macos'] = 'true'
+            if 'windows' in labels:
+                avail['windows'] = 'true'
+        with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
+            print(f"linux={avail['linux']}", file=f)
+            print(f"macos={avail['macos']}", file=f)
+            print(f"windows={avail['windows']}", file=f)
+        PY
 
   availability-alert:
     name: Runner availability alert
