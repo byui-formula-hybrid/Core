@@ -13,9 +13,10 @@ on:
       environment:
         description: 'Runner environment preference'
         required: false
-        default: 'ubuntu-latest'
+        default: 'self-hosted'
         type: choice
         options:
+        - self-hosted
         - ubuntu-latest
         - macos-latest
         - windows-latest
@@ -46,12 +47,113 @@ env:
   PLATFORMIO_CORE_DIR: ~/.platformio
 
 jobs:
+  check_runners:
+    name: Check self-hosted runners
+    runs-on: ubuntu-latest
+    outputs:
+      linux: ${{ steps.check.outputs.linux }}
+      macos: ${{ steps.check.outputs.macos }}
+      windows: ${{ steps.check.outputs.windows }}
+    steps:
+    - id: check
+      name: Query repository self-hosted runners
+      env:
+        GITHUB_TOKEN: ${{ secrets.ORG_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
+        OWNER: ${{ github.repository_owner }}
+      run: |
+        echo "Fetching self-hosted runners for org ${OWNER}..."
+        curl -s -H "Accept: application/vnd.github+json" -H "Authorization: Bearer $GITHUB_TOKEN" "https://api.github.com/orgs/${OWNER}/actions/runners" -o runners.json
+    python3 - <<'PY'
+import json, os
+data = json.load(open('runners.json'))
+avail = {'linux':'false', 'macos':'false', 'windows':'false'}
+for r in data.get('runners', []):
+  if r.get('status') != 'online':
+    continue
+  labels = [l.get('name','').lower() for l in r.get('labels', [])]
+  if 'linux' in labels:
+    avail['linux'] = 'true'
+  if 'macos' in labels or 'mac os' in labels or 'macos-latest' in labels:
+    avail['macos'] = 'true'
+  if 'windows' in labels:
+    avail['windows'] = 'true'
+with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
+  print(f"linux={avail['linux']}", file=f)
+  print(f"macos={avail['macos']}", file=f)
+  print(f"windows={avail['windows']}", file=f)
+PY
+
+  availability-alert:
+    name: Runner availability alert
+    runs-on: ubuntu-latest
+    needs: check_runners
+    if: needs.check_runners.outputs.linux == 'false' || needs.check_runners.outputs.macos == 'false' || needs.check_runners.outputs.windows == 'false'
+    steps:
+    - name: Report offline runners
+      run: |
+        echo "Self-hosted runner availability:"
+        echo "  linux: ${{ needs.check_runners.outputs.linux }}"
+        echo "  macos: ${{ needs.check_runners.outputs.macos }}"
+        echo "  windows: ${{ needs.check_runners.outputs.windows }}"
+    - name: Create or update GitHub issue for offline runners
+      env:
+        GITHUB_TOKEN: ${{ secrets.ORG_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
+      run: |
+        TITLE="Self-hosted runner(s) offline"
+        BODY=$(printf 'Self-hosted runners were unavailable when this workflow ran.\n\nlinux: %s\nmacos: %s\nwindows: %s\n\nRun: %s' "${{ needs.check_runners.outputs.linux }}" "${{ needs.check_runners.outputs.macos }}" "${{ needs.check_runners.outputs.windows }}" "${{ github.run_html_url }}")
+
+        # Search for existing open issues with the same title
+        issues=$(curl -s -H "Authorization: Bearer $GITHUB_TOKEN" -H "Accept: application/vnd.github+json" "https://api.github.com/repos/${GITHUB_REPOSITORY}/issues?state=open&labels=runner-offline")
+        existing_number=$(echo "$issues" | python3 -c "import sys,json; data=json.load(sys.stdin); print(next((i['number'] for i in data if i.get('title','')=='${TITLE}'),''))")
+
+        if [ -n "$existing_number" ]; then
+          echo "Found existing issue #$existing_number — adding a comment"
+          comment=$(printf '{"body":"%s"}' "$BODY")
+          curl -s -X POST -H "Authorization: Bearer $GITHUB_TOKEN" -H "Accept: application/vnd.github+json" "https://api.github.com/repos/${GITHUB_REPOSITORY}/issues/$existing_number/comments" -d "$comment" || true
+        else
+          echo "No existing issue found — creating a new one"
+          json=$(printf '{"title":"%s","body":"%s","labels":["runner-offline"]}' "$TITLE" "$BODY")
+          curl -s -X POST -H "Authorization: Bearer $GITHUB_TOKEN" -H "Accept: application/vnd.github+json" "https://api.github.com/repos/${GITHUB_REPOSITORY}/issues" -d "$json" || true
+        fi
+    - name: Post alert to Discord (optional)
+      env:
+        DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+        LINUX_AVAIL: ${{ needs.check_runners.outputs.linux }}
+        MACOS_AVAIL: ${{ needs.check_runners.outputs.macos }}
+        WINDOWS_AVAIL: ${{ needs.check_runners.outputs.windows }}
+        RUN_URL: ${{ github.run_html_url }}
+      run: |
+        if [ -z "$DISCORD_WEBHOOK" ]; then
+          echo "DISCORD_WEBHOOK not set; skipping Discord notification"
+          exit 0
+        fi
+        payload=$(printf '{"content":"Self-hosted runners were unavailable when this workflow ran.\nlinux: %s\nmacos: %s\nwindows: %s\nRun: %s"}' "$LINUX_AVAIL" "$MACOS_AVAIL" "$WINDOWS_AVAIL" "$RUN_URL")
+        curl -s -H "Content-Type: application/json" -d "$payload" "$DISCORD_WEBHOOK" || true
   test:
     name: Native Tests
-    runs-on: ${{ github.event.inputs.environment || 'ubuntu-latest' }}
+    needs: check_runners
+    # Run tests on all self-hosted OSes (linux, macos, windows).
+    strategy:
+      matrix:
+        osLabel: [linux, macos, windows]
+    # Skip this matrix entry if the self-hosted runner for the OS is offline
+    if: ${{ (matrix.osLabel == 'linux' && needs.check_runners.outputs.linux == 'true') || (matrix.osLabel == 'macos' && needs.check_runners.outputs.macos == 'true') || (matrix.osLabel == 'windows' && needs.check_runners.outputs.windows == 'true') }}
+    runs-on:
+      - self-hosted
+      - ${{ matrix.osLabel }}
     timeout-minutes: 10  # Reasonable timeout for unit tests
+    defaults:
+      run:
+        shell: bash
     
     steps:
+    - name: Runner info
+      run: |
+        echo "RUNNER_NAME=$RUNNER_NAME"
+        echo "RUNNER_OS=$RUNNER_OS"
+        echo "RUNNER_LABELS=$RUNNER_LABELS"
+        uname -a || echo "uname not available on this runner"
+
     - name: Checkout code
       uses: actions/checkout@v4
       
@@ -93,13 +195,43 @@ jobs:
           echo "❌ Some native tests failed!"
           exit 1
         fi
+
+    - name: Cleanup workspace (self-hosted)
+      if: always()
+      run: |
+        # Only attempt cleanup on self-hosted runners
+        if echo "$RUNNER_LABELS" | grep -qi 'self-hosted'; then
+          echo "Cleaning workspace and caches on self-hosted runner"
+          rm -rf .pio .pytest_cache .cache .platformio ~/.platformio || true
+        else
+          echo "Not a self-hosted runner; skipping cleanup"
+        fi
         
   build:
     name: ESP32 Build
-    runs-on: ${{ github.event.inputs.environment || 'ubuntu-latest' }}
+    needs: check_runners
+    # Build on all self-hosted OSes (linux, macos, windows).
+    strategy:
+      matrix:
+        osLabel: [linux, macos, windows]
+    # Skip this matrix entry if the self-hosted runner for the OS is offline
+    if: ${{ (matrix.osLabel == 'linux' && needs.check_runners.outputs.linux == 'true') || (matrix.osLabel == 'macos' && needs.check_runners.outputs.macos == 'true') || (matrix.osLabel == 'windows' && needs.check_runners.outputs.windows == 'true') }}
+    runs-on:
+      - self-hosted
+      - ${{ matrix.osLabel }}
     timeout-minutes: 15  # Reasonable timeout for ESP32 compilation
+    defaults:
+      run:
+        shell: bash
     
     steps:
+    - name: Runner info
+      run: |
+        echo "RUNNER_NAME=$RUNNER_NAME"
+        echo "RUNNER_OS=$RUNNER_OS"
+        echo "RUNNER_LABELS=$RUNNER_LABELS"
+        uname -a || echo "uname not available on this runner"
+
     - name: Checkout code
       uses: actions/checkout@v4
       
@@ -153,20 +285,42 @@ jobs:
           .pio/build/esp32dev/partitions.bin
           .pio/build/esp32dev/bootloader.bin
         retention-days: 7
+
+    - name: Cleanup workspace (self-hosted)
+      if: always()
+      run: |
+        # Only attempt cleanup on self-hosted runners
+        if echo "$RUNNER_LABELS" | grep -qi 'self-hosted'; then
+          echo "Cleaning workspace and caches on self-hosted runner"
+          rm -rf .pio .pytest_cache .cache .platformio build .pioenvs || true
+        else
+          echo "Not a self-hosted runner; skipping cleanup"
+        fi
         
   # Fallback job - runs if primary jobs fail due to runner issues
   fallback:
     name: Fallback Validation
-    if: failure() && github.event_name == 'workflow_dispatch'
-    needs: [test, build]
+    needs: [test, build, check_runners]
+    # Run fallback on all self-hosted OSes as well
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
+        osLabel: [linux, macos, windows]
       fail-fast: false
-    runs-on: ${{ matrix.os }}
+    # Only run fallback when workflow_dispatch failure condition holds AND the OS runner is available
+    if: ${{ (failure() && github.event_name == 'workflow_dispatch') && ((matrix.osLabel == 'linux' && needs.check_runners.outputs.linux == 'true') || (matrix.osLabel == 'macos' && needs.check_runners.outputs.macos == 'true') || (matrix.osLabel == 'windows' && needs.check_runners.outputs.windows == 'true')) }}
+    runs-on:
+      - self-hosted
+      - ${{ matrix.osLabel }}
     timeout-minutes: 20
     
     steps:
+    - name: Runner info
+      run: |
+        echo "RUNNER_NAME=$RUNNER_NAME"
+        echo "RUNNER_OS=$RUNNER_OS"
+        echo "RUNNER_LABELS=$RUNNER_LABELS"
+        uname -a || echo "uname not available on this runner"
+
     - name: Checkout code
       uses: actions/checkout@v4
       
@@ -182,25 +336,39 @@ jobs:
         
     - name: Quick Validation
       run: |
-        echo "Running fallback validation on ${{ matrix.os }}..."
+        echo "Running fallback validation on ${{ matrix.osLabel }}..."
         pio platform install espressif32
         pio test -e native --verbose
         pio run -e esp32dev
         
   validate:
     name: Validation Summary
-    runs-on: ubuntu-latest
-    needs: [test, build]
-    if: always()
+    # Run validation summary on all OSes to validate environment-specific results.
+    strategy:
+      matrix:
+        osLabel: [linux, macos, windows]
+    # Only run validate for OSes where the self-hosted runner was available
+    if: ${{ (matrix.osLabel == 'linux' && needs.check_runners.outputs.linux == 'true') || (matrix.osLabel == 'macos' && needs.check_runners.outputs.macos == 'true') || (matrix.osLabel == 'windows' && needs.check_runners.outputs.windows == 'true') }}
+    runs-on:
+      - self-hosted
+      - ${{ matrix.osLabel }}
+    needs: [check_runners, test, build]
     timeout-minutes: 2
     
     steps:
+    - name: Runner info
+      run: |
+        echo "RUNNER_NAME=$RUNNER_NAME"
+        echo "RUNNER_OS=$RUNNER_OS"
+        echo "RUNNER_LABELS=$RUNNER_LABELS"
+        uname -a || echo "uname not available on this runner"
+
     - name: Check Results
       run: |
         echo "=== CI Pipeline Results ==="
         echo "Native Tests: ${{ needs.test.result }}"
         echo "ESP32 Build: ${{ needs.build.result }}"
-        echo "Runner: ${{ github.event.inputs.environment || 'ubuntu-latest' }}"
+        echo "Runner: ${{ github.event.inputs.environment || 'self-hosted' }} on ${{ matrix.osLabel }}"
         echo "Trigger: ${{ github.event_name }}"
         echo ""
         
