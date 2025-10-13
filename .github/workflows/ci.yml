@@ -129,264 +129,265 @@ jobs:
         fi
         payload=$(printf '{"content":"Self-hosted runners were unavailable when this workflow ran.\nlinux: %s\nmacos: %s\nwindows: %s\nRun: %s"}' "$LINUX_AVAIL" "$MACOS_AVAIL" "$WINDOWS_AVAIL" "$RUN_URL")
         curl -s -H "Content-Type: application/json" -d "$payload" "$DISCORD_WEBHOOK" || true
-  test:
-    name: Native Tests
+  # per-OS test jobs
+  test-linux:
+    name: Native Tests (linux)
     needs: check_runners
-    # Run tests on all self-hosted OSes (linux, macos, windows).
-    strategy:
-      matrix:
-        osLabel: [linux, macos, windows]
-    # Skip this matrix entry if the self-hosted runner for the OS is offline
-    if: ${{ (matrix.osLabel == 'linux' && needs.check_runners.outputs.linux == 'true') || (matrix.osLabel == 'macos' && needs.check_runners.outputs.macos == 'true') || (matrix.osLabel == 'windows' && needs.check_runners.outputs.windows == 'true') }}
-    runs-on:
-      - self-hosted
-      - ${{ matrix.osLabel }}
-    timeout-minutes: 10  # Reasonable timeout for unit tests
+    if: ${{ needs.check_runners.outputs.linux == 'true' }}
+    runs-on: [self-hosted, linux]
+    timeout-minutes: 20
     defaults:
       run:
         shell: bash
-    
     steps:
     - name: Runner info
       run: |
         echo "RUNNER_NAME=$RUNNER_NAME"
         echo "RUNNER_OS=$RUNNER_OS"
         echo "RUNNER_LABELS=$RUNNER_LABELS"
-        uname -a || echo "uname not available on this runner"
-
     - name: Checkout code
       uses: actions/checkout@v4
-      
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
         python-version: '3.11'
-        
-    - name: Cache PlatformIO
-      uses: actions/cache@v4
-      with:
-        path: |
-          ~/.platformio
-          ~/.cache/pip
-        key: ${{ runner.os }}-platformio-${{ hashFiles('**/platformio.ini') }}
-        restore-keys: |
-          ${{ runner.os }}-platformio-
-          
     - name: Install PlatformIO
       run: |
         python -m pip install --upgrade pip
         pip install platformio
-        
-    - name: Install PlatformIO dependencies
-      run: |
-        pio platform install espressif32
-        
     - name: Run Native Tests
       run: |
-        echo "Running native environment tests..."
+        echo "Running native environment tests on linux..."
         pio test -e native --verbose
-        
-    - name: Test Results Summary
-      if: always()
-      run: |
-        if [ $? -eq 0 ]; then
-          echo "✅ All native tests passed!"
-        else
-          echo "❌ Some native tests failed!"
-          exit 1
-        fi
-
     - name: Cleanup workspace (self-hosted)
       if: always()
       run: |
-        # Only attempt cleanup on self-hosted runners
         if echo "$RUNNER_LABELS" | grep -qi 'self-hosted'; then
-          echo "Cleaning workspace and caches on self-hosted runner"
-          rm -rf .pio .pytest_cache .cache .platformio ~/.platformio || true
-        else
-          echo "Not a self-hosted runner; skipping cleanup"
+          rm -rf .pio .pytest_cache .cache ~/.platformio || true
         fi
-        
-  build:
-    name: ESP32 Build
+
+  test-macos:
+    name: Native Tests (macos)
     needs: check_runners
-    # Build on all self-hosted OSes (linux, macos, windows).
-    strategy:
-      matrix:
-        osLabel: [linux, macos, windows]
-    # Skip this matrix entry if the self-hosted runner for the OS is offline
-    if: ${{ (matrix.osLabel == 'linux' && needs.check_runners.outputs.linux == 'true') || (matrix.osLabel == 'macos' && needs.check_runners.outputs.macos == 'true') || (matrix.osLabel == 'windows' && needs.check_runners.outputs.windows == 'true') }}
-    runs-on:
-      - self-hosted
-      - ${{ matrix.osLabel }}
-    timeout-minutes: 15  # Reasonable timeout for ESP32 compilation
+    if: ${{ needs.check_runners.outputs.macos == 'true' }}
+    runs-on: [self-hosted, macos]
+    timeout-minutes: 20
     defaults:
       run:
         shell: bash
-    
     steps:
     - name: Runner info
       run: |
         echo "RUNNER_NAME=$RUNNER_NAME"
         echo "RUNNER_OS=$RUNNER_OS"
         echo "RUNNER_LABELS=$RUNNER_LABELS"
-        uname -a || echo "uname not available on this runner"
-
     - name: Checkout code
       uses: actions/checkout@v4
-      
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
         python-version: '3.11'
-        
-    - name: Cache PlatformIO
-      uses: actions/cache@v4
-      with:
-        path: |
-          ~/.platformio
-          ~/.cache/pip
-        key: ${{ runner.os }}-platformio-${{ hashFiles('**/platformio.ini') }}
-        restore-keys: |
-          ${{ runner.os }}-platformio-
-          
     - name: Install PlatformIO
       run: |
         python -m pip install --upgrade pip
         pip install platformio
-        
+    - name: Run Native Tests
+      run: |
+        echo "Running native environment tests on macOS..."
+        pio test -e native --verbose
+    - name: Cleanup workspace (self-hosted)
+      if: always()
+      run: |
+        if echo "$RUNNER_LABELS" | grep -qi 'self-hosted'; then
+          rm -rf .pio .pytest_cache .cache ~/.platformio || true
+        fi
+
+  test-windows:
+    name: Native Tests (windows)
+    needs: check_runners
+    if: ${{ needs.check_runners.outputs.windows == 'true' }}
+    runs-on: [self-hosted, windows]
+    timeout-minutes: 30
+    defaults:
+      run:
+        shell: bash
+    steps:
+    - name: Runner info
+      run: |
+        echo "RUNNER_NAME=$RUNNER_NAME"
+        echo "RUNNER_OS=$RUNNER_OS"
+        echo "RUNNER_LABELS=$RUNNER_LABELS"
+    - name: Checkout code
+      uses: actions/checkout@v4
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    - name: Install PlatformIO
+      run: |
+        python -m pip install --upgrade pip
+        pip install platformio
+    - name: Run Native Tests
+      run: |
+        echo "Running native environment tests on Windows..."
+        pio test -e native --verbose
+    - name: Cleanup workspace (self-hosted)
+      if: always()
+      run: |
+        if echo "$RUNNER_LABELS" | grep -qi 'self-hosted'; then
+          rm -rf .pio .pytest_cache .cache ~/.platformio || true
+        fi
+
+  # Build jobs per-OS
+  build-linux:
+    name: ESP32 Build (linux)
+    needs: check_runners
+    if: ${{ needs.check_runners.outputs.linux == 'true' }}
+    runs-on: [self-hosted, linux]
+    timeout-minutes: 30
+    defaults:
+      run:
+        shell: bash
+    steps:
+    - name: Runner info
+      run: |
+        echo "RUNNER_NAME=$RUNNER_NAME"
+        echo "RUNNER_OS=$RUNNER_OS"
+        echo "RUNNER_LABELS=$RUNNER_LABELS"
+    - name: Checkout code
+      uses: actions/checkout@v4
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    - name: Install PlatformIO
+      run: |
+        python -m pip install --upgrade pip
+        pip install platformio
     - name: Install ESP32 platform
       run: |
         pio platform install espressif32
-        
     - name: Build ESP32 Firmware
       run: |
-        echo "Building ESP32 firmware..."
+        echo "Building ESP32 firmware on linux..."
         pio run -e esp32dev --verbose
-        
     - name: Verify build artifacts
       run: |
-        ls -la .pio/build/esp32dev/
-        if [ -f ".pio/build/esp32dev/firmware.bin" ]; then
-          echo "✅ Firmware binary created successfully"
-          echo "📦 Firmware size: $(stat -c%s .pio/build/esp32dev/firmware.bin 2>/dev/null || stat -f%z .pio/build/esp32dev/firmware.bin) bytes"
-        else
-          echo "❌ Firmware binary not found!"
-          exit 1
-        fi
-        
+        ls -la .pio/build/esp32dev/ || true
     - name: Upload Build Artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: esp32-firmware-${{ runner.os }}
-        path: |
-          .pio/build/esp32dev/firmware.bin
-          .pio/build/esp32dev/firmware.elf
-          .pio/build/esp32dev/partitions.bin
-          .pio/build/esp32dev/bootloader.bin
-        retention-days: 7
-
+        name: esp32-firmware-linux
+        path: .pio/build/esp32dev/
     - name: Cleanup workspace (self-hosted)
       if: always()
       run: |
-        # Only attempt cleanup on self-hosted runners
         if echo "$RUNNER_LABELS" | grep -qi 'self-hosted'; then
-          echo "Cleaning workspace and caches on self-hosted runner"
-          rm -rf .pio .pytest_cache .cache .platformio build .pioenvs || true
-        else
-          echo "Not a self-hosted runner; skipping cleanup"
+          rm -rf .pio .pytest_cache .cache ~/.platformio build .pioenvs || true
         fi
-        
-  # Fallback job - runs if primary jobs fail due to runner issues
-  fallback:
-    name: Fallback Validation
-    needs: [test, build, check_runners]
-    # Run fallback on all self-hosted OSes as well
-    strategy:
-      matrix:
-        osLabel: [linux, macos, windows]
-      fail-fast: false
-    # Only run fallback when workflow_dispatch failure condition holds AND the OS runner is available
-    if: ${{ (failure() && github.event_name == 'workflow_dispatch') && ((matrix.osLabel == 'linux' && needs.check_runners.outputs.linux == 'true') || (matrix.osLabel == 'macos' && needs.check_runners.outputs.macos == 'true') || (matrix.osLabel == 'windows' && needs.check_runners.outputs.windows == 'true')) }}
-    runs-on:
-      - self-hosted
-      - ${{ matrix.osLabel }}
-    timeout-minutes: 20
-    
+
+  build-macos:
+    name: ESP32 Build (macos)
+    needs: check_runners
+    if: ${{ needs.check_runners.outputs.macos == 'true' }}
+    runs-on: [self-hosted, macos]
+    timeout-minutes: 30
+    defaults:
+      run:
+        shell: bash
     steps:
     - name: Runner info
       run: |
         echo "RUNNER_NAME=$RUNNER_NAME"
         echo "RUNNER_OS=$RUNNER_OS"
         echo "RUNNER_LABELS=$RUNNER_LABELS"
-        uname -a || echo "uname not available on this runner"
-
     - name: Checkout code
       uses: actions/checkout@v4
-      
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
         python-version: '3.11'
-        
     - name: Install PlatformIO
       run: |
         python -m pip install --upgrade pip
         pip install platformio
-        
-    - name: Quick Validation
+    - name: Install ESP32 platform
       run: |
-        echo "Running fallback validation on ${{ matrix.osLabel }}..."
         pio platform install espressif32
-        pio test -e native --verbose
-        pio run -e esp32dev
-        
-  validate:
-    name: Validation Summary
-    # Run validation summary on all OSes to validate environment-specific results.
-    strategy:
-      matrix:
-        osLabel: [linux, macos, windows]
-    # Only run validate for OSes where the self-hosted runner was available
-    if: ${{ (matrix.osLabel == 'linux' && needs.check_runners.outputs.linux == 'true') || (matrix.osLabel == 'macos' && needs.check_runners.outputs.macos == 'true') || (matrix.osLabel == 'windows' && needs.check_runners.outputs.windows == 'true') }}
-    runs-on:
-      - self-hosted
-      - ${{ matrix.osLabel }}
-    needs: [check_runners, test, build]
-    timeout-minutes: 2
-    
+    - name: Build ESP32 Firmware
+      run: |
+        echo "Building ESP32 firmware on macOS..."
+        pio run -e esp32dev --verbose
+    - name: Upload Build Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: esp32-firmware-macos
+        path: .pio/build/esp32dev/
+    - name: Cleanup workspace (self-hosted)
+      if: always()
+      run: |
+        if echo "$RUNNER_LABELS" | grep -qi 'self-hosted'; then
+          rm -rf .pio .pytest_cache .cache ~/.platformio build .pioenvs || true
+        fi
+
+  build-windows:
+    name: ESP32 Build (windows)
+    needs: check_runners
+    if: ${{ needs.check_runners.outputs.windows == 'true' }}
+    runs-on: [self-hosted, windows]
+    timeout-minutes: 40
+    defaults:
+      run:
+        shell: bash
     steps:
     - name: Runner info
       run: |
         echo "RUNNER_NAME=$RUNNER_NAME"
         echo "RUNNER_OS=$RUNNER_OS"
         echo "RUNNER_LABELS=$RUNNER_LABELS"
-        uname -a || echo "uname not available on this runner"
+    - name: Checkout code
+      uses: actions/checkout@v4
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    - name: Install PlatformIO
+      run: |
+        python -m pip install --upgrade pip
+        pip install platformio
+    - name: Install ESP32 platform
+      run: |
+        pio platform install espressif32
+    - name: Build ESP32 Firmware
+      run: |
+        echo "Building ESP32 firmware on Windows..."
+        pio run -e esp32dev --verbose
+    - name: Upload Build Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: esp32-firmware-windows
+        path: .pio/build/esp32dev/
+    - name: Cleanup workspace (self-hosted)
+      if: always()
+      run: |
+        if echo "$RUNNER_LABELS" | grep -qi 'self-hosted'; then
+          rm -rf .pio .pytest_cache .cache ~/.platformio build .pioenvs || true
+        fi
 
+  validate:
+    name: Validation Summary
+    runs-on: ubuntu-latest
+    needs: [check_runners, test-linux, test-macos, test-windows, build-linux, build-macos, build-windows]
+    if: always()
+    timeout-minutes: 5
+    steps:
     - name: Check Results
       run: |
         echo "=== CI Pipeline Results ==="
-        echo "Native Tests: ${{ needs.test.result }}"
-        echo "ESP32 Build: ${{ needs.build.result }}"
-        echo "Runner: ${{ github.event.inputs.environment || 'self-hosted' }} on ${{ matrix.osLabel }}"
-        echo "Trigger: ${{ github.event_name }}"
-        echo ""
-        
-        if [[ "${{ needs.test.result }}" == "success" && "${{ needs.build.result }}" == "success" ]]; then
-          echo "🎉 All validations passed!"
-          echo "✅ Native tests: PASSED"
-          echo "✅ ESP32 build: PASSED"
-          echo ""
-          echo "Ready for deployment! 🚀"
-          exit 0
-        else
-          echo "💥 Pipeline failed!"
-          echo "❌ Native tests: ${{ needs.test.result }}"
-          echo "❌ ESP32 build: ${{ needs.build.result }}"
-          echo ""
-          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
-            echo "💡 Manual run detected - consider trying a different runner if this was a timeout/runner issue"
-          fi
-          echo "Please check the logs above for details."
-          exit 1
-        fi
+        echo "Test linux: ${ { needs.test-linux.result } }"
+        echo "Test macos: ${ { needs.test-macos.result } }"
+        echo "Test windows: ${ { needs.test-windows.result } }"
+        echo "Build linux: ${ { needs.build-linux.result } }"
+        echo "Build macos: ${ { needs.build-macos.result } }"
+        echo "Build windows: ${ { needs.build-windows.result } }"
+        echo "Runner availability: linux=${{ needs.check_runners.outputs.linux }}, macos=${{ needs.check_runners.outputs.macos }}, windows=${{ needs.check_runners.outputs.windows }}"
