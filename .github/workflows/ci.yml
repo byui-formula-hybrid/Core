@@ -38,59 +38,47 @@ jobs:
             runner: [self-hosted, Linux]
           - os: macos
             runner: [self-hosted, macOS]
+          - os: windows
+            runner: [self-hosted, Windows]
     timeout-minutes: 10
-    defaults:
-      run:
-        shell: bash
     steps:
       - name: Runner info
         run: |
-          echo "RUNNER_NAME=$RUNNER_NAME"
-          echo "RUNNER_OS=$RUNNER_OS"
-          echo "RUNNER_LABELS=$RUNNER_LABELS"
+          echo "RUNNER_NAME=${{ env.RUNNER_NAME }}"
+          echo "RUNNER_OS=${{ env.RUNNER_OS }}"
+          echo "RUNNER_LABELS=${{ env.RUNNER_LABELS }}"
       - name: Checkout code
         uses: actions/checkout@v4
-      - name: Set Up Environment
+      - name: Set Up Environment (bash)
+        if: matrix.os != 'windows'
         run: ./.scripts/install.sh --ci
-      - name: Build for ESP32
+      - name: Set Up Environment (PowerShell)
+        if: matrix.os == 'windows'
+        shell: pwsh
+        run: ./.scripts/powershell/install.ps1 --ci
+      - name: Build for ESP32 (bash)
+        if: matrix.os != 'windows'
         run: ./.scripts/build.sh --ci
-      - name: Run Tests
+      - name: Build for ESP32 (PowerShell)
+        if: matrix.os == 'windows'
+        shell: pwsh
+        run: ./.scripts/powershell/build.ps1 --ci
+      - name: Run Tests (bash)
+        if: matrix.os != 'windows'
         run: ./.scripts/test.sh --ci
+      - name: Run Tests (PowerShell)
+        if: matrix.os == 'windows'
+        shell: pwsh
+        run: ./.scripts/powershell/test.ps1 --ci
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v4
         with:
           name: esp32-firmware-${{ matrix.os }}
           path: .pio/build/esp32dev/
-      - name: Cleanup
-        if: always()
+      - name: Cleanup (bash)
+        if: matrix.os != 'windows' && always()
         run: ./.scripts/uninstall.sh --ci
-  
-  build-and-test-windows:
-    name: Build and Test on Windows
-    runs-on: [self-hosted, Windows]
-    timeout-minutes: 10
-    defaults:
-      run:
+      - name: Cleanup (PowerShell)
+        if: matrix.os == 'windows' && always()
         shell: pwsh
-    steps:
-      - name: Runner info
-        run: |
-          echo "RUNNER_NAME=$env:RUNNER_NAME"
-          echo "RUNNER_OS=$env:RUNNER_OS"
-          echo "RUNNER_LABELS=$env:RUNNER_LABELS"
-      - name: Checkout code
-        uses: actions/checkout@v4
-      - name: Set Up Environment
-        run: ./.scripts/install.pwsh --ci
-      - name: Build for ESP32
-        run: ./.scripts/build.pwsh --ci
-      - name: Run Tests
-        run: ./.scripts/test.pwsh --ci
-      - name: Upload Build Artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: esp32-firmware-windows
-          path: .pio/build/esp32dev/
-      - name: Cleanup
-        if: always()
-        run: ./.scripts/uninstall.pwsh --ci
+        run: ./.scripts/powershell/uninstall.ps1 --ci
