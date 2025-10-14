@@ -82,7 +82,7 @@ while [[ $# -gt 0 ]]; do
         -c|--ci)
             # CI mode flag, can be used for CI-specific logic if needed
             CI_MODE=true
-            ENVIRONMENT="native
+            ENVIRONMENT="native"
             shift
             ;;
         *)
