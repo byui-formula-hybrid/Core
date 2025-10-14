@@ -47,247 +47,60 @@ env:
   PLATFORMIO_CORE_DIR: ~/.platformio
 
 jobs:
-  check_runners:
-    name: Check self-hosted runners
-    runs-on: ubuntu-latest
-    outputs:
-      linux: ${{ steps.check.outputs.linux }}
-      macos: ${{ steps.check.outputs.macos }}
-      windows: ${{ steps.check.outputs.windows }}
-    steps:
-    - id: check
-      name: Query repository self-hosted runners
-      env:
-        GITHUB_TOKEN: ${{ secrets.ORG_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
-        OWNER: ${{ github.repository_owner }}
-      run: |
-        echo "Fetching self-hosted runners for org ${OWNER}..."
-        curl -s -H "Accept: application/vnd.github+json" -H "Authorization: Bearer $GITHUB_TOKEN" "https://api.github.com/orgs/${OWNER}/actions/runners" -o runners.json
-        python3 - <<'PY'
-        import json, os
-        data = json.load(open('runners.json'))
-        avail = {'linux':'false', 'macos':'false', 'windows':'false'}
-        for r in data.get('runners', []):
-          if r.get('status') != 'online':
-            continue
-          labels = [l.get('name','').lower() for l in r.get('labels', [])]
-          if 'linux' in labels:
-            avail['linux'] = 'true'
-          if 'macos' in labels or 'mac os' in labels or 'macos-latest' in labels:
-            avail['macos'] = 'true'
-          if 'windows' in labels:
-            avail['windows'] = 'true'
-        with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
-          print(f"linux={avail['linux']}", file=f)
-          print(f"macos={avail['macos']}", file=f)
-          print(f"windows={avail['windows']}", file=f)
-        PY
-
-  availability-alert:
-    name: Runner availability alert
-    runs-on: ubuntu-latest
-    needs: check_runners
-    if: needs.check_runners.outputs.linux == 'false' || needs.check_runners.outputs.macos == 'false' || needs.check_runners.outputs.windows == 'false'
-    steps:
-    - name: Report offline runners
-      run: |
-        echo "Self-hosted runner availability:"
-        echo "  linux: ${{ needs.check_runners.outputs.linux }}"
-        echo "  macos: ${{ needs.check_runners.outputs.macos }}"
-        echo "  windows: ${{ needs.check_runners.outputs.windows }}"
-    - name: Create or update GitHub issue for offline runners
-      env:
-        GITHUB_TOKEN: ${{ secrets.ORG_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
-      run: |
-        TITLE="Self-hosted runner(s) offline"
-        BODY=$(printf 'Self-hosted runners were unavailable when this workflow ran.\n\nlinux: %s\nmacos: %s\nwindows: %s\n\nRun: %s' "${{ needs.check_runners.outputs.linux }}" "${{ needs.check_runners.outputs.macos }}" "${{ needs.check_runners.outputs.windows }}" "${{ github.run_html_url }}")
-
-        # Search for existing open issues with the same title
-        issues=$(curl -s -H "Authorization: Bearer $GITHUB_TOKEN" -H "Accept: application/vnd.github+json" "https://api.github.com/repos/${GITHUB_REPOSITORY}/issues?state=open&labels=runner-offline")
-        existing_number=$(echo "$issues" | python3 -c "import sys,json; data=json.load(sys.stdin); print(next((i['number'] for i in data if i.get('title','')=='${TITLE}'),''))")
-
-        if [ -n "$existing_number" ]; then
-          echo "Found existing issue #$existing_number — adding a comment"
-          export BODY
-          comment_json=$(python3 -c 'import json,os; print(json.dumps({"body": os.environ.get("BODY","")}))')
-          curl -s -X POST -H "Authorization: Bearer $GITHUB_TOKEN" -H "Accept: application/vnd.github+json" "https://api.github.com/repos/${GITHUB_REPOSITORY}/issues/$existing_number/comments" -d "$comment_json" || true
-        else
-          echo "No existing issue found — creating a new one"
-          export TITLE
-          export BODY
-          issue_json=$(python3 -c 'import json,os; print(json.dumps({"title": os.environ.get("TITLE",""), "body": os.environ.get("BODY",""), "labels": ["runner-offline"]}))')
-          curl -s -X POST -H "Authorization: Bearer $GITHUB_TOKEN" -H "Accept: application/vnd.github+json" "https://api.github.com/repos/${GITHUB_REPOSITORY}/issues" -d "$issue_json" || true
-        fi
-    - name: Post alert to Discord (optional)
-      env:
-        DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
-        LINUX_AVAIL: ${{ needs.check_runners.outputs.linux }}
-        MACOS_AVAIL: ${{ needs.check_runners.outputs.macos }}
-        WINDOWS_AVAIL: ${{ needs.check_runners.outputs.windows }}
-        RUN_URL: ${{ github.run_html_url }}
-      run: |
-        if [ -z "$DISCORD_WEBHOOK" ]; then
-          echo "DISCORD_WEBHOOK not set; skipping Discord notification"
-          exit 0
-        fi
-        discord_payload=$(python3 -c 'import json,os; msg=("Self-hosted runners were unavailable when this workflow ran.\n"+"linux: "+os.environ.get("LINUX_AVAIL","")+"\n"+"macos: "+os.environ.get("MACOS_AVAIL","")+"\n"+"windows: "+os.environ.get("WINDOWS_AVAIL","")+"\n"+"Run: "+os.environ.get("RUN_URL","")); print(json.dumps({"content": msg}))')
-        curl -s -H "Content-Type: application/json" -d "$discord_payload" "$DISCORD_WEBHOOK" || true
-  # per-OS test jobs
-  test-linux:
-    name: Native Tests (linux)
-    needs: check_runners
-    if: ${{ needs.check_runners.outputs.linux == 'true' }}
-    runs-on: [self-hosted, linux]
-    timeout-minutes: 20
-    defaults:
-      run:
-        shell: bash
-    steps:
-    - name: Runner info
-      run: |
-        echo "RUNNER_NAME=$RUNNER_NAME"
-        echo "RUNNER_OS=$RUNNER_OS"
-        echo "RUNNER_LABELS=$RUNNER_LABELS"
-    - name: Checkout code
-      uses: actions/checkout@v4
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.11'
-    - name: Install PlatformIO
-      run: |
-        python -m pip install --upgrade pip
-        pip install platformio
-    - name: Run Native Tests
-      run: |
-        echo "Running native environment tests on linux..."
-        pio test -e native --verbose
-    - name: Cleanup workspace (self-hosted)
-      if: always()
-      run: |
-        if echo "$RUNNER_LABELS" | grep -qi 'self-hosted'; then
-          rm -rf .pio .pytest_cache .cache ~/.platformio || true
-        fi
-
-  test-macos:
-    name: Native Tests (macos)
-    needs: check_runners
-    if: ${{ needs.check_runners.outputs.macos == 'true' }}
-    runs-on: [self-hosted, macos]
-    timeout-minutes: 20
-    defaults:
-      run:
-        shell: bash
-    steps:
-    - name: Runner info
-      run: |
-        echo "RUNNER_NAME=$RUNNER_NAME"
-        echo "RUNNER_OS=$RUNNER_OS"
-        echo "RUNNER_LABELS=$RUNNER_LABELS"
-    - name: Checkout code
-      uses: actions/checkout@v4
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.11'
-    - name: Install PlatformIO
-      run: |
-        python -m pip install --upgrade pip
-        pip install platformio
-    - name: Run Native Tests
-      run: |
-        echo "Running native environment tests on macOS..."
-        pio test -e native --verbose
-    - name: Cleanup workspace (self-hosted)
-      if: always()
-      run: |
-        if echo "$RUNNER_LABELS" | grep -qi 'self-hosted'; then
-          rm -rf .pio .pytest_cache .cache ~/.platformio || true
-        fi
-
-  test-windows:
-    name: Native Tests (windows)
-    needs: check_runners
-    if: ${{ needs.check_runners.outputs.windows == 'true' }}
-    runs-on: [self-hosted, windows]
+  build-and-test:
+    name: Build and Test on ${{ matrix.os }}
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      matrix:
+        include:
+          - os: linux
+            runner: [self-hosted, linux]
+          - os: macos
+            runner: [self-hosted, macos]
+          - os: windows
+            runner: [self-hosted, windows]
     timeout-minutes: 30
     defaults:
       run:
         shell: bash
     steps:
-    - name: Runner info
-      run: |
-        echo "RUNNER_NAME=$RUNNER_NAME"
-        echo "RUNNER_OS=$RUNNER_OS"
-        echo "RUNNER_LABELS=$RUNNER_LABELS"
-    - name: Checkout code
-      uses: actions/checkout@v4
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.11'
-    - name: Install PlatformIO
-      run: |
-        python -m pip install --upgrade pip
-        pip install platformio
-    - name: Run Native Tests
-      run: |
-        echo "Running native environment tests on Windows..."
-        pio test -e native --verbose
-    - name: Cleanup workspace (self-hosted)
-      if: always()
-      run: |
-        if echo "$RUNNER_LABELS" | grep -qi 'self-hosted'; then
-          rm -rf .pio .pytest_cache .cache ~/.platformio || true
-        fi
-
-  # Build jobs per-OS
-  build-linux:
-    name: ESP32 Build (linux)
-    needs: check_runners
-    if: ${{ needs.check_runners.outputs.linux == 'true' }}
-    runs-on: [self-hosted, linux]
-    timeout-minutes: 30
-    defaults:
-      run:
-        shell: bash
-    steps:
-    - name: Runner info
-      run: |
-        echo "RUNNER_NAME=$RUNNER_NAME"
-        echo "RUNNER_OS=$RUNNER_OS"
-        echo "RUNNER_LABELS=$RUNNER_LABELS"
-    - name: Checkout code
-      uses: actions/checkout@v4
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.11'
-    - name: Install PlatformIO
-      run: |
-        python -m pip install --upgrade pip
-        pip install platformio
-    - name: Install ESP32 platform
-      run: |
-        pio platform install espressif32
-    - name: Build ESP32 Firmware
-      run: |
-        echo "Building ESP32 firmware on linux..."
-        pio run -e esp32dev --verbose
-    - name: Verify build artifacts
-      run: |
-        ls -la .pio/build/esp32dev/ || true
-    - name: Upload Build Artifacts
-      uses: actions/upload-artifact@v4
-      with:
-        name: esp32-firmware-linux
-        path: .pio/build/esp32dev/
-    - name: Cleanup workspace (self-hosted)
-      if: always()
-      run: |
-        if echo "$RUNNER_LABELS" | grep -qi 'self-hosted'; then
-          rm -rf .pio .pytest_cache .cache ~/.platformio build .pioenvs || true
-        fi
+      - name: Runner info
+        run: |
+          echo "RUNNER_NAME=$RUNNER_NAME"
+          echo "RUNNER_OS=$RUNNER_OS"
+          echo "RUNNER_LABELS=$RUNNER_LABELS"
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      - name: Install PlatformIO
+        run: |
+          python -m pip install --upgrade pip
+          pip install platformio
+      - name: Install ESP32 platform
+        run: |
+          pio platform install espressif32
+      - name: Run Native Tests
+        run: |
+          echo "Running native environment tests on ${{ matrix.os }}..."
+          pio test -e native --verbose
+      - name: Build ESP32 Firmware
+        run: |
+          echo "Building ESP32 firmware on ${{ matrix.os }}..."
+          pio run -e esp32dev --verbose
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: esp32-firmware-${{ matrix.os }}
+          path: .pio/build/esp32dev/
+      - name: Cleanup workspace (self-hosted)
+        if: always()
+        run: |
+          if echo "$RUNNER_LABELS" | grep -qi 'self-hosted'; then
+            rm -rf .pio .pytest_cache .cache ~/.platformio build .pioenvs || true
+          fi
 
   build-macos:
     name: ESP32 Build (macos)
