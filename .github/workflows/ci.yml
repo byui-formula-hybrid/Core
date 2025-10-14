@@ -42,11 +42,19 @@ jobs:
             runner: [self-hosted, Windows]
     timeout-minutes: 10
     steps:
-      - name: Runner info
+      - name: Runner info (bash)
+        if: matrix.os != 'windows'
         run: |
-          echo "RUNNER_NAME=${{ env.RUNNER_NAME }}"
-          echo "RUNNER_OS=${{ env.RUNNER_OS }}"
-          echo "RUNNER_LABELS=${{ env.RUNNER_LABELS }}"
+          echo "RUNNER_NAME=${RUNNER_NAME}"
+          echo "RUNNER_OS=${RUNNER_OS}"
+          echo "RUNNER_LABELS=${RUNNER_LABELS}"
+      - name: Runner info (PowerShell)
+        if: matrix.os == 'windows'
+        shell: pwsh
+        run: |
+          Write-Host "RUNNER_NAME=$env:RUNNER_NAME"
+          Write-Host "RUNNER_OS=$env:RUNNER_OS"
+          Write-Host "RUNNER_LABELS=$env:RUNNER_LABELS"
       - name: Checkout code
         uses: actions/checkout@v4
       - name: Set Up Environment (bash)
