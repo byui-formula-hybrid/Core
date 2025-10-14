@@ -52,33 +52,17 @@ jobs:
           echo "RUNNER_LABELS=$RUNNER_LABELS"
       - name: Checkout code
         uses: actions/checkout@v4
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.11'
-      - name: Install PlatformIO
-        run: |
-          python -m pip install --upgrade pip
-          pip install platformio
-      - name: Install ESP32 platform
-        run: |
-          pio platform install espressif32
-      - name: Run Native Tests
-        run: |
-          echo "Running native environment tests on ${{ matrix.os }}..."
-          pio test -e native --verbose
-      - name: Build ESP32 Firmware
-        run: |
-          echo "Building ESP32 firmware on ${{ matrix.os }}..."
-          pio run -e esp32dev --verbose
+      - name: Set Up Environment
+        run: ./scripts/install.sh --ci
+      - name: Build for ESP32
+        run: ./scripts/build-esp32.sh --ci
+      - name: Run Tests
+        run: ./scripts/test.sh --ci
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v4
         with:
           name: esp32-firmware-${{ matrix.os }}
           path: .pio/build/esp32dev/
-      - name: Cleanup workspace (self-hosted)
+      - name: Cleanup
         if: always()
-        run: |
-          if echo "$RUNNER_LABELS" | grep -qi 'self-hosted'; then
-            rm -rf .pio .pytest_cache .cache ~/.platformio build .pioenvs || true
-          fi
+        run: ./.scripts/uninstall.sh --ci
