@@ -66,3 +66,4 @@ jobs:
       - name: Cleanup
         if: always()
         run: ./.scripts/uninstall.sh --ci
+        
