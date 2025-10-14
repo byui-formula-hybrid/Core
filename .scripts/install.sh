@@ -47,7 +47,6 @@ install_python
 set_python
 start_python_virtual_environment
 install_python_packages
-install_platformio_dependencies
 stop_python_virtual_environment
 
 if [ "$CI_MODE" == false ]; then
