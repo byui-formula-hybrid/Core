@@ -240,12 +240,6 @@ install_python() {
             case $PACKAGE_MANAGER in
                 apt)
                     sudo apt-get update && sudo apt-get install -y python3 python3-pip
-                    # Ensure venv module is available
-                    if python3 --version 2>&1 | grep -q '3.10'; then
-                        sudo apt-get install -y python3.10-venv
-                    else
-                        sudo apt-get install -y python3-venv
-                    fi
                     ;;
                 yum)
                     sudo yum install -y python3 python3-pip
@@ -277,6 +271,7 @@ install_python() {
             esac
             ;;
     esac
+    install_python_venv
 }
 
 set_python() {
@@ -289,6 +284,84 @@ set_python() {
         return 1
     fi
     export PYTHON_CMD
+}
+
+install_python_venv() {
+    case "$OS" in
+        linux)
+            case "$PACKAGE_MANAGER" in
+                apt)
+                    if $PYTHON_CMD --version 2>&1 | grep -q '3.10'; then
+                        sudo apt-get update && sudo apt-get install -y python3.10-venv
+                    else
+                        sudo apt-get update && sudo apt-get install -y python3-venv
+                    fi
+                    ;;
+                yum)
+                    sudo yum install -y python3-venv || sudo yum install -y python3
+                    ;;
+                dnf)
+                    sudo dnf install -y python3-venv || sudo dnf install -y python3
+                    ;;
+                pacman)
+                    sudo pacman -Syu --noconfirm python-virtualenv || sudo pacman -Syu --noconfirm python
+                    ;;
+                *)
+                    echo "Unsupported package manager for venv module installation. Please install manually."
+                    return 1
+                    ;;
+            esac
+            ;;
+        macos)
+            echo "On macOS, venv should be included with Python 3. If missing, reinstall Python via Homebrew."
+            ;;
+        windows)
+            echo "On Windows, venv should be included with Python 3. If missing, reinstall Python."
+            ;;
+        *)
+            echo "Unsupported OS for venv module installation. Please install manually."
+            return 1
+            ;;
+    esac
+}
+
+uninstall_python_venv() {
+    case "$OS" in
+        linux)
+            case "$PACKAGE_MANAGER" in
+                apt)
+                    if $PYTHON_CMD --version 2>&1 | grep -q '3.10'; then
+                        sudo apt-get remove -y python3.10-venv
+                    else
+                        sudo apt-get remove -y python3-venv
+                    fi
+                    ;;
+                yum)
+                    sudo yum remove -y python3-venv || sudo yum remove -y python3
+                    ;;
+                dnf)
+                    sudo dnf remove -y python3-venv || sudo dnf remove -y python3
+                    ;;
+                pacman)
+                    sudo pacman -Rns --noconfirm python-virtualenv || sudo pacman -Rns --noconfirm python
+                    ;;
+                *)
+                    echo "Unsupported package manager for venv module uninstallation. Please uninstall manually."
+                    return 1
+                    ;;
+            esac
+            ;;
+        macos)
+            echo "On macOS, venv is part of Python. To remove, uninstall Python via Homebrew."
+            ;;
+        windows)
+            echo "On Windows, venv is part of Python. To remove, uninstall Python."
+            ;;
+        *)
+            echo "Unsupported OS for venv module uninstallation. Please uninstall manually."
+            return 1
+            ;;
+    esac
 }
 
 start_python_virtual_environment() {
@@ -305,9 +378,9 @@ start_python_virtual_environment() {
         $PYTHON_CMD -m venv .venv
         if [ $? -ne 0 ]; then
             print_error "Failed to create Python virtual environment"
-            return 1
+            install_python_venv || return 1
         fi
-        source .venv/bin/activate
+        source .venv/bin/activate || return 1
         print_info "Created and activated new Python virtual environment"
     fi
 }
@@ -401,6 +474,7 @@ uninstall_python() {
             esac
             ;;
     esac
+    uninstall_python_venv
 }
 
 # GIT
@@ -513,42 +587,6 @@ uninstall_git() {
 }
 
 # PLATFORMIO
-install_platformio() {
-    if command_exists pio; then
-        print_success "PlatformIO already installed"
-        return 0
-    fi
-    
-    if [ -z "$PYTHON_CMD" ]; then
-        set_python || return 1
-    fi
-    
-    print_info "Installing PlatformIO Core..."
-    $PYTHON_CMD -m pip install --upgrade platformio
-    if [ $? -eq 0 ]; then
-        print_success "PlatformIO Core installed successfully"
-        return 0
-    else
-        print_error "Failed to install PlatformIO Core"
-        return 1
-    fi
-}
-
-install_platformio_dependencies() {
-    if [ -z "$PYTHON_CMD" ]; then
-        set_python || return 1
-    fi
-    
-    print_info "Installing PlatformIO Core..."
-    install_platformio
-    if [ $? -eq 0 ]; then
-        print_success "PlatformIO Core installed successfully"
-    else
-        print_error "Failed to install PlatformIO Core"
-        return 1
-    fi
-}
-
 uninstall_pio_artifacts() {
     if [ -d ".pio" ]; then
         rm -rf .pio
