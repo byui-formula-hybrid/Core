@@ -38,8 +38,8 @@ jobs:
             runner: [self-hosted, Linux]
           - os: macos
             runner: [self-hosted, macOS]
-          # - os: windows
-          #   runner: [self-hosted, Windows]
+          - os: windows
+            runner: [self-hosted, Windows]
     timeout-minutes: 40
     defaults:
       run:
