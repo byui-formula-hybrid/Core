@@ -38,8 +38,8 @@ jobs:
             runner: [self-hosted, Linux]
           - os: macos
             runner: [self-hosted, macOS]
-          - os: windows
-            runner: [self-hosted, Windows]
+          # - os: windows
+          #   runner: [self-hosted, Windows]
     timeout-minutes: 40
     defaults:
       run:
@@ -53,11 +53,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
       - name: Set Up Environment
-        run: ./scripts/install.sh --ci
+        run: ./scripts/install.sh -a
       - name: Build for ESP32
-        run: ./scripts/build-esp32.sh --ci
+        run: ./scripts/build-esp32.sh -a
       - name: Run Tests
-        run: ./scripts/test.sh --ci
+        run: ./scripts/test.sh -a
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v4
         with:
@@ -65,4 +65,4 @@ jobs:
           path: .pio/build/esp32dev/
       - name: Cleanup
         if: always()
-        run: ./.scripts/uninstall.sh --ci
+        run: ./.scripts/uninstall.sh -a

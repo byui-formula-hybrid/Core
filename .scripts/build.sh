@@ -24,7 +24,7 @@ show_help() {
     echo ""
     echo "Options:"
     echo "  -e, --env ENVIRONMENT    Build environment (esp32dev, native)"
-    echo "                          Note: 'native' is for testing only, use .scripts/test.sh"
+    echo "                           Note: 'native' is for testing only, use .scripts/test.sh"
     echo "  -c, --clean              Clean build files before building"
     echo "  -u, --upload             Upload to device after building"
     echo "  -m, --monitor            Start serial monitor after upload"
@@ -62,6 +62,12 @@ while [[ $# -gt 0 ]]; do
         -h|--help)
             show_help
             exit 0
+            ;;
+        -c|--ci)
+            # CI mode flag, can be used for CI-specific logic if needed
+            CI_MODE=true
+            ENVIRONMENT="esp32dev"
+            shift
             ;;
         *)
             print_error "Unknown option: $1"
