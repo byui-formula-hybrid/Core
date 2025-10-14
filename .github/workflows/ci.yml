@@ -7,32 +7,16 @@ concurrency:
   cancel-in-progress: true
 
 on:
-  # Manual trigger - allows running the pipeline on-demand
   workflow_dispatch:
-    inputs:
-      environment:
-        description: 'Runner environment preference'
-        required: false
-        default: 'self-hosted'
-        type: choice
-        options:
-        - self-hosted
-        - ubuntu-latest
-        - macos-latest
-        - windows-latest
-      
-  # Automatic triggers with path filtering
   pull_request:
     branches: [ main ]
     paths-ignore:
-      - '**.md'           # Skip markdown files
-      - 'docs/**'         # Skip documentation
-      - '.gitignore'      # Skip git files
-      - 'LICENSE'         # Skip license
-      - '.vscode/**'      # Skip VS Code settings
-      - '.scripts/README.md'  # Skip script docs
-      
-  # Optional: Still allow push to main for releases
+      - '**.md'
+      - 'docs/**'
+      - '.gitignore'
+      - 'LICENSE'
+      - '.vscode/**'
+      - '.scripts/README.md'
   push:
     branches: [ main ]
     paths-ignore:
@@ -42,9 +26,6 @@ on:
       - 'LICENSE'
       - '.vscode/**'
       - '.scripts/README.md'
-
-env:
-  PLATFORMIO_CORE_DIR: ~/.platformio
 
 jobs:
   build-and-test:
@@ -59,7 +40,7 @@ jobs:
             runner: [self-hosted, macos]
           - os: windows
             runner: [self-hosted, windows]
-    timeout-minutes: 30
+    timeout-minutes: 40
     defaults:
       run:
         shell: bash
@@ -101,109 +82,3 @@ jobs:
           if echo "$RUNNER_LABELS" | grep -qi 'self-hosted'; then
             rm -rf .pio .pytest_cache .cache ~/.platformio build .pioenvs || true
           fi
-
-  build-macos:
-    name: ESP32 Build (macos)
-    needs: check_runners
-    if: ${{ needs.check_runners.outputs.macos == 'true' }}
-    runs-on: [self-hosted, macos]
-    timeout-minutes: 30
-    defaults:
-      run:
-        shell: bash
-    steps:
-    - name: Runner info
-      run: |
-        echo "RUNNER_NAME=$RUNNER_NAME"
-        echo "RUNNER_OS=$RUNNER_OS"
-        echo "RUNNER_LABELS=$RUNNER_LABELS"
-    - name: Checkout code
-      uses: actions/checkout@v4
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.11'
-    - name: Install PlatformIO
-      run: |
-        python -m pip install --upgrade pip
-        pip install platformio
-    - name: Install ESP32 platform
-      run: |
-        pio platform install espressif32
-    - name: Build ESP32 Firmware
-      run: |
-        echo "Building ESP32 firmware on macOS..."
-        pio run -e esp32dev --verbose
-    - name: Upload Build Artifacts
-      uses: actions/upload-artifact@v4
-      with:
-        name: esp32-firmware-macos
-        path: .pio/build/esp32dev/
-    - name: Cleanup workspace (self-hosted)
-      if: always()
-      run: |
-        if echo "$RUNNER_LABELS" | grep -qi 'self-hosted'; then
-          rm -rf .pio .pytest_cache .cache ~/.platformio build .pioenvs || true
-        fi
-
-  build-windows:
-    name: ESP32 Build (windows)
-    needs: check_runners
-    if: ${{ needs.check_runners.outputs.windows == 'true' }}
-    runs-on: [self-hosted, windows]
-    timeout-minutes: 40
-    defaults:
-      run:
-        shell: bash
-    steps:
-    - name: Runner info
-      run: |
-        echo "RUNNER_NAME=$RUNNER_NAME"
-        echo "RUNNER_OS=$RUNNER_OS"
-        echo "RUNNER_LABELS=$RUNNER_LABELS"
-    - name: Checkout code
-      uses: actions/checkout@v4
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.11'
-    - name: Install PlatformIO
-      run: |
-        python -m pip install --upgrade pip
-        pip install platformio
-    - name: Install ESP32 platform
-      run: |
-        pio platform install espressif32
-    - name: Build ESP32 Firmware
-      run: |
-        echo "Building ESP32 firmware on Windows..."
-        pio run -e esp32dev --verbose
-    - name: Upload Build Artifacts
-      uses: actions/upload-artifact@v4
-      with:
-        name: esp32-firmware-windows
-        path: .pio/build/esp32dev/
-    - name: Cleanup workspace (self-hosted)
-      if: always()
-      run: |
-        if echo "$RUNNER_LABELS" | grep -qi 'self-hosted'; then
-          rm -rf .pio .pytest_cache .cache ~/.platformio build .pioenvs || true
-        fi
-
-  validate:
-    name: Validation Summary
-    runs-on: ubuntu-latest
-    needs: [check_runners, test-linux, test-macos, test-windows, build-linux, build-macos, build-windows]
-    if: always()
-    timeout-minutes: 5
-    steps:
-    - name: Check Results
-      run: |
-        echo "=== CI Pipeline Results ==="
-        echo "Test linux: ${ { needs.test-linux.result } }"
-        echo "Test macos: ${ { needs.test-macos.result } }"
-        echo "Test windows: ${ { needs.test-windows.result } }"
-        echo "Build linux: ${ { needs.build-linux.result } }"
-        echo "Build macos: ${ { needs.build-macos.result } }"
-        echo "Build windows: ${ { needs.build-windows.result } }"
-        echo "Runner availability: linux=${{ needs.check_runners.outputs.linux }}, macos=${{ needs.check_runners.outputs.macos }}, windows=${{ needs.check_runners.outputs.windows }}"
