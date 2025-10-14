@@ -50,7 +50,7 @@ jobs:
           echo "RUNNER_LABELS=${RUNNER_LABELS}"
       - name: Runner info (PowerShell)
         if: matrix.os == 'windows'
-        shell: pwsh
+        shell: powershell
         run: |
           Write-Host "RUNNER_NAME=$env:RUNNER_NAME"
           Write-Host "RUNNER_OS=$env:RUNNER_OS"
@@ -62,21 +62,21 @@ jobs:
         run: ./.scripts/install.sh --ci
       - name: Set Up Environment (PowerShell)
         if: matrix.os == 'windows'
-        shell: pwsh
+        shell: powershell
         run: ./.scripts/powershell/install.ps1 --ci
       - name: Build for ESP32 (bash)
         if: matrix.os != 'windows'
         run: ./.scripts/build.sh --ci
       - name: Build for ESP32 (PowerShell)
         if: matrix.os == 'windows'
-        shell: pwsh
+        shell: powershell
         run: ./.scripts/powershell/build.ps1 --ci
       - name: Run Tests (bash)
         if: matrix.os != 'windows'
         run: ./.scripts/test.sh --ci
       - name: Run Tests (PowerShell)
         if: matrix.os == 'windows'
-        shell: pwsh
+        shell: powershell
         run: ./.scripts/powershell/test.ps1 --ci
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v4
@@ -88,5 +88,5 @@ jobs:
         run: ./.scripts/uninstall.sh --ci
       - name: Cleanup (PowerShell)
         if: matrix.os == 'windows' && always()
-        shell: pwsh
+        shell: powershell
         run: ./.scripts/powershell/uninstall.ps1 --ci
