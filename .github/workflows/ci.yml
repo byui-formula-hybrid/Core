@@ -68,19 +68,19 @@ jobs:
         data = json.load(open('runners.json'))
         avail = {'linux':'false', 'macos':'false', 'windows':'false'}
         for r in data.get('runners', []):
-            if r.get('status') != 'online':
-                continue
-            labels = [l.get('name','').lower() for l in r.get('labels', [])]
-            if 'linux' in labels:
-                avail['linux'] = 'true'
-            if 'macos' in labels or 'mac os' in labels or 'macos-latest' in labels:
-                avail['macos'] = 'true'
-            if 'windows' in labels:
-                avail['windows'] = 'true'
+          if r.get('status') != 'online':
+            continue
+          labels = [l.get('name','').lower() for l in r.get('labels', [])]
+          if 'linux' in labels:
+            avail['linux'] = 'true'
+          if 'macos' in labels or 'mac os' in labels or 'macos-latest' in labels:
+            avail['macos'] = 'true'
+          if 'windows' in labels:
+            avail['windows'] = 'true'
         with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
-            print(f"linux={avail['linux']}", file=f)
-            print(f"macos={avail['macos']}", file=f)
-            print(f"windows={avail['windows']}", file=f)
+          print(f"linux={avail['linux']}", file=f)
+          print(f"macos={avail['macos']}", file=f)
+          print(f"windows={avail['windows']}", file=f)
         PY
 
   availability-alert:
@@ -108,12 +108,15 @@ jobs:
 
         if [ -n "$existing_number" ]; then
           echo "Found existing issue #$existing_number — adding a comment"
-          comment=$(printf '{"body":"%s"}' "$BODY")
-          curl -s -X POST -H "Authorization: Bearer $GITHUB_TOKEN" -H "Accept: application/vnd.github+json" "https://api.github.com/repos/${GITHUB_REPOSITORY}/issues/$existing_number/comments" -d "$comment" || true
+          export BODY
+          comment_json=$(python3 -c 'import json,os; print(json.dumps({"body": os.environ.get("BODY","")}))')
+          curl -s -X POST -H "Authorization: Bearer $GITHUB_TOKEN" -H "Accept: application/vnd.github+json" "https://api.github.com/repos/${GITHUB_REPOSITORY}/issues/$existing_number/comments" -d "$comment_json" || true
         else
           echo "No existing issue found — creating a new one"
-          json=$(printf '{"title":"%s","body":"%s","labels":["runner-offline"]}' "$TITLE" "$BODY")
-          curl -s -X POST -H "Authorization: Bearer $GITHUB_TOKEN" -H "Accept: application/vnd.github+json" "https://api.github.com/repos/${GITHUB_REPOSITORY}/issues" -d "$json" || true
+          export TITLE
+          export BODY
+          issue_json=$(python3 -c 'import json,os; print(json.dumps({"title": os.environ.get("TITLE",""), "body": os.environ.get("BODY",""), "labels": ["runner-offline"]}))')
+          curl -s -X POST -H "Authorization: Bearer $GITHUB_TOKEN" -H "Accept: application/vnd.github+json" "https://api.github.com/repos/${GITHUB_REPOSITORY}/issues" -d "$issue_json" || true
         fi
     - name: Post alert to Discord (optional)
       env:
@@ -127,8 +130,8 @@ jobs:
           echo "DISCORD_WEBHOOK not set; skipping Discord notification"
           exit 0
         fi
-        payload=$(printf '{"content":"Self-hosted runners were unavailable when this workflow ran.\nlinux: %s\nmacos: %s\nwindows: %s\nRun: %s"}' "$LINUX_AVAIL" "$MACOS_AVAIL" "$WINDOWS_AVAIL" "$RUN_URL")
-        curl -s -H "Content-Type: application/json" -d "$payload" "$DISCORD_WEBHOOK" || true
+        discord_payload=$(python3 -c 'import json,os; msg=("Self-hosted runners were unavailable when this workflow ran.\n"+"linux: "+os.environ.get("LINUX_AVAIL","")+"\n"+"macos: "+os.environ.get("MACOS_AVAIL","")+"\n"+"windows: "+os.environ.get("WINDOWS_AVAIL","")+"\n"+"Run: "+os.environ.get("RUN_URL","")); print(json.dumps({"content": msg}))')
+        curl -s -H "Content-Type: application/json" -d "$discord_payload" "$DISCORD_WEBHOOK" || true
   # per-OS test jobs
   test-linux:
     name: Native Tests (linux)
