@@ -9,7 +9,6 @@ concurrency:
 on:
   workflow_dispatch:
   pull_request:
-    branches: [ main ]
     paths-ignore:
       - '**.md'
       - 'docs/**'
@@ -66,4 +65,3 @@ jobs:
       - name: Cleanup
         if: always()
         run: ./.scripts/uninstall.sh --ci
-        
