@@ -35,11 +35,11 @@ jobs:
       matrix:
         include:
           - os: linux
-            runner: [self-hosted, linux]
+            runner: [self-hosted, Linux]
           - os: macos
-            runner: [self-hosted, macos]
+            runner: [self-hosted, macOS]
           - os: windows
-            runner: [self-hosted, windows]
+            runner: [self-hosted, Windows]
     timeout-minutes: 40
     defaults:
       run:
