@@ -55,7 +55,7 @@ jobs:
       - name: Set Up Environment
         run: ./.scripts/install.sh --ci
       - name: Build for ESP32
-        run: ./.scripts/build-esp32.sh --ci
+        run: ./.scripts/build.sh --ci
       - name: Run Tests
         run: ./.scripts/test.sh --ci
       - name: Upload Build Artifacts
