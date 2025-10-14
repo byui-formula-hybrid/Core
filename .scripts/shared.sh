@@ -240,6 +240,12 @@ install_python() {
             case $PACKAGE_MANAGER in
                 apt)
                     sudo apt-get update && sudo apt-get install -y python3 python3-pip
+                    # Ensure venv module is available
+                    if python3 --version 2>&1 | grep -q '3.10'; then
+                        sudo apt-get install -y python3.10-venv
+                    else
+                        sudo apt-get install -y python3-venv
+                    fi
                     ;;
                 yum)
                     sudo yum install -y python3 python3-pip
