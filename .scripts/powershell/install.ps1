@@ -11,14 +11,14 @@ Print-Header "Installation Script"
 Install-Git
 
 Install-Python
+Install-VSCode
+Install-VSCodeExtensions
+
 Set-Python
 Start-PythonVirtualEnvironment
 Install-PythonPackages
 Install-PlatformIO
 Stop-PythonVirtualEnvironment
-
-Install-VSCode
-Install-VSCodeExtensions
 
 Show-ProjectInfo
 
