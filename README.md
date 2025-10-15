@@ -7,38 +7,32 @@ This is a PlatformIO-based ESP32 project for a race car with multiple modular co
 ## Project Structure
 
 ```
-/Users/po/Developer/Core/
-├── README.md                  # This file - project overview and setup
-├── platformio.ini             # PlatformIO configuration 
-├── .gitignore                 # Git ignore patterns for ESP32/embedded development
-├── src/                       # Main application source code
-│   └── main.cpp               # ESP32 application entry point
+Core/
+├── .github/                   # GitHub Actions workflows and templates
+├── .scripts/                  # Automated setup, build, and test scripts
+├── docs/                      # Project documentation and design specs
+├── include/                   # Shared headers and global configuration
 ├── lib/                       # Custom race car module libraries
-│   ├── can/                   # CAN bus communication module
-│   ├── core/                  # Core system functionality
-│   ├── dash/                  # Dashboard and display module
-│   ├── inverter/              # Motor inverter control module
-│   ├── pump/                  # Cooling pump control module
-│   ├── pedals/                # Accelerator/brake pedal module
-│   ├── battery/               # Battery monitoring module
-│   └── imd/                   # Insulation monitoring device module
-├── include/                   # Shared headers and configuration
-│   ├── config.h               # Global configuration constants
-│   └── types.h                # Shared data structures
-├── test/                      # Unit tests for each module
-│   ├── test_can/              # CAN module tests
-│   ├── test_core/             # Core module tests
-│   ├── test_dash/             # Dashboard module tests
-│   ├── test_inverter/         # Inverter module tests
-│   ├── test_pump/             # Pump module tests
-│   ├── test_pedals/           # Pedals module tests
-│   ├── test_battery/          # Battery module tests
-│   ├── test_imd/              # IMD module tests
-│   └── mocks/                 # Mock objects for testing
-└── docs/                      # Project documentation
-    ├── CANbus.md              # CAN bus protocol documentation
-    ├── Design.md              # System design and architecture
-    └── README.md              # Documentation overview
+│   ├── battery/               # Battery monitoring and management
+│   ├── can/                   # CAN bus communication protocol
+│   ├── core/                  # Core system functionality and reactive patterns
+│   ├── dash/                  # Dashboard and display interface
+│   ├── imd/                   # Insulation monitoring device
+│   ├── inverter/              # Motor inverter control
+│   ├── pedals/                # Accelerator and brake pedal input
+│   └── pump/                  # Cooling pump control
+├── src/                       # Main ESP32 application source code
+└── test/                      # Unit tests and test helpers
+    ├── helpers/               # Test factory implementations
+    ├── mocks/                 # Mock objects and strategies
+    ├── test_battery/          # Battery module tests
+    ├── test_can/              # CAN module tests
+    ├── test_core/             # Core module tests
+    ├── test_dash/             # Dashboard module tests
+    ├── test_imd/              # IMD module tests
+    ├── test_inverter/         # Inverter module tests
+    ├── test_pedals/           # Pedals module tests
+    └── test_pump/             # Pump module tests
 ```
 
 ## Getting Started
