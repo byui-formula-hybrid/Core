@@ -12,13 +12,14 @@ Install-Git
 
 Install-Python
 Install-VSCode
-Install-VSCodeExtensions
 
 Set-Python
 Start-PythonVirtualEnvironment
 Install-PythonPackages
 Install-PlatformIO
 Stop-PythonVirtualEnvironment
+
+Install-VSCodeExtensions
 
 Show-ProjectInfo
 

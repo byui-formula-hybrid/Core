@@ -24,6 +24,15 @@ function Print-Header($msg) {
 }
 
 # ================================
+# ENVIRONMENT MANAGEMENT
+# ================================
+function Refresh-Env {
+    # Refresh system environment variables
+    $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" +
+                [System.Environment]::GetEnvironmentVariable("Path", "User")
+}
+
+# ================================
 # COMMAND CHECK
 # ================================
 function Command-Exists($cmd) {
@@ -129,8 +138,10 @@ function Install-Python() {
     Print-Info "Installing Python..."
     if (Command-Exists "choco") {
         choco install python
+        if ($LASTEXITCODE -eq 0) {Refresh-Env}
     } elseif (Command-Exists "winget") {
         winget install -e --id Python.Python.3.13 --scope machine
+        if ($LASTEXITCODE -eq 0) {Refresh-Env}
     } else {
         Print-Warning "Install Python manually: https://www.python.org/downloads/windows/"
         Print-Warning "Using the 64-bit installer"
@@ -160,10 +171,13 @@ function Install-Git {
     }
 
     Print-Info "Installing Git..."
+    $installed = $false
     if (Command-Exists "choco") {
         choco install git -y
+        if ($LASTEXITCODE -eq 0) {Refresh-Env}
     } elseif (Command-Exists "winget") {
         winget install --id Git.Git -e --silent --source winget
+        if ($LASTEXITCODE -eq 0) {Refresh-Env}
     } else {
         Print-Warning "Install Git manually: https://git-scm.com/download/win"
     }
@@ -183,9 +197,12 @@ function Install-PlatformIO {
     Run-Python @("-m", "pip", "install", "--upgrade", "platformio")
     if ($LASTEXITCODE -eq 0) {
         Print-Success "PlatformIO installed successfully"
+        Refresh-Env
     } else {
         Print-Error "Failed to install PlatformIO"
     }
+
+    # Possibly add platform io to environment variables
 }
 
 function Uninstall-PioArtifacts {
@@ -213,8 +230,14 @@ function Install-VSCode {
         return
     }
 
-    if (Command-Exists choco) { choco install vscode -y }
-    elseif (Command-Exists winget) { winget install -e --id Microsoft.VisualStudioCode --silent }
+    if (Command-Exists choco) {
+        choco install vscode -y
+        if ($LASTEXITCODE -eq 0) {Refresh-Env}
+        }
+    elseif (Command-Exists winget) {
+        winget install -e --id Microsoft.VisualStudioCode --silent
+        if ($LASTEXITCODE -eq 0) {Refresh-Env}
+        }
     else { Print-Warning "Install manually: https://code.visualstudio.com/download" }
 }
 
