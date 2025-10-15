@@ -57,14 +57,6 @@ FILTER=""
 
 while [[ $# -gt 0 ]]; do
     case $1 in
-        -v|--verbose)
-            VERBOSE=true
-            shift
-            ;;
-        -f|--filter)
-            FILTER="$2"
-            shift 2
-            ;;
         -h|--help)
             echo "Usage: $0 [OPTIONS]"
             echo ""
@@ -78,6 +70,20 @@ while [[ $# -gt 0 ]]; do
             echo "  $0 --verbose                # Run all tests with verbose output"
             echo "  $0 --filter test_core_module # Run only core module tests"
             exit 0
+            ;;
+        -v|--verbose)
+            VERBOSE=true
+            shift
+            ;;
+        -f|--filter)
+            FILTER="$2"
+            shift 2
+            ;;
+        -c|--ci)
+            # CI mode flag, can be used for CI-specific logic if needed
+            CI_MODE=true
+            ENVIRONMENT="native"
+            shift
             ;;
         *)
             print_error "Unknown option: $1"

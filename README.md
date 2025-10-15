@@ -1,5 +1,7 @@
 # ESP32 Race Car Core Library
 
+[![CI Pipeline](https://github.com/byui-formula-hybrid/Core/actions/workflows/ci.yml/badge.svg)](https://github.com/byui-formula-hybrid/Core/actions/workflows/ci.yml)
+
 This is a PlatformIO-based ESP32 project for a race car with multiple modular components. Each component is implemented as a separate library for clean organization and easy testing.
 
 ## Project Structure
@@ -43,13 +45,16 @@ This is a PlatformIO-based ESP32 project for a race car with multiple modular co
 
 > **💡 Important:** This project includes automated scripts that handle all setup, building, and testing. **Use the provided scripts instead of manual commands** for the best experience and to avoid common setup issues.
 
+
 ### Quick Start (Recommended)
 
 **New to the project? Start here:**
 
+
+#### For Linux/macOS
 ```bash
 # 1. Clone the repository
-git clone <repository-url>
+git clone https://github.com/byui-formula-hybrid/Core.git
 cd Core
 
 # 2. Run the automated setup script
@@ -62,26 +67,59 @@ cd Core
 ./.scripts/build.sh
 ```
 
-The setup script will automatically:
-- ✅ Detect your operating system (macOS, Linux, Windows)
-- ✅ Install required dependencies (Python, PlatformIO, etc.)
-- ✅ Configure your development environment
-- ✅ Verify everything is working
-
-## Windows Users: Git Bash Setup
-
+#### For Windows
 > **🪟 Windows Notice:**
 >
-> To run project scripts on Windows, you must first set up Git Bash:
+> You have two options for running project scripts on Windows:
+>
+> **Option 1: Use PowerShell scripts**
+>
+> Open PowerShell and run:
+> ```powershell
+> # 1. Clone the repository
+> git clone https://github.com/byui-formula-hybrid/Core.git
+> cd Core
+>
+> # 2. Run the automated setup script
+> ./.scripts/powershell/install.ps1
+>
+> # 3. Test that everything works
+> ./.scripts/powershell/test.ps1
+>
+> # 4. Build for ESP32
+> ./.scripts/powershell/build.ps1
+> ```
+>
+> **Option 2: Use Git Bash and bash scripts**
 >
 > 1. Open PowerShell and run:
 >    ```powershell
 >    ./.scripts/setup-gitbash.ps1
 >    ```
 > 2. After setup, open a Git Bash terminal (not PowerShell or CMD).
-> 3. Run all project scripts (e.g., `build.sh`, `test.sh`, `install.sh`) in Git Bash using the same syntax as on macOS/Linux.
+> 3. Run all project scripts (e.g., `build.sh`, `test.sh`, `install.sh`) in Git Bash using the same syntax as on macOS/Linux:
+>    ```bash
+>    # 1. Clone the repository
+>    git clone https://github.com/byui-formula-hybrid/Core.git
+>    cd Core
+>
+>    # 2. Run the automated setup script
+>    ./.scripts/install.sh
+>
+>    # 3. Test that everything works
+>    ./.scripts/test.sh
+>
+>    # 4. Build for ESP32
+>    ./.scripts/build.sh
+>    ```
 >
 > This ensures all scripts work correctly and avoids shell compatibility issues.
+
+The setup script will automatically:
+- ✅ Detect your operating system (macOS, Linux, Windows)
+- ✅ Install required dependencies (Python, PlatformIO, etc.)
+- ✅ Configure your development environment
+- ✅ Verify everything is working
 
 ### All Available Scripts
 
@@ -93,6 +131,37 @@ The setup script will automatically:
 | `./.scripts/uninstall.sh` | **Clean up** | `./.scripts/uninstall.sh` |
 
 📚 **For detailed script options:** See [`.scripts/README.md`](.scripts/README.md)
+
+## CI/CD Pipeline
+
+This project uses GitHub Actions for continuous integration with smart safeguards and efficiency optimizations.
+
+### 🚀 **Pipeline Features**
+- **Manual Trigger**: Run on-demand from GitHub Actions tab
+- **Smart Path Filtering**: Skips runs for documentation-only changes  
+- **Timeout Protection**: 10min tests, 15min builds, never hangs
+- **Multi-Runner Support**: Ubuntu (default), macOS, Windows fallback
+- **Auto-Cancel**: New commits stop previous runs, saving CI minutes
+- **Artifact Storage**: ESP32 firmware binaries saved for 7 days
+
+### 🧪 **What Gets Tested**
+- **Native Tests**: All unit tests using Unity framework
+- **ESP32 Build**: Full firmware compilation and verification
+- **Cross-Platform**: Optional validation on multiple OS types
+
+### 📊 **Pipeline Triggers**
+- ✅ **Pull Requests** to `main` (automatic)
+- ✅ **Pushes** to `main` (releases)  
+- ✅ **Manual Runs** (on-demand via GitHub UI)
+- ❌ **Documentation** changes only (skipped)
+
+### 🛠️ **Usage**
+```bash
+# Manual trigger via GitHub:
+# Actions → CI Pipeline → Run workflow
+```
+
+**📚 Detailed Guide:** [`.github/workflows/README.md`](.github/workflows/README.md)
 
 ## License
 
