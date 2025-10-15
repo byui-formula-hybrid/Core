@@ -16,6 +16,6 @@ jobs:
         run: |
           curl -H "Content-Type: application/json" \
             -d '{
-              "content": "@Software A new PR has been opened by ${{ github.actor }}: [Review this PR](${{ github.event.pull_request.html_url }})\nPlease review it!"
+              "content": "<@&1245089722351489044> A new PR has been opened by ${{ github.actor }}: [Review this PR](${{ github.event.pull_request.html_url }})\nPlease review it!"
             }' \
             "$DISCORD_WEBHOOK"
