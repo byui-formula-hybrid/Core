@@ -4,6 +4,7 @@
 #include <functional>
 #include <memory>
 #include <cstddef>
+#include <algorithm>
 #include "../strategies/LockStrategy.h"
 #include "Subscription.h"
 
