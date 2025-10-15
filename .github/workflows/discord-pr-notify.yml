@@ -1,0 +1,21 @@
+
+name: Notify Discord on PR Creation
+
+on:
+  pull_request:
+    types: [opened, ready_for_review]
+
+jobs:
+  notify-discord:
+    runs-on: [self-hosted, Linux]
+    steps:
+      - name: Send Discord notification
+        if: ${{ !github.event.pull_request.draft }}
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+        run: |
+          curl -H "Content-Type: application/json" \
+            -d '{
+              "content": "<@&1245089722351489044> A new PR has been opened by ${{ github.actor }}: [Please review this PR](${{ github.event.pull_request.html_url }})!"
+            }' \
+            "$DISCORD_WEBHOOK"
