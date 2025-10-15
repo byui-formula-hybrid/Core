@@ -118,18 +118,18 @@ function Install-PythonPackages {
 }
 
 function Install-Python() {
-    if (Command_Exists python) {
+    if (Command-Exists "python") {
         Print-Success "Python already installed"
         return
-    } elseif (Command_Exists python3) {
+    } elseif (Command-Exists "python3") {
         Print-Success "Python 3 already installed"
         return
     }
     
     Print-Info "Installing Python..."
-    if (Command-Exists choco) {
+    if (Command-Exists "choco") {
         choco install python
-    } elseif (Command-Exists winget) {
+    } elseif (Command-Exists "winget") {
         winget install -e --id Python.Python.3.13 --scope machine
     } else {
         Print-Warning "Install Python manually: https://www.python.org/downloads/windows/"
@@ -160,9 +160,9 @@ function Install-Git {
     }
 
     Print-Info "Installing Git..."
-    if (Command-Exists choco) {
+    if (Command-Exists "choco") {
         choco install git -y
-    } elseif (Command-Exists winget) {
+    } elseif (Command-Exists "winget") {
         winget install --id Git.Git -e --silent --source winget
     } else {
         Print-Warning "Install Git manually: https://git-scm.com/download/win"
@@ -173,7 +173,7 @@ function Install-Git {
 # PLATFORMIO
 # ================================
 function Install-PlatformIO {
-    if (Command-Exists pio) {
+    if (Command-Exists "pio") {
         Print-Success "PlatformIO already installed"
         return
     }
