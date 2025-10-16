@@ -15,8 +15,8 @@ Install-VSCode
 
 Set-Python
 Start-PythonVirtualEnvironment
-Install-PythonPackages
 Install-PlatformIO
+Install-PythonPackages
 Stop-PythonVirtualEnvironment
 
 Install-VSCodeExtensions
