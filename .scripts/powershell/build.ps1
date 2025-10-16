@@ -49,6 +49,10 @@ for ($i = 0; $i -lt $args.Length; $i++) {
         '--monitor' { $Monitor = $true }
         '-h' { Show-Help; exit 0 }
         '--help' { Show-Help; exit 0 }
+        '--ci' {
+            # Continuous Integration mode for Github pipeline
+            $Environment = 'esp32dev'
+        }
         default {
             Print-Error "Unknown option: $($args[$i])"
             Write-Host "Use -h or --help for usage information"
