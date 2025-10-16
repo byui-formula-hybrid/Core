@@ -88,4 +88,4 @@ Consists of seven recessive bits that signify the end of the message frame.
 A period of bus inactivity that occurs after the End of Frame, separating one frame from the next. 
 
 ## Resources
-<!-- Links to additional or external resources -->
+[Can Overview](https://www.ni.com/docs/en-US/bundle/ni-xnet/page/can-overview.html)

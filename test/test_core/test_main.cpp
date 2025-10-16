@@ -18,6 +18,7 @@ int main() {
 
     run_publisher_tests();
     run_value_subject_tests();
+    run_binary_unkeyed_encoding_container_tests();
     
     return UNITY_END();
 }
