@@ -52,6 +52,7 @@ for ($i = 0; $i -lt $args.Length; $i++) {
         '--ci' {
             # Continuous Integration mode for Github pipeline
             $Environment = 'esp32dev'
+            $i++
         }
         default {
             Print-Error "Unknown option: $($args[$i])"
