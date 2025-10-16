@@ -30,6 +30,9 @@ function Refresh-Env {
     # Refresh system environment variables
     $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" +
                 [System.Environment]::GetEnvironmentVariable("Path", "User")
+
+    # Give time for environment changes before attempting to run next command
+    Start-Sleep -Seconds 1
 }
 
 # ================================
@@ -127,6 +130,17 @@ function Install-PythonPackages {
 }
 
 function Install-Python() {
+    # Check if Microsoft is dumb!!!
+    $stubPath = "$env:LOCALAPPDATA\Microsoft\WindowsApps"
+    $files = @("python.exe", "python3.exe")
+    foreach ($f in $files) {
+        $fPath = Join-Path $stubPath $f
+        if (Test-Path $fPath) {
+            Remove-Item -Path $fPath -Force
+            Print-Warning "Microsofts stub python was found and was removed!"
+        }
+    }
+    
     if (Command-Exists "python") {
         Print-Success "Python already installed"
         return
