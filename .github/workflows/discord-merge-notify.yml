@@ -1,20 +1,12 @@
-name: Notify Discord on Merge
+name: Call Discord Merge Notification
 
 on:
   push:
-    branches:
-      - main
+    branches: [ main ]
 
 jobs:
-  notify-discord:
-    runs-on: [self-hosted, Linux]
-    steps:
-      - name: Send Discord notification
-        env:
-          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
-        run: |
-          curl -H "Content-Type: application/json" \
-            -d '{
-                "content": "<@&1245089722351489044> Branch was merged into main by ${{ github.actor }}. See commit: [${{ github.sha }}](${{ github.event.head_commit.url }})"
-            }' \
-            "$DISCORD_WEBHOOK"
+  notify:
+    uses: byui-formula-hybrid/.github/.github/workflows/discord-merge-notification.yml@main
+    secrets:
+      DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+      DISCORD_ROLE_ID: ${{ secrets.DISCORD_ROLE_ID }}
