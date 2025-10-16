@@ -49,8 +49,11 @@ function Show-ProjectInfo {
     Print-Header "ESP32 Formula Hybrid Core Library"
     Print-Info "Python: $(if (Command-Exists 'python') { "$checkBox" } else { "$redX" })"
     Print-Info "Git: $(if (Command-Exists 'git') { "$checkBox" } else { "$redX" })"
-    Print-Info "PlatformIO: $(if (Command-Exists 'pio') { "$checkBox" } else { "$redX" })"
     Print-Info "VS Code: $(if (Command-Exists 'code') { "$checkBox" } else { "$redX" })"
+    Start-PythonVirtualEnvironment
+    Print-Info "Python Virtual Environment: $((if ($env:VIRTUAL_ENV) { "$checkBox" } else { "$redX" }))"
+    Print-Info "PlatformIO: $(if (Command-Exists 'pio') { "$checkBox" } else { "$redX" })"
+    Stop-PythonVirtualEnvironment
 }
 
 # ================================
@@ -82,7 +85,7 @@ function Run-Python($pyArgs) {
 }
 
 function Start-PythonVirtualEnvironment {
-    if (-not (Set-Python)) { return }
+    if (-not (Set-Python)) { return 1}
 
     $VenvPath = Join-Path $ProjectRoot ".venv"
     if (Test-Path $VenvPath) {
