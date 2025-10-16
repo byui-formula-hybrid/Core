@@ -1,6 +1,6 @@
 #pragma once
 
-#include "LockStrategy.h"
+#include "i_lock_strategy.h"
 
 // Only compile this entire file for real ESP32 hardware
 #ifndef ARDUINO_ARCH_NATIVE
@@ -15,7 +15,7 @@ namespace Core {
  * @brief FreeRTOS mutex-based lock strategy for real ESP32 hardware
  * This entire file is only compiled for ESP32, not for testing
  */
-class FreeRTOSLockStrategy : public LockStrategy {
+class FreeRTOSLockStrategy : public iLockStrategy {
 private:
     SemaphoreHandle_t mutex_;
 

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../reactive/CurrentValueSubject.h"
+#include "current_value_subject.h"
 #include <memory>
 
 namespace Core {
