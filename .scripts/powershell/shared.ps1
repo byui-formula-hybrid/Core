@@ -179,7 +179,7 @@ function Uninstall-PythonVirtualEnvironment {
 }
 
 # ================================
-# GIT
+# GIT AND WINGET
 # ================================
 function Install-Git {
     if (Command-Exists git) {
@@ -198,6 +198,35 @@ function Install-Git {
     } else {
         Print-Warning "Install Git manually: https://git-scm.com/download/win"
     }
+}
+
+function Install-Winget {
+    if (Command-Exists winget) {
+        Print-Success "winget already installed"
+        return
+    }
+
+    # Get the current user-scope PATH variable
+    $userPath = [System.Environment]::GetEnvironmentVariable("PATH", "User")
+    $wingetPath = Join-Path $env:LOCALAPPDATA "Microsoft\WindowsApps\winget.exe"
+	if (Test-Path $wingetPath) {
+        # Check if the new path is already in the PATH variable to avoid duplicates
+        if ($userPath -notlike "*$wingetPath*") {
+            # Append the new path to the existing user PATH variable
+            $newUserPath = "$userPath;$wingetPath"
+            Print-Success "Added winget to the environment"
+        } else {
+            Print-Error "Winget is already present in the environment variable but is inaccessable."
+        }
+	} else {
+        # install it
+        Add-AppxPackage https://github.com/microsoft/winget-cli/releases/latest/download/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle
+        if ($LASTEXITCODE -eq 0) {
+            Print-Success "Installed winget"
+        }
+    }
+
+    Refresh-Env
 }
 
 # ================================

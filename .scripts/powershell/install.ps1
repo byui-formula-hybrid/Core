@@ -44,7 +44,11 @@ if ($args.Count -gt 0) {
 
 Print-Header "Installation Script"
 
-Install-Git
+Install-Winget
+
+if (-not $CI_MODE) {
+	Install-Git
+}
 
 Install-Python
 if (-not $CI_MODE) {
