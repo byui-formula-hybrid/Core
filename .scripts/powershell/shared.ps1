@@ -140,7 +140,7 @@ function Install-Python() {
             Print-Warning "Microsofts stub python was found and was removed!"
         }
     }
-    
+
     if (Command-Exists "python") {
         Print-Success "Python already installed"
         return
@@ -211,6 +211,7 @@ function Install-PlatformIO {
     Run-Python @("-m", "pip", "install", "--upgrade", "platformio")
     if ($LASTEXITCODE -eq 0) {
         Print-Success "PlatformIO installed successfully"
+        # add pio to envrionment variables maybe..., pio installs on a per user basis not a system wide, it would involve a user specific environment variable (problematic in Windows)
         Refresh-Env
     } else {
         Print-Error "Failed to install PlatformIO"
