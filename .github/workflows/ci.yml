@@ -70,14 +70,14 @@ jobs:
       - name: Build for ESP32 (PowerShell)
         if: matrix.os == 'windows'
         shell: powershell
-        run: ./.scripts/powershell/build.ps1 --ci
+        run: ./.scripts/powershell/build.ps1
       - name: Run Tests (bash)
         if: matrix.os != 'windows'
         run: ./.scripts/test.sh --ci
       - name: Run Tests (PowerShell)
         if: matrix.os == 'windows'
         shell: powershell
-        run: ./.scripts/powershell/test.ps1 --ci
+        run: ./.scripts/powershell/test.ps1
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v4
         with:
@@ -89,4 +89,4 @@ jobs:
       - name: Cleanup (PowerShell)
         if: matrix.os == 'windows' && always()
         shell: powershell
-        run: ./.scripts/powershell/uninstall.ps1 --ci
+        run: ./.scripts/powershell/uninstall.ps1
