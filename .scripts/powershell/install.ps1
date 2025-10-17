@@ -54,6 +54,7 @@ Install-Python
 if (-not $CI_MODE) {
 	Install-MSYS2
 } else {
+	winget upgrade --id Microsoft.AppInstaller
 	Install-Mingw
 }
 if (-not $CI_MODE) {
