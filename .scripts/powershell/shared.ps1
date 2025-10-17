@@ -51,7 +51,7 @@ function Show-ProjectInfo {
     Print-Info "Git: $(if (Command-Exists 'git') { "$checkBox" } else { "$redX" })"
     Print-Info "VS Code: $(if (Command-Exists 'code') { "$checkBox" } else { "$redX" })"
     Start-PythonVirtualEnvironment
-    Print-Info "Python Virtual Environment: $((if ($env:VIRTUAL_ENV) { "$checkBox" } else { "$redX" }))"
+    Print-Info "Python Virtual Environment: $(if ($env:VIRTUAL_ENV) { "$checkBox" } else { "$redX" })"
     Print-Info "PlatformIO: $(if (Command-Exists 'pio') { "$checkBox" } else { "$redX" })"
     Stop-PythonVirtualEnvironment
 }
