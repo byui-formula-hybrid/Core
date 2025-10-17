@@ -179,7 +179,7 @@ function Uninstall-PythonVirtualEnvironment {
 }
 
 # ================================
-# GIT AND WINGET
+# GIT, WINGET, MSYS2
 # ================================
 function Install-Git {
     if (Command-Exists git) {
@@ -214,6 +214,7 @@ function Install-Winget {
         if ($userPath -notlike "*$wingetPath*") {
             # Append the new path to the existing user PATH variable
             $newUserPath = "$userPath;$wingetPath"
+            [System.Environment]::SetEnvironmentVariable("PATH", "$newUserPath", "User")
             Print-Success "Added winget to the environment"
         } else {
             Print-Error "Winget is already present in the environment variable but is inaccessable."
@@ -227,6 +228,33 @@ function Install-Winget {
     }
 
     Refresh-Env
+}
+
+function Install-MSYS2 {
+    if (Command-Exists "g++") {
+        Print-Success "C++ compiler already installed"
+        return
+    }
+
+    Print-Info "Installing C++ Compiler from MSYS2"
+    if (Command-Exists "winget") {
+        winget install --id=MSYS2.MSYS2 --location "C:\Program Files\msys64" --accept-source-agreements
+        if ($LASTEXITCODE -eq 0) {Print-Info "Download complete, installing toolchain"}
+
+        $ucrt64Args = @("pacman", "-S", "--noconfirm", "--needed", "base-devel", "mingw-w64-ucrt-x86_64-toolchain")
+        Start-Process -FilePath "C:\Program Files\msys64\ucrt64.exe" -ArgumentList $ucrt64Args -Wait
+        if ($LASTEXITCODE -eq 0) {Print-Info "Installation success, adding environment variables"}
+
+        $machPath = [System.Environment]::GetEnvironmentVariable("Path", "Machine")
+        $compilePath = "C:\Program Files\msys64\ucrt64\bin"
+        $newPath = "$machPath;$compilePath"
+        [System.Environment]::SetEnvironmentVariable("Path", "$NewPath", "Machine")
+        if ($LASTEXITCODE -eq 0) {Refresh-Env}
+    } else {
+        Print-Warning "Install MSYS2 manually: https://github.com/msys2/msys2-installer/releases/download/2024-12-08/msys2-x86_64-20241208.exe"
+        Print-Warning "For latest release use: https://repo.msys2.org/distrib/x86_64/"
+        Print-Warning "Select the latest exe that is not msys2-base"
+    }
 }
 
 # ================================
