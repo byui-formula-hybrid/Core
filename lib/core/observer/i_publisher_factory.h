@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../reactive/Publisher.h"
+#include "publisher.h"
 #include <memory>
 
 namespace Core {

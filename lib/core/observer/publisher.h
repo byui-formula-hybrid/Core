@@ -5,8 +5,9 @@
 #include <memory>
 #include <cstddef>
 #include <algorithm>
-#include "../strategies/LockStrategy.h"
-#include "Subscription.h"
+#include "../lock/i_lock_strategy.h"
+#include "../lock/lock_guard.h"
+#include "subscription.h"
 
 namespace Core {
 
@@ -34,14 +35,14 @@ private:
     
     std::vector<Subscriber> subscribers_;
     size_t next_id_ = 1;
-    std::unique_ptr<LockStrategy> lock_strategy_;
+    std::unique_ptr<iLockStrategy> lock_strategy_;
 
 public:
     /**
      * @brief Constructor with dependency injection of lock strategy
      * @param lock_strategy The locking strategy to use (ownership transferred)
      */
-    explicit Publisher(std::unique_ptr<LockStrategy> lock_strategy) 
+    explicit Publisher(std::unique_ptr<iLockStrategy> lock_strategy) 
         : lock_strategy_(std::move(lock_strategy)) {}
     
     /**

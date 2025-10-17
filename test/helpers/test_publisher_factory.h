@@ -1,8 +1,10 @@
 #pragma once
 
-#include "../../lib/core/factories/PublisherFactory.h"
-#include "../../lib/core/factories/CurrentValueSubjectFactory.h"
-#include "../mocks/strategies/NativeLockStrategy.h"
+#include "../../lib/core/observer/publisher.h"
+#include "../../lib/core/observer/i_publisher_factory.h"
+#include "../../lib/core/observer/current_value_subject.h"
+#include "../../lib/core/observer/i_current_value_subject_factory.h"
+#include "../mocks/strategies/native_lock_strategy.h"
 #include <memory>
 
 namespace Core {
@@ -20,7 +22,7 @@ public:
      * @brief Create publisher with native lock strategy for testing
      */
     Publisher<T> create() override {
-        return Publisher<T>(std::unique_ptr<LockStrategy>(new NativeLockStrategy()));
+        return Publisher<T>(std::unique_ptr<iLockStrategy>(new NativeLockStrategy()));
     }
 };
 
@@ -34,14 +36,14 @@ public:
      * @brief Create subject without initial value
      */
     CurrentValueSubject<T> create() override {
-        return CurrentValueSubject<T>(std::unique_ptr<LockStrategy>(new NativeLockStrategy()));
+        return CurrentValueSubject<T>(std::unique_ptr<iLockStrategy>(new NativeLockStrategy()));
     }
     
     /**
      * @brief Create subject with initial value
      */
     CurrentValueSubject<T> create(const T& initial_value) override {
-        return CurrentValueSubject<T>(initial_value, std::unique_ptr<LockStrategy>(new NativeLockStrategy()));
+        return CurrentValueSubject<T>(initial_value, std::unique_ptr<iLockStrategy>(new NativeLockStrategy()));
     }
 };
 
