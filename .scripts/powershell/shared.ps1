@@ -198,6 +198,7 @@ function Uninstall-Python {
         ($_ -split '\s{2,}')[1]
     }
 
+    Print-Info "Found these packages: $pyPackages"
     foreach ($pkg in $pyPackages) {
         Print-Info "Uninstalling $pkg"
         winget uninstall --id=$pkg --silent
