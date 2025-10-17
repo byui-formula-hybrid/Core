@@ -54,7 +54,15 @@ Install-Python
 if (-not $CI_MODE) {
 	Install-MSYS2
 } else {
-	Print-Warning "Github Pipeline CI has storage limits, it will not let you install the g++ compiler because it exceeds 500 MB"
+	# Print-Warning "Github Pipeline CI has storage limits, it will not let you install the g++ compiler because it exceeds 500 MB"
+	Print-Header "System Information:"
+	$totRam = (Get-WmiObject -Class Win32_computerSystem).TotalPhysicalMemory / 1GB
+	$storageInfo = Get-PSDrive -PSProvider 'FileSystem' | Select-Object Name, 
+		@{Name='Used(MB)';Expression={[math]::Round($_.Used / 1MB)}}, 
+		@{Name='Free(MB)';Expression={[math]::Round($_.Free / 1MB)}}, 
+		Provider | Format-Table -AutoSize
+	Print-Info "Ram: $totRam"
+	Print-Info "Storage info: $torageInfo"
 	# Install-Mingw
 }
 if (-not $CI_MODE) {
