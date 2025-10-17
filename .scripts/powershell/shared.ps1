@@ -158,10 +158,20 @@ function Install-Python() {
     Print-Info "Installing Python..."
     if (Command-Exists "choco") {
         choco install python
-        if ($LASTEXITCODE -eq 0) {Refresh-Env}
+        if ($LASTEXITCODE -eq 0) {
+            Refresh-Env
+        } else {
+            Print-Error "Failed to install Python using choco"
+            exit 1
+        }
     } elseif (Command-Exists "winget") {
         winget install -e --id Python.Python.3.13 --scope machine --accept-source-agreements
-        if ($LASTEXITCODE -eq 0) {Refresh-Env}
+        if ($LASTEXITCODE -eq 0) {
+            Refresh-Env
+        } else {
+            Print-Error "Failed to install Python using winget"
+            exit 1
+        }
     } else {
         Print-Warning "Install Python manually: https://www.python.org/downloads/windows/"
         Print-Warning "Using the 64-bit installer"
@@ -197,7 +207,12 @@ function Install-Git {
         if ($LASTEXITCODE -eq 0) {Refresh-Env}
     } elseif (Command-Exists "winget") {
         winget install --id Git.Git -e --silent --source winget
-        if ($LASTEXITCODE -eq 0) {Refresh-Env}
+        if ($LASTEXITCODE -eq 0) {
+            Refresh-Env
+        } else {
+            Print-Error "Failed to install Git"
+            exit 1
+        }
     } else {
         Print-Warning "Install Git manually: https://git-scm.com/download/win"
     }
@@ -227,6 +242,9 @@ function Install-Winget {
         Add-AppxPackage https://github.com/microsoft/winget-cli/releases/latest/download/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle
         if ($LASTEXITCODE -eq 0) {
             Print-Success "Installed winget"
+        } else {
+            Print-Error "Failed to install winget"
+            exit 1
         }
     }
 
@@ -262,7 +280,13 @@ function Install-MSYS2 {
         $compilerPath = "C:\Program Files\msys64\ucrt64\bin"
         $newPath = "$machPath;$compilerPath"
         [System.Environment]::SetEnvironmentVariable("Path", "$NewPath", "Machine")
-        if ($LASTEXITCODE -eq 0) {Refresh-Env}
+        if ($LASTEXITCODE -eq 0) {
+            Refresh-Env
+            Print-Success "Successfully installed the g++ and gcc compilers!"
+        } else {
+            Print-Error "Failed to install MSYS2 and the compilers: g++ and gcc"
+            exit 1
+        }
     } else {
         Print-Warning "Install MSYS2 manually: https://github.com/msys2/msys2-installer/releases/download/2024-12-08/msys2-x86_64-20241208.exe"
         Print-Warning "For latest release use: https://repo.msys2.org/distrib/x86_64/"
@@ -289,7 +313,13 @@ function Install-Mingw {
     if (Command-Exists "winget") {
         winget install --id=BrechtSanders.WinLibs.POSIX.UCRT --accept-source-agreements
         # Can add specific location, but not necessary for the CI
-        if ($LASTEXITCODE -eq 0) {Refresh-Env}
+        if ($LASTEXITCODE -eq 0) {
+            Refresh-Env
+            Print-Success "Successfully installed the g++ and gcc compilers!"
+        } else {
+            Print-Error "Failed to install MinGW with compilers: g++ and gcc"
+            exit 1
+        }
     } else {
         Print-Error "Failed to install g++ and gcc compilers!"
         exit 1
@@ -309,14 +339,11 @@ function Install-PlatformIO {
     Print-Info "Installing PlatformIO Core..."
     Run-Python @("-m", "pip", "install", "--upgrade", "platformio")
     if ($LASTEXITCODE -eq 0) {
-        Print-Success "PlatformIO installed successfully"
-        # add pio to envrionment variables maybe..., pio installs on a per user basis not a system wide, it would involve a user specific environment variable (problematic in Windows)
         Refresh-Env
+        Print-Success "PlatformIO installed successfully"
     } else {
         Print-Error "Failed to install PlatformIO"
     }
-
-    # Possibly add platform io to environment variables
 }
 
 function Uninstall-PioArtifacts {
@@ -346,13 +373,23 @@ function Install-VSCode {
 
     if (Command-Exists choco) {
         choco install vscode -y
-        if ($LASTEXITCODE -eq 0) {Refresh-Env}
+        if ($LASTEXITCODE -eq 0) {
+            Refresh-Env
+            Print-Success "Successfully installed VSCode"
+        } else {
+            Print-Error "Failed to install VSCode using choco"
+            exit 1
         }
-    elseif (Command-Exists winget) {
+    } elseif (Command-Exists winget) {
         winget install -e --id Microsoft.VisualStudioCode --silent
-        if ($LASTEXITCODE -eq 0) {Refresh-Env}
+        if ($LASTEXITCODE -eq 0) {
+            Refresh-Env
+            Print-Success "Successfully installed VSCode"
+        } else {
+            Print-Error "Failed to install VSCode using winget"
+            exit 1
         }
-    else { Print-Warning "Install manually: https://code.visualstudio.com/download" }
+    } else { Print-Warning "Install manually: https://code.visualstudio.com/download" }
 }
 
 function Install-VSCodeExtensions {
