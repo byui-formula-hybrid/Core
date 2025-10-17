@@ -160,7 +160,7 @@ function Install-Python() {
         choco install python
         if ($LASTEXITCODE -eq 0) {Refresh-Env}
     } elseif (Command-Exists "winget") {
-        winget install -e --id Python.Python.3.13 --scope machine
+        winget install -e --id Python.Python.3.13 --scope machine --accept-source-agreements
         if ($LASTEXITCODE -eq 0) {Refresh-Env}
     } else {
         Print-Warning "Install Python manually: https://www.python.org/downloads/windows/"
@@ -259,9 +259,8 @@ function Install-MSYS2 {
         if ($LASTEXITCODE -eq 0) {Print-Info "Installation success, adding environment variables"}
 
         $machPath = [System.Environment]::GetEnvironmentVariable("Path", "Machine")
-        $gppPath = "C:\Program Files\msys64\ucrt64\bin\g++.exe"
-        $gccPath = "C:\Program Files\msys64\ucrt64\bin\gcc.exe"
-        $newPath = "$machPath;$gccPath;$gppPath"
+        $compilerPath = "C:\Program Files\msys64\ucrt64\bin"
+        $newPath = "$machPath;$compilerPath"
         [System.Environment]::SetEnvironmentVariable("Path", "$NewPath", "Machine")
         if ($LASTEXITCODE -eq 0) {Refresh-Env}
     } else {

@@ -50,8 +50,8 @@ if (-not $CI_MODE) {
 	Install-Git
 }
 
-Install-MSYS2
 Install-Python
+Install-MSYS2
 if (-not $CI_MODE) {
 	Install-VSCode
 }
