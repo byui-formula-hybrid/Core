@@ -47,6 +47,8 @@ function Command-Exists($cmd) {
 # ================================
 function Show-ProjectInfo {
     Print-Header "ESP32 Formula Hybrid Core Library"
+    Print-Info "C++: $(if (Command-Exists 'g++') { "$checkBox" } else { "$redX" })"
+    Print-Info "C: $(if (Command-Exists 'gcc') { "$checkBox" } else { "$redX" })"
     Print-Info "Python: $(if (Command-Exists 'python') { "$checkBox" } else { "$redX" })"
     Print-Info "Git: $(if (Command-Exists 'git') { "$checkBox" } else { "$redX" })"
     Print-Info "VS Code: $(if (Command-Exists 'code') { "$checkBox" } else { "$redX" })"
@@ -232,11 +234,21 @@ function Install-Winget {
 
 function Install-MSYS2 {
     if (Command-Exists "g++") {
-        Print-Success "C++ compiler already installed"
-        return
+        Print-Success "g++ compiler already installed"
+        if (Command-Exists "gcc") {
+            Print-Success "gcc compiler already installed"
+            return
+        }
+        Print-Error "Compiler missing gcc but g++ was found, validate environment variables!"
+        exit 1
+    }
+    if (Command-Exists "gcc") {
+        Print-Error "Compiler missing g++ but gcc was found, validate environment variables!"
+        exit 1
     }
 
-    Print-Info "Installing C++ Compiler from MSYS2"
+
+    Print-Info "Installing g++ and gcc Compilers from MSYS2"
     if (Command-Exists "winget") {
         winget install --id=MSYS2.MSYS2 --location "C:\Program Files\msys64" --accept-source-agreements
         if ($LASTEXITCODE -eq 0) {Print-Info "Download complete, installing toolchain"}
