@@ -36,12 +36,12 @@ echo ""
 
 uninstall_build_artifacts
 uninstall_pio_artifacts
+uninstall_python_virtual_environment
 
 if [ "$CI_MODE" == false ]; then
   uninstall_vscode_extensions
   uninstall_vscode
 
-  uninstall_python_virtual_environment
   uninstall_python
 
   uninstall_git
