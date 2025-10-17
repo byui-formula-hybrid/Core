@@ -195,13 +195,22 @@ function Uninstall-PythonVirtualEnvironment {
 
 function Uninstall-Python {
     $pyPackages = winget list python | Select-String -Pattern '^Python' | ForEach-Object {
-        ($_ -split '\s{2,}')[1]
+        $columns = $_ -split '\s{2,}'
+        if ($columns.Count -ge 2) {
+            [PSCustomObject]@{
+                Name = $columns[0]
+                Id = $columns[1]
+            }
+        }
     }
 
-    Print-Info "Found these packages: $pyPackages"
+    Print-Info "Found these packages:"
+    $pyPackages | ForEach-Object {
+        Print-Info "Name: $($_.Name), Id: $($_.Id)"
+    }
     foreach ($pkg in $pyPackages) {
         Print-Info "Uninstalling $pkg"
-        winget uninstall --id=$pkg --silent
+        winget uninstall --id=$pkg.Id --silent
     }
 }
 
@@ -352,9 +361,11 @@ function Install-Mingw {
         # Invoke-WebRequest -Uri $mingwUrl -OutFile $mingwArchive # This is REALLY SLOW
         $wc = New-Object System.Net.WebClient
         $wc.DownloadFile($mingwUrl, $mingwArchive)
+        Print-Info "Download Complete!"
         New-Item -ItemType Directory -Force -Path $mingwDir | Out-Null
         # Expand-Archive -Path $mingwArchive -DestinationPath $mingwDir # This is REALLY SLOW
         Add-Type -AssemblyName System.IO.Compression.FileSystem
+        Print-Info "Extracting"
         [System.IO.Compression.ZipFile]::ExtractToDirectory("$mingwArchive", "$mingwDir")
         $mingwBinPath = Join-Path $mingwDir "mingw64\bin"
         $machPath = [System.Environment]::GetEnvironmentVariable("Path", "Machine")
