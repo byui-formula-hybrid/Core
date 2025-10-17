@@ -59,7 +59,18 @@ if (-not $CI_MODE) {
 	$totRam = (Get-WmiObject -Class Win32_computerSystem).TotalPhysicalMemory / 1GB
 	Print-Info "Ram: $totRam"
 	$storageInfo = Get-PSDrive -PSProvider 'FileSystem' | Select-Object Name, @{Name='Used(MB)';Expression={[math]::Round($_.Used / 1MB)}}, @{Name='Free(MB)';Expression={[math]::Round($_.Free / 1MB)}}, Provider | Format-Table -AutoSize
-	Print-Info "Storage info: $torageInfo"
+	Print-Info "Storage info:"
+
+	Print-Info ("{0,-5} {1,10} {2,10} {3,15}" -f "Name", "Used(MB)", "Free(MB)", "Provider")
+	Get-PSDrive -PSProvider 'FileSystem' | ForEach-Object {
+		$name = $_.Name
+		$usedMB = [math]::Round($_.Used / 1MB)
+		$freeMB = [math]::Round($_.Free / 1MB)
+		$provider = $_.Provider
+
+		Print-Info ("{0,-5} {1,10} {2,10} {3,15}" -f $name, $usedMB, $freeMB, $provider)
+	}
+
 	# Install-Mingw
 }
 if (-not $CI_MODE) {
