@@ -259,8 +259,9 @@ function Install-MSYS2 {
         if ($LASTEXITCODE -eq 0) {Print-Info "Installation success, adding environment variables"}
 
         $machPath = [System.Environment]::GetEnvironmentVariable("Path", "Machine")
-        $compilePath = "C:\Program Files\msys64\ucrt64\bin"
-        $newPath = "$machPath;$compilePath"
+        $gppPath = "C:\Program Files\msys64\ucrt64\bin\g++.exe"
+        $gccPath = "C:\Program Files\msys64\ucrt64\bin\gcc.exe"
+        $newPath = "$machPath;$gccPath;$gppPath"
         [System.Environment]::SetEnvironmentVariable("Path", "$NewPath", "Machine")
         if ($LASTEXITCODE -eq 0) {Refresh-Env}
     } else {
