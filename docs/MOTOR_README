@@ -1,0 +1,34 @@
+Motor Type: Emrax 208   - High voltage/ Liquid cooled
+  Motor connection type - UVW or 2x UVW  
+  Temperature sensor (on windings) - KTY 81/210 
+
+  Cooling specifications: 
+    - Requires 6 liters per minute. 
+    - Max coolent temp - 50 C
+    - Ambient* temp    - 30
+
+  Operating voltage   - 50-690 V
+
+  Peak** power         - 86 kW at 6000 RPM
+  Continuous*** power  - 52 kW
+  Peak torque          - 150 Nm
+  Continuous torque    - 84 Nm
+  Peak current         - 240 A
+  Continuous current   - 140 A
+
+  Limiting speed****   - 7000 RPM
+
+  Kv Constant at no load [RPM/Vdc]       - 15.53 RPM
+  Kv Constant at nominal load [RPM/Vdc]  - 11.67 RPM (How many RPM per volt)
+  Kv Constant at peak load [RPM/Vdc]     - 8.64  RPM
+
+  Kt Constant [Nm/A]                     - 0.62 Nm   (Torque per amp)
+
+
+* How much it can output at a max of 2 min before overheating
+** Output it can run at indefinitly (given proper cooling)
+*** How fast the motor can spin before becoming a hazard
+
+  
+
+
