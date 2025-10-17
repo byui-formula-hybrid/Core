@@ -24,13 +24,13 @@ function Run-Tests {
     }
     
     pio @pioArgs
+    # Write-Host "The Exit Code: $LASTEXITCODE /n/n"
     if ($LASTEXITCODE -eq 0) {
         Print-Success "All tests passed!"
-        return 0
     } else {
         Print-Error "At least one test failed!"
-        return 1
     }
+    return
 }
 
 # Function to show test summary
@@ -101,9 +101,11 @@ if ($filter) {
         Print-Error "Filtered tests failed!"
         exit 1
     }
+    exit 0
 } else {
     # Run all tests
-    $testResult = Run-Tests
+    Run-Tests
+    $testResult = $LASTEXITCODE
 }
 
 
