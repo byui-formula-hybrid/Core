@@ -89,4 +89,4 @@ jobs:
       - name: Cleanup (PowerShell)
         if: matrix.os == 'windows' && always()
         shell: powershell
-        run: ./.scripts/powershell/uninstall.ps1
+        run: ./.scripts/powershell/uninstall.ps1 --ci

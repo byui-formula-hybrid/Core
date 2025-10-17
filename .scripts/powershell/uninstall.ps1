@@ -8,7 +8,69 @@ $SharedPath = Join-Path $PSScriptRoot "shared.ps1"
 
 Print-Header "Uninstall Script"
 
+# Default: not running in CI
+$CI_MODE = $false
+
+# Parse command-line arguments to support --ci / -c and help
+if ($args.Count -gt 0) {
+	for ($i = 0; $i -lt $args.Count; $i++) {
+		switch ($args[$i]) {
+			'--ci' { $CI_MODE = $true; break }
+			'-c'   { $CI_MODE = $true; break }
+			'-h' {
+				Write-Host "Usage: install.ps1 [OPTIONS]`n"
+				Write-Host "Options:"
+				Write-Host "  --ci, -c               Setup for CI environment"
+				Write-Host "  -h, --help             Show this help message"
+				exit 0
+			}
+			'--help' {
+				Write-Host "Usage: install.ps1 [OPTIONS]`n"
+				Write-Host "Options:"
+				Write-Host "  --ci, -c               Setup for CI environment"
+				Write-Host "  -h, --help             Show this help message"
+				exit 0
+			}
+			default {
+				if (Get-Command Print-Error -ErrorAction SilentlyContinue) {
+					Print-Error "Unknown option: $($args[$i])"
+				} else {
+					Write-Error "Unknown option: $($args[$i])"
+				}
+				Write-Host "Use -h or --help for usage information"
+				exit 1
+			}
+		}
+	}
+}
+
 Uninstall-BuildArtifacts
 Uninstall-PioArtifacts
 
 Uninstall-PythonVirtualEnvironment
+
+if ($CI_MODE) {
+    Uninstall-MinGW
+    Uninstall-Python
+    # Uninstall-PlatformIO
+} else {
+    # ask if the user wants tools removed
+    $confirm = Read-Host "Do you want to uninstall Python? (y/N)"
+    if ($confirm -ne "y") {
+        Print-Warning "Skipping Python uninstallation"
+    } else {
+        Uninstall-Python
+    }
+
+    $mingwDir = "C:\Program Files\MinGW"
+    if (Test-Path $mingwDir) {
+        $confirm = Read-Host "Do you want to uninstall MinGW? (y/N)"
+        if ($confirm -ne "y") {
+            Print-Warning "Skipping MinGW uninstallation"
+        } else {
+            Uninstall-MinGW
+        }
+    }
+}
+
+Refresh-Env

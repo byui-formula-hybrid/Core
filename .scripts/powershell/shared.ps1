@@ -193,6 +193,17 @@ function Uninstall-PythonVirtualEnvironment {
     }
 }
 
+function Uninstall-Python {
+    $pyPackages = winget list python | Select-String -Pattern '^Python' | ForEach-Object {
+        ($_ -split '\s{2,}')[1]
+    }
+
+    foreach ($pkg in $pyPackages) {
+        Print-Info "Uninstalling $pkg"
+        winget uninstall --id=$pkg --silent
+    }
+}
+
 # ================================
 # GIT, WINGET, MSYS2
 # ================================
@@ -332,6 +343,10 @@ function Install-Mingw {
         $mingwUrl = "https://github.com/brechtsanders/winlibs_mingw/releases/download/15.2.0posix-13.0.0-ucrt-r2/winlibs-x86_64-posix-seh-gcc-15.2.0-mingw-w64ucrt-13.0.0-r2.zip"
         $mingwArchive = "$env:TEMP\mingw.zip"
         $mingwDir = "C:\Program Files\MinGW"
+        if (Test-Path $mingwDir) {
+            Print-Info "Remnants of a previous installation found and will be cleaned up!"
+            Remove-Item -Recurse -Force $mingwDir
+        }
 
         # Invoke-WebRequest -Uri $mingwUrl -OutFile $mingwArchive # This is REALLY SLOW
         $wc = New-Object System.Net.WebClient
@@ -355,6 +370,26 @@ function Install-Mingw {
     } else {
         Print-Error "Failed to install g++ and gcc compilers!"
         exit 1
+    }
+}
+
+function Uninstall-MinGW {
+    $machPath = [System.Environment]::GetEnvironmentVariable("PATH", "Machine")
+    $mingwDir = "C:\Program Files\MinGW"
+    $mingwBinPath = Join-Path $mingwDir "mingw64\bin"
+    if ($machPath -like "*$mingwBinPath*") {
+        Print-Info "Removing MinGW from environment variables"
+        $machEntries = $machPath -split ";"
+        $newEntries = $machEntries | where {$_ -ne $mingwBinPath}
+        $newPathEntries = $newEntries -Join ';'
+        [System.Environment]::SetEnvironmentVariable("PATH", $newPathEntries, "Machine")
+    }
+
+    if (Test-Path $mingwDir) {
+        Remove-Item -Recurse -Force $mingwDir
+        Print-Success "MinGW removed!"
+    } else {
+        Print-Warning "MinGW wasn't found"
     }
 }
 
