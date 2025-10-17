@@ -1,10 +1,7 @@
 #pragma once
 
-#include "../../../lib/core/strategies/LockStrategy.h"
 #include <mutex>
 #include <memory>
-
-namespace Core {
 
 /**
  * @brief Native lock strategy using std::mutex for testing on host platform
@@ -12,7 +9,7 @@ namespace Core {
  * This provides real thread safety using native C++ threading primitives,
  * allowing us to test thread-safe behavior without ESP32 hardware.
  */
-class NativeLockStrategy : public LockStrategy {
+class NativeLockStrategy : public Core::iLockStrategy {
 private:
     std::unique_ptr<std::mutex> mutex_;
 
@@ -39,5 +36,3 @@ public:
     NativeLockStrategy(NativeLockStrategy&&) = delete;
     NativeLockStrategy& operator=(NativeLockStrategy&&) = delete;
 };
-
-} // namespace Core

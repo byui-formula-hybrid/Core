@@ -1,7 +1,7 @@
 #include <unity.h>
 
-#include "../helpers/TestPublisherFactory.h"
-#include "../../lib/core/reactive/CurrentValueSubject.h"
+#include "../helpers/test_publisher_factory.h"
+#include "../../lib/core/observer/current_value_subject.h"
 
 using namespace Core;
 

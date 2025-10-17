@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Publisher.h"
+#include "publisher.h"
 
 namespace Core {
 
@@ -30,13 +30,13 @@ public:
     /**
      * @brief Constructor with dependency injection of lock strategy
      */
-    explicit CurrentValueSubject(std::unique_ptr<LockStrategy> lock_strategy) 
+    explicit CurrentValueSubject(std::unique_ptr<iLockStrategy> lock_strategy) 
         : Publisher<T>(std::move(lock_strategy)), has_value_(false) {}
     
     /**
      * @brief Constructor with initial value and dependency injection
      */
-    CurrentValueSubject(const T& initial_value, std::unique_ptr<LockStrategy> lock_strategy) 
+    CurrentValueSubject(const T& initial_value, std::unique_ptr<iLockStrategy> lock_strategy) 
         : Publisher<T>(std::move(lock_strategy)), current_value_(initial_value), has_value_(true) {}
     
     /**

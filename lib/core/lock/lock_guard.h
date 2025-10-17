@@ -1,16 +1,8 @@
 #pragma once
 
-namespace Core {
+#include "i_lock_strategy.h"
 
-/**
- * @brief Abstract lock strategy interface
- */
-class LockStrategy {
-public:
-    virtual ~LockStrategy() = default;
-    virtual void lock() = 0;
-    virtual void unlock() = 0;
-};
+namespace Core {
 
 /**
  * @brief RAII lock guard that works with any lock strategy
@@ -20,14 +12,14 @@ public:
  */
 class LockGuard {
 private:
-    LockStrategy* strategy_;
+    iLockStrategy* strategy_;
     
 public:
     /**
      * @brief Acquire the lock on construction
      * @param strategy Pointer to the lock strategy (can be nullptr for no locking)
      */
-    explicit LockGuard(LockStrategy* strategy) : strategy_(strategy) {
+    explicit LockGuard(iLockStrategy* strategy) : strategy_(strategy) {
         if (strategy_) {
             strategy_->lock();
         }
