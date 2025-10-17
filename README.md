@@ -75,20 +75,20 @@ cd Core
 > cd Core
 >
 > # 2. Run the automated setup script
-> ./.scripts/powershell/install.ps1
+> .\.scripts\powershell\install.ps1
 >
 > # 3. Test that everything works
-> ./.scripts/powershell/test.ps1
+> .\.scripts\powershell\test.ps1
 >
 > # 4. Build for ESP32
-> ./.scripts/powershell/build.ps1
+> .\.scripts\powershell\build.ps1
 > ```
 >
 > **Option 2: Use Git Bash and bash scripts**
 >
 > 1. Open PowerShell and run:
 >    ```powershell
->    ./.scripts/setup-gitbash.ps1
+>    .\.scripts\setup-gitbash.ps1
 >    ```
 > 2. After setup, open a Git Bash terminal (not PowerShell or CMD).
 > 3. Run all project scripts (e.g., `build.sh`, `test.sh`, `install.sh`) in Git Bash using the same syntax as on macOS/Linux:

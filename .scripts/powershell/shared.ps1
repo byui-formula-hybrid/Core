@@ -143,6 +143,7 @@ function Install-Python() {
         if (Test-Path $fPath) {
             Remove-Item -Path $fPath -Force
             Print-Warning "Microsofts stub python was found and was removed!"
+            Refresh-Env
         }
     }
 
