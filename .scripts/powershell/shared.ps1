@@ -148,6 +148,8 @@ function Install-Python() {
     }
 
     if (Command-Exists "python") {
+        $cmdPath = (Get-Command "python").Path
+        Print-Info "Python path: $cmdPath"
         Print-Success "Python already installed"
         return
     } elseif (Command-Exists "python3") {
@@ -309,7 +311,7 @@ function Install-Mingw {
         exit 1
     }
 
-    # Print-Info "Installing g++ and gcc Compilers from MinGW"
+    Print-Info "Installing g++ and gcc Compilers from MinGW"
     # if (Command-Exists "winget") {
     #     winget install --id=BrechtSanders.WinLibs.POSIX.UCRT --accept-source-agreements
     #     # Can add specific location, but not necessary for the CI
@@ -324,7 +326,6 @@ function Install-Mingw {
     #     Print-Error "Failed to install g++ and gcc compilers!"
     #     exit 1
     # }
-
     if (Command-Exists "winget") {
         # Since winget is throwing errors in the CI attempting to go around that
         $mingwUrl = "https://github.com/brechtsanders/winlibs_mingw/releases/download/15.2.0posix-13.0.0-ucrt-r2/winlibs-x86_64-posix-seh-gcc-15.2.0-mingw-w64ucrt-13.0.0-r2.zip"
