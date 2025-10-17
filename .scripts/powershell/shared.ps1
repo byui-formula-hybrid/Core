@@ -326,6 +326,7 @@ function Install-Mingw {
     # }
 
     if (Command-Exists "winget") {
+        # Since winget is throwing errors in the CI attempting to go around that
         $mingwUrl = "https://github.com/brechtsanders/winlibs_mingw/releases/download/15.2.0posix-13.0.0-ucrt-r2/winlibs-x86_64-posix-seh-gcc-15.2.0-mingw-w64ucrt-13.0.0-r2.zip"
         $mingwArchive = "$env:TEMP\mingw.zip"
         $mingwDir = "C:\Program Files\MinGW"
@@ -337,7 +338,7 @@ function Install-Mingw {
         $machPath = [System.Environment]::GetEnvironmentVariable("Path", "Machine")
         $newPath = "$machPath;$mingwBinPath"
         [System.Environment]::SetEnvironmentVariable("Path", "$NewPath", "Machine")
-        # Can add specific location, but not necessary for the CI
+        
         if ($LASTEXITCODE -eq 0) {
             Refresh-Env
             Print-Success "Successfully installed the g++ and gcc compilers!"
