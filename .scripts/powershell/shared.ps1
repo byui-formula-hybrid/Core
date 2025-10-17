@@ -196,21 +196,22 @@ function Uninstall-PythonVirtualEnvironment {
 function Uninstall-Python {
     $pyPackages = winget list python | Select-String -Pattern '^Python' | ForEach-Object {
         $columns = $_ -split '\s{2,}'
-        if ($columns.Count -ge 2) {
+        if ($columns.Count -ge 3) {
             [PSCustomObject]@{
                 Name = $columns[0]
                 Id = $columns[1]
+                Version = $columns
             }
         }
     }
 
     Print-Info "Found these packages:"
     $pyPackages | ForEach-Object {
-        Print-Info "Name: $($_.Name), Id: $($_.Id)"
+        Print-Info "Name: $($_.Name), Id: $($_.Id), Version: $($_.Version)"
     }
     foreach ($pkg in $pyPackages) {
         Print-Info "Uninstalling $pkg"
-        winget uninstall --name $pkg.Name --silent
+        winget uninstall --name $pkg.Name --version $pkg.Version --silent
     }
 }
 
@@ -363,6 +364,12 @@ function Install-Mingw {
         $wc.DownloadFile($mingwUrl, $mingwArchive)
         Print-Info "Download Complete!"
         New-Item -ItemType Directory -Force -Path $mingwDir | Out-Null
+        if (Test-Path $mingwDir) {
+            Print-Info "Directory created successfully"
+        } else {
+            Print-Error "Failed to create installation directory"
+            exit 1
+        }
         # Expand-Archive -Path $mingwArchive -DestinationPath $mingwDir # This is REALLY SLOW
         Add-Type -AssemblyName System.IO.Compression.FileSystem
         Print-Info "Extracting"
