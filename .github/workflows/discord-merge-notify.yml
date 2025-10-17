@@ -1,0 +1,12 @@
+name: Call Discord Merge Notification
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  notify:
+    uses: byui-formula-hybrid/.github/.github/workflows/discord-merge-notification.yml@main
+    secrets:
+      DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+      DISCORD_ROLE_ID: ${{ secrets.DISCORD_ROLE_ID }}
