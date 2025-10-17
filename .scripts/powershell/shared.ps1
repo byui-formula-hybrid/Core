@@ -210,7 +210,7 @@ function Uninstall-Python {
     }
     foreach ($pkg in $pyPackages) {
         Print-Info "Uninstalling $pkg"
-        winget uninstall --id=$pkg.Id --silent
+        winget uninstall --name $pkg.Name --silent
     }
 }
 

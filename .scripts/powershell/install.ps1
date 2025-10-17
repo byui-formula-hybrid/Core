@@ -54,7 +54,8 @@ Install-Python
 if (-not $CI_MODE) {
 	Install-MSYS2
 } else {
-	Install-Mingw
+	Print-Warning "Github Pipeline CI has storage limits, it will not let you install the g++ compiler because it exceeds 500 MB"
+	# Install-Mingw
 }
 if (-not $CI_MODE) {
 	Install-VSCode
