@@ -148,8 +148,8 @@ function Install-Python() {
     }
 
     if (Command-Exists "python") {
-        $cmdPath = (Get-Command "python").Path
-        Print-Info "Python path: $cmdPath"
+        # $cmdPath = (Get-Command "python").Path
+        # Print-Info "Python path: $cmdPath"
         Print-Success "Python already installed"
         return
     } elseif (Command-Exists "python3") {
@@ -332,13 +332,22 @@ function Install-Mingw {
         $mingwArchive = "$env:TEMP\mingw.zip"
         $mingwDir = "C:\Program Files\MinGW"
 
-        Invoke-WebRequest -Uri $mingwUrl -OutFile $mingwArchive
+        Print-Info "Downloading mingw archive!"
+        # Invoke-WebRequest -Uri $mingwUrl -OutFile $mingwArchive # This is REALLY SLOW
+        $wc = New-Object System.Net.WebClient
+        $wc.DownloadFile($mingwUrl, $mingwArchive)
+        Print-Info "File downloaded with exit code: $LASTEXITCODE"
         New-Item -ItemType Directory -Force -Path $mingwDir | Out-Null
-        Expand-Archive -Path $mingwArchive -DestinationPath $mingwDir
+        Print-Info "Directory created with exit code: $LASTEXITCODE"
+        Print-Info "Extracting mingw archive: $mingwArchive"
+        # Expand-Archive -Path $mingwArchive -DestinationPath $mingwDir # This is REALLY SLOW
+        # Add-Type -Assembly "System.IO.Compression.FileSystem" # Not necessary on newer versions of powershell
+        [System.IO.Compression.ZipFile]::ExtractToDirectory("$mingwArchive", "$mingwDir")
         $mingwBinPath = Join-Path $mingwDir "mingw64\bin"
         $machPath = [System.Environment]::GetEnvironmentVariable("Path", "Machine")
         $newPath = "$machPath;$mingwBinPath"
         [System.Environment]::SetEnvironmentVariable("Path", "$NewPath", "Machine")
+        Print-Info "Environment variables set with exit code: $LASTEXITCODE"
         
         if ($LASTEXITCODE -eq 0) {
             Refresh-Env
