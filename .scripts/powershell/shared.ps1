@@ -309,9 +309,34 @@ function Install-Mingw {
         exit 1
     }
 
-    Print-Info "Installing g++ and gcc Compilers from MinGW"
+    # Print-Info "Installing g++ and gcc Compilers from MinGW"
+    # if (Command-Exists "winget") {
+    #     winget install --id=BrechtSanders.WinLibs.POSIX.UCRT --accept-source-agreements
+    #     # Can add specific location, but not necessary for the CI
+    #     if ($LASTEXITCODE -eq 0) {
+    #         Refresh-Env
+    #         Print-Success "Successfully installed the g++ and gcc compilers!"
+    #     } else {
+    #         Print-Error "Failed to install MinGW with compilers: g++ and gcc"
+    #         exit 1
+    #     }
+    # } else {
+    #     Print-Error "Failed to install g++ and gcc compilers!"
+    #     exit 1
+    # }
+
     if (Command-Exists "winget") {
-        winget install --id=BrechtSanders.WinLibs.POSIX.UCRT --accept-source-agreements
+        $mingwUrl = "https://github.com/brechtsanders/winlibs_mingw/releases/download/15.2.0posix-13.0.0-ucrt-r2/winlibs-x86_64-posix-seh-gcc-15.2.0-mingw-w64ucrt-13.0.0-r2.zip"
+        $mingwArchive = "$env:TEMP\mingw.zip"
+        $mingwDir = "C:\Program Files\MinGW"
+
+        Invoke-WebRequest -Uri $mingwUrl -OutFile $mingwArchive
+        New-Item -ItemType Directory -Force -Path $mingwDir | Out-Null
+        Expand-Archive -Path $mingwArchive -DestinationPath $mingwDir
+        $mingwBinPath = Join-Path $mingwDir "mingw64\bin"
+        $machPath = [System.Environment]::GetEnvironmentVariable("Path", "Machine")
+        $newPath = "$machPath;$mingwBinPath"
+        [System.Environment]::SetEnvironmentVariable("Path", "$NewPath", "Machine")
         # Can add specific location, but not necessary for the CI
         if ($LASTEXITCODE -eq 0) {
             Refresh-Env

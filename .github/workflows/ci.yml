@@ -60,12 +60,6 @@ jobs:
       - name: Set Up Environment (bash)
         if: matrix.os != 'windows'
         run: ./.scripts/install.sh --ci
-      - name: Install g++ (PowerShell)
-        if: matrix.os == 'windows'
-        shell: powershell
-        run: |
-          choco install mingw -y
-          echo "C:\ProgramData\chocolatey\lib\mingw\tools\install\mingw64\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
       - name: Set Up Environment (PowerShell)
         if: matrix.os == 'windows'
         shell: powershell
