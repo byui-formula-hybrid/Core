@@ -51,7 +51,11 @@ if (-not $CI_MODE) {
 }
 
 Install-Python
-Install-MSYS2
+if (-not $CI_MODE) {
+	Install-MSYS2
+} else {
+	Install-Mingw
+}
 if (-not $CI_MODE) {
 	Install-VSCode
 }

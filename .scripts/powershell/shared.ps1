@@ -270,6 +270,32 @@ function Install-MSYS2 {
     }
 }
 
+function Install-Mingw {
+    if (Command-Exists "g++") {
+        Print-Success "g++ compiler already installed"
+        if (Command-Exists "gcc") {
+            Print-Success "gcc compiler already installed"
+            return
+        }
+        Print-Error "Compiler missing gcc but g++ was found, validate environment variables!"
+        exit 1
+    }
+    if (Command-Exists "gcc") {
+        Print-Error "Compiler missing g++ but gcc was found, validate environment variables!"
+        exit 1
+    }
+
+    Print-Info "Installing g++ and gcc Compilers from MinGW"
+    if (Command-Exists "winget") {
+        winget install --id=BrechtSanders.WinLibs.POSIX.UCRT --accept-source-agreements
+        # Can add specific location, but not necessary for the CI
+        if ($LASTEXITCODE -eq 0) {Refresh-Env}
+    } else {
+        Print-Error "Failed to install g++ and gcc compilers!"
+        exit 1
+    }
+}
+
 # ================================
 # PLATFORMIO
 # ================================
