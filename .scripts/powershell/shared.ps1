@@ -326,28 +326,24 @@ function Install-Mingw {
     #     Print-Error "Failed to install g++ and gcc compilers!"
     #     exit 1
     # }
+    # This is essentially a manual version of the commented code above, but is more stable
     if (Command-Exists "winget") {
         # Since winget is throwing errors in the CI attempting to go around that
         $mingwUrl = "https://github.com/brechtsanders/winlibs_mingw/releases/download/15.2.0posix-13.0.0-ucrt-r2/winlibs-x86_64-posix-seh-gcc-15.2.0-mingw-w64ucrt-13.0.0-r2.zip"
         $mingwArchive = "$env:TEMP\mingw.zip"
         $mingwDir = "C:\Program Files\MinGW"
 
-        Print-Info "Downloading mingw archive!"
         # Invoke-WebRequest -Uri $mingwUrl -OutFile $mingwArchive # This is REALLY SLOW
         $wc = New-Object System.Net.WebClient
         $wc.DownloadFile($mingwUrl, $mingwArchive)
-        Print-Info "File downloaded with exit code: $LASTEXITCODE"
         New-Item -ItemType Directory -Force -Path $mingwDir | Out-Null
-        Print-Info "Directory created with exit code: $LASTEXITCODE"
-        Print-Info "Extracting mingw archive: $mingwArchive"
         # Expand-Archive -Path $mingwArchive -DestinationPath $mingwDir # This is REALLY SLOW
-        # Add-Type -Assembly "System.IO.Compression.FileSystem" # Not necessary on newer versions of powershell
+        Add-Type -AssemblyName System.IO.Compression.FileSystem
         [System.IO.Compression.ZipFile]::ExtractToDirectory("$mingwArchive", "$mingwDir")
         $mingwBinPath = Join-Path $mingwDir "mingw64\bin"
         $machPath = [System.Environment]::GetEnvironmentVariable("Path", "Machine")
         $newPath = "$machPath;$mingwBinPath"
         [System.Environment]::SetEnvironmentVariable("Path", "$NewPath", "Machine")
-        Print-Info "Environment variables set with exit code: $LASTEXITCODE"
         
         if ($LASTEXITCODE -eq 0) {
             Refresh-Env
