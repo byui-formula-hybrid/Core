@@ -23,6 +23,8 @@ constexpr const char* BRAKE_STATUS = "brakeStatus";
 constexpr const char* ACCELERATOR_STATUS = "acceleratorStatus";
 
 struct PedalMessage: public Core::iCodable {
+    PedalMessage() = default;
+
     uint8_t acceleratorPedalPercentage;
     bool isBraking;
     uint16_t acceleratorPotentiometer1;

@@ -1,11 +1,22 @@
 #include <unity.h>
 
-void test_pedals_basic() {
-    TEST_ASSERT_TRUE(true);
+// Include test files
+#include "./test_main.h"
+
+// Setup function called before each test
+void setUp(void) {
+    // No platform-specific setup needed for pure reactive components
+}
+
+// Teardown function called after each test
+void tearDown(void) {
+    // Clean up any test artifacts
 }
 
 int main() {
     UNITY_BEGIN();
-    RUN_TEST(test_pedals_basic);
+    
+    run_pedal_message_tests();
+
     return UNITY_END();
 }

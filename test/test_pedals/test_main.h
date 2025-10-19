@@ -1,0 +1,1 @@
+void run_pedal_message_tests();
