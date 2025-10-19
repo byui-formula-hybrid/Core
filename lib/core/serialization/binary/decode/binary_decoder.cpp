@@ -6,7 +6,7 @@ iUnkeyedDecodingContainer* BinaryDecoder::unkeyedContainer() {
     return nullptr;
 }
 
-iKeyedDecodingContainer<int>* BinaryDecoder::keyedContainer() {
+iKeyedDecodingContainer* BinaryDecoder::keyedContainer() {
     return nullptr;
 }
 

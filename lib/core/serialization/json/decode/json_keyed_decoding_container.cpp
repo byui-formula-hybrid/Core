@@ -1,5 +1,3 @@
-#pragma once
-
 #include "json_keyed_decoding_container.h"
 
 namespace Core {

@@ -5,11 +5,6 @@
 
 namespace Core {
 
-class iCodable: public iDecodable, public iEncodable {
-  public: 
-    iCodable() = default;
-
-    virtual ~iCodable() = default;
-};
+class iCodable: public iDecodable, public iEncodable {};
 
 } // namespace Core

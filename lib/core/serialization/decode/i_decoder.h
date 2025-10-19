@@ -5,9 +5,6 @@
 
 namespace Core {
 
-template<typename Key> class iKeyedDecodingContainer;
-class iUnkeyedDecodingContainer;
-
 class iDecoder {
 public: 
     virtual iKeyedDecodingContainer* keyedContainer() = 0;
