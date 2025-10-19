@@ -5,10 +5,11 @@
 namespace Core {
 
 class BinaryDecoder: public iDecoder {
-  public:
-    BinaryDecoder() = default;
+public:
+    iUnkeyedDecodingContainer* unkeyedContainer();
+    iKeyedDecodingContainer* keyedContainer();
 
-    virtual ~BinaryDecoder() = default;
+    ~BinaryDecoder() = default;
 };
 
 } // namespace Core

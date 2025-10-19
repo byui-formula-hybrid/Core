@@ -6,11 +6,9 @@
 namespace Core {
 
 class iDecodable {
-  public: 
-    iDecodable() = default;
-
+public:
     virtual DecodeError decode(iDecoder& decoder) = 0;
-
+    
     ~iDecodable() = default;
 };
 

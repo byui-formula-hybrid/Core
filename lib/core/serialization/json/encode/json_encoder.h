@@ -5,10 +5,13 @@
 namespace Core {
 
 class JSONEncoder: public iEncoder {
-  public:
+public:
     JSONEncoder() = default;
 
-    virtual ~JSONEncoder() = default;
+    iKeyedEncodingContainer* keyedContainer();
+    iUnkeyedEncodingContainer* unkeyedContainer();
+
+    ~JSONEncoder() = default;
 };
 
 } // namespace Core

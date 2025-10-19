@@ -5,10 +5,13 @@
 namespace Core {
 
 class JSONDecoder: public iDecoder {
-  public:
+public:
     JSONDecoder() = default;
 
-    virtual ~JSONDecoder() = default;
+    iKeyedDecodingContainer* keyedContainer();
+    iUnkeyedDecodingContainer* unkeyedContainer();
+
+    ~JSONDecoder() = default;
 };
 
 } // namespace Core

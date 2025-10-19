@@ -6,11 +6,11 @@
 namespace Core {
 
 class iEncoder {
-  public: 
-    virtual iKeyedEncodingContainer* container() = 0;
+public: 
+    virtual iKeyedEncodingContainer* keyedContainer() = 0;
     virtual iUnkeyedEncodingContainer* unkeyedContainer() = 0;
     
-    virtual ~iEncoder() = default;
+    ~iEncoder() = default;
 };
 
 } // namespace Core

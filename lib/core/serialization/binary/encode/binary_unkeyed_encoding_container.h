@@ -7,7 +7,7 @@
 namespace Core {
 
 class BinaryUnkeyedEncodingContainer: public iUnkeyedEncodingContainer {
-  public:
+public:
     BinaryUnkeyedEncodingContainer();
 
     const uint8_t count() const;
@@ -21,7 +21,7 @@ class BinaryUnkeyedEncodingContainer: public iUnkeyedEncodingContainer {
     const EncodeError encodeUInt64(const uint64_t in);
     const EncodeError encodeString(const char* in);
 
-  private:
+private:
     uint8_t buffer[8];
     uint8_t bufferIndex = 0;
 };

@@ -5,7 +5,7 @@ namespace Core {
 
 BinaryEncoder::BinaryEncoder() : binaryUnkeyedContainer() {}
 
-iKeyedEncodingContainer* BinaryEncoder::container() {
+iKeyedEncodingContainer* BinaryEncoder::keyedContainer() {
     return nullptr;
 }
 

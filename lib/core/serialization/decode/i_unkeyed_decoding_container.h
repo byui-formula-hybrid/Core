@@ -6,7 +6,7 @@
 namespace Core {
 
 class iUnkeyedDecodingContainer {
-  public: 
+public: 
     virtual const uint8_t count() = 0;
     virtual const bool isAtEnd() = 0;
     virtual const uint8_t currentIndex() = 0;
@@ -18,7 +18,7 @@ class iUnkeyedDecodingContainer {
     virtual const DecodeError decodeUInt64(uint64_t& out) = 0;
     virtual const DecodeError decodeString(char* out) = 0;
 
-    virtual ~iUnkeyedDecodingContainer() = default;
+    ~iUnkeyedDecodingContainer() = default;
 };
 
 } // namespace Core

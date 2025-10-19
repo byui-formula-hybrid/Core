@@ -5,7 +5,7 @@
 namespace Core {
 
 class JSONKeyedDecodingContainer: public iKeyedDecodingContainer {
-  public:
+public:
     JSONKeyedDecodingContainer() = default;
 
     const DecodeError decodeBool(bool& out, const char* key);
@@ -15,7 +15,7 @@ class JSONKeyedDecodingContainer: public iKeyedDecodingContainer {
     const DecodeError decodeUInt32(uint32_t& out, const char* key);
     const DecodeError decodeUInt64(uint64_t& out, const char* key);
 
-  private:
+private:
     // Private members for JSON parsing
 };
 

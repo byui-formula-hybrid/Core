@@ -7,7 +7,7 @@
 namespace Core {
 
 class iKeyedDecodingContainer {
-  public: 
+public: 
     virtual const size_t allKeys(const char* buffer, size_t max_keys) = 0;
     virtual const bool contains(const char* key) = 0;
 
@@ -18,7 +18,7 @@ class iKeyedDecodingContainer {
     virtual const DecodeError decodeUInt32(uint32_t& out, const char* key) = 0;
     virtual const DecodeError decodeUInt64(uint64_t& out, const char* key) = 0;
 
-    virtual ~iKeyedDecodingContainer() = default;
+    ~iKeyedDecodingContainer() = default;
 };
 
 } // namespace Core

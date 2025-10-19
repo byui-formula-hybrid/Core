@@ -6,7 +6,7 @@
 namespace Core {
 
 class iUnkeyedEncodingContainer {
-  public:
+public:
     virtual const uint8_t count() const = 0;
     virtual const bool isAtEnd() const = 0;
     virtual const uint8_t currentIndex() const = 0;

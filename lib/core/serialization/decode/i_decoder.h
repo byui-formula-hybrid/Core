@@ -9,9 +9,9 @@ template<typename Key> class iKeyedDecodingContainer;
 class iUnkeyedDecodingContainer;
 
 class iDecoder {
-  public: 
-    virtual iUnkeyedDecodingContainer* unkeyedContainer() = 0;
+public: 
     virtual iKeyedDecodingContainer* keyedContainer() = 0;
+    virtual iUnkeyedDecodingContainer* unkeyedContainer() = 0;
 
     ~iDecoder() = default;
 };

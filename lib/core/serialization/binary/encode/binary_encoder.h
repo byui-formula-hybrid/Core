@@ -6,13 +6,13 @@
 namespace Core {
 
 class BinaryEncoder: public iEncoder {
-  public:
+public:
     BinaryEncoder();
 
-    iKeyedEncodingContainer* container();
+    iKeyedEncodingContainer* keyedContainer();
     iUnkeyedEncodingContainer* unkeyedContainer();
 
-  private:
+private:
     BinaryUnkeyedEncodingContainer binaryUnkeyedContainer;
 };
 

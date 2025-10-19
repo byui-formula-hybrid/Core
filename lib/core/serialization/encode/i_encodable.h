@@ -6,10 +6,10 @@ class iEncoder;
 enum class EncodeError;
 
 class iEncodable {
-  public: 
+public: 
     virtual EncodeError encode(iEncoder& encoder) const = 0;
     
-    virtual ~iEncodable() = default;
+    ~iEncodable() = default;
 };
 
 } // namespace Core
