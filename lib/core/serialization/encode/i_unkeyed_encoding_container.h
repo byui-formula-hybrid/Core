@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include "encode_error.h"
+#include "../data.h"
 
 namespace Core {
 
@@ -17,6 +18,8 @@ public:
     virtual const EncodeError encodeUInt16(const uint16_t value) = 0;
     virtual const EncodeError encodeUInt32(const uint32_t value) = 0;
     virtual const EncodeError encodeUInt64(const uint64_t value) = 0;
+
+    virtual const Data data() = 0;
 
     ~iUnkeyedEncodingContainer() = default;
 };

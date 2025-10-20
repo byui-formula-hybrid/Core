@@ -13,4 +13,4 @@ iUnkeyedEncodingContainer* BinaryEncoder::unkeyedContainer() {
     return &binaryUnkeyedContainer;
 }
 
-}; // namespace Core
+} // namespace Core

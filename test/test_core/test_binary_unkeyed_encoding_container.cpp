@@ -7,7 +7,7 @@ void test_initialization() {
     BinaryUnkeyedEncodingContainer container;
     TEST_ASSERT_EQUAL(0, container.currentIndex());
     TEST_ASSERT_FALSE(container.isAtEnd());
-    TEST_ASSERT_EQUAL(8, container.count());
+    TEST_ASSERT_EQUAL(0, container.count());
     for (uint8_t i = 0; i < container.count(); ++i) {
         TEST_ASSERT_EQUAL(0, container.data()[i]);
     }
@@ -65,7 +65,9 @@ void test_encode_string() {
     auto dataBefore = container.data();
     TEST_ASSERT_EQUAL(EncodeError::NotSupported, container.encodeString("Hi"));
     TEST_ASSERT_EQUAL(0, container.currentIndex());
-    TEST_ASSERT_EQUAL(dataBefore, container.data());
+    for (uint8_t i = 0; i < container.count(); ++i) {
+        TEST_ASSERT_EQUAL(0, container.data()[i]);
+    }
 }
 
 void test_bit_packing() {

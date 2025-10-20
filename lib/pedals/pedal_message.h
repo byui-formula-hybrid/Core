@@ -34,8 +34,8 @@ struct PedalMessage: public Core::iCodable {
     uint8_t brakeStatus;
     uint8_t acceleratorStatus;
 
-    Core::DecodeError decode(Core::iDecoder& decoder) override;
-    Core::EncodeError encode(Core::iEncoder& encoder) const override;
+    Core::DecodeError decode(Core::iDecoder& decoder);
+    Core::EncodeError encode(Core::iEncoder& encoder, Core::Data& out) const;
 };
 
 } // namespace Pedals

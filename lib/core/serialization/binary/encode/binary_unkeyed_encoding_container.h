@@ -3,6 +3,7 @@
 #include <cstddef>
 #include "../../encode/i_unkeyed_encoding_container.h"
 #include "../../encode/i_encodable.h"
+#include "../../data.h"
 
 namespace Core {
 
@@ -21,9 +22,10 @@ public:
     const EncodeError encodeUInt64(const uint64_t in);
     const EncodeError encodeString(const char* in);
 
+    const Data data();
+
 private:
-    uint8_t buffer[8];
-    uint8_t bufferIndex = 0;
+    Data buffer;
 };
 
 } // namespace Core

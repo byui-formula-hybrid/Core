@@ -7,6 +7,7 @@ enum class EncodeError {
     EndOfContainer,
     NoContainer,
     NotSupported,
+    NotImplemented,
     UnknownError
 };
 

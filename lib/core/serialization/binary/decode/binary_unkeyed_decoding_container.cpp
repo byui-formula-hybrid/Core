@@ -1,5 +1,3 @@
-#pragma once
-
 #include "binary_unkeyed_decoding_container.h"
 
 namespace Core {

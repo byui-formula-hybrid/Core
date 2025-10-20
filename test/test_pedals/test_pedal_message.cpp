@@ -9,8 +9,10 @@ using namespace Core;
 void test_pedal_binary_encoding() {
     PedalMessage message;
     BinaryEncoder encoder;
-    auto err = message.encode(encoder);
+    Data out(8);
+    auto err = encoder.encode(out);
     TEST_ASSERT_EQUAL(EncodeError::None, err);
+    TEST_ASSERT_EQUAL({0,0,0,0,0,0,0,0}, out.bytes());
 };
 
 void run_pedal_message_tests() {

@@ -1,13 +1,14 @@
 #pragma once
 
-namespace Core {
+#include "../data.h"
+#include "i_encoder.h"
+#include "encode_error.h"
 
-class iEncoder;
-enum class EncodeError;
+namespace Core {
 
 class iEncodable {
 public: 
-    virtual EncodeError encode(iEncoder& encoder) const = 0;
+    virtual EncodeError encode(iEncoder& encoder, Data& out) const = 0;
     
     ~iEncodable() = default;
 };
