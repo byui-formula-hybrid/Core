@@ -7,64 +7,101 @@
 
 namespace Core {
 
+/*
+* @brief A class representing a data buffer for serialization
+* 
+* This class allows storing and retrieving data in a bit-packed format, 
+* automatically packing them into bytes. It behaves like a dynamic array of bits,
+* where bits are added sequentially and packed into bytes as needed.
+*/
 class Data {
 public:
-    explicit Data(std::size_t capacity)
-    : _capacity(capacity), _size(0), _buffer(std::make_unique<uint8_t[]>(capacity)) {}
+    /*
+    * @brief Enumeration representing potential errors that can occur during data operations
+    */
+    enum class Error { None, InsufficientCapacity };
 
-    // Copy constructor
-    Data(const Data& other)
-    : _capacity(other._capacity), _size(other._size),
-      _buffer(std::make_unique<uint8_t[]>(other._capacity)) {
-        std::copy(other._buffer.get(), other._buffer.get() + other._size, _buffer.get());
+    /*
+    * @brief Constructor to initialize the data buffer with a specified capacity
+    * @param capacity The capacity of the data buffer in bytes
+    */
+    Data(std::size_t capacity = 8);
+
+    /*
+    * @brief Deep copy constructor
+    * @param other The Data object to copy from
+    */
+    Data(const Data& other);
+
+    /*
+    * @brief Assign from another Data object
+    * @param other The Data object to copy from
+    */
+    Data& operator=(const Data& other);
+
+    /*
+    * @brief Append a value to the current end of the data buffer
+    * @param value The value to append
+    * @return Error indicating success or failure
+    */
+    template <typename T>
+    Error write(const T value);
+
+    // TODO: Comment
+    template <typename T>
+    Error readFromBit(T& value, size_t bitOffset = 0) {
+        return Error::None;
     }
 
-    // Move constructor
-    Data(Data&& other) noexcept
-    : _capacity(other._capacity), _size(other._size), _buffer(std::move(other._buffer)) {
-        other._size = 0;
-        other._capacity = 0;
+    // TODO: Comment
+    template <typename T>
+    Error readFromBit(T& value, size_t byteOffset = 0, size_t bitOffset = 0) {
+        return Error::None;
     }
 
-    // Append array of bytes
-    void append(const uint8_t* bytes, std::size_t length) {
-        std::size_t available = _capacity - _size;
-        std::size_t toCopy = (length < available) ? length : available;
-        std::copy(bytes, bytes + toCopy, _buffer.get() + _size);
-        _size += toCopy;
+    // TODO: Comment
+    template <typename T>
+    Error readFromByte(T& value, size_t byteOffset = 0) {
+        return Error::None;
     }
 
-    // Append single byte
-    void append(uint8_t byte) {
-        if (_size < _capacity)
-            _buffer[_size++] = byte;
-    }
+    /*
+    * @brief Reset the data buffer
+    * @return Error indicating success or failure
+    */
+    void clear();
 
-    // Subscript operators
-    uint8_t& operator[](std::size_t index) {
-        if (index >= _size)
-            throw std::out_of_range("Data index out of range");
-        return _buffer[index];
-    }
+    /*
+    * @brief Get the raw bytes of the data buffer
+    * @param outBuffer The output buffer to copy the data into
+    * @param length The number of bytes to copy
+    * @return Error indicating success or failure
+    */
+    const uint8_t* bytes() const;
 
-    const uint8_t& operator[](std::size_t index) const {
-        if (index >= _size)
-            throw std::out_of_range("Data index out of range");
-        return _buffer[index];
-    }
+    /*
+    * @brief Get the size of the data buffer
+    * @param outSize The size of the data buffer
+    * @return Error indicating success or failure
+    */
+    const size_t size() const;
 
-    // Accessors
-    const uint8_t* bytes() const { return _buffer.get(); }
-    uint8_t* bytes() { return _buffer.get(); }
+    /*
+    * @brief Get the capacity of the data buffer
+    * @param outCapacity The capacity of the data buffer
+    * @return Error indicating success or failure
+    */
+    const size_t capacity() const;
 
-    std::size_t size() const { return _size; }
-    std::size_t capacity() const { return _capacity; }
-
-    void clear() { _size = 0; }
+    /*
+    * @brief Destructor for the Data class
+    */
+    ~Data() = default;
 
 private:
     std::size_t _capacity;
-    std::size_t _size;
+    std::size_t _bitOffset;
+    std::size_t _byteOffset;
     std::unique_ptr<uint8_t[]> _buffer;
 };
 

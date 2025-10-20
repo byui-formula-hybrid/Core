@@ -8,10 +8,6 @@ Core::DecodeError PedalMessage::decode(Core::iDecoder& decoder) {
     auto unkeyedContainer = decoder.unkeyedContainer();
     Core::DecodeError err = Core::DecodeError::None;
 
-    if (keyedContainer == nullptr && unkeyedContainer == nullptr) {
-        return Core::DecodeError::NoContainer;
-    }
-
     if (keyedContainer != nullptr) {
         err = keyedContainer->decodeUInt8(acceleratorPedalPercentage, ACCELERATOR_PEDAL_PERCENTAGE); if (err != Core::DecodeError::None) return err;
         err = keyedContainer->decodeBool(isBraking, IS_BRAKING); if (err != Core::DecodeError::None) return err;
@@ -21,6 +17,7 @@ Core::DecodeError PedalMessage::decode(Core::iDecoder& decoder) {
         err = keyedContainer->decodeUInt16(brakePotentiometer2, BRAKE_POT2); if (err != Core::DecodeError::None) return err;
         err = keyedContainer->decodeUInt8(brakeStatus, BRAKE_STATUS); if (err != Core::DecodeError::None) return err;
         err = keyedContainer->decodeUInt8(acceleratorStatus, ACCELERATOR_STATUS); if (err != Core::DecodeError::None) return err;
+        return Core::DecodeError::None;
     }
 
     if (unkeyedContainer != nullptr) {
@@ -32,15 +29,18 @@ Core::DecodeError PedalMessage::decode(Core::iDecoder& decoder) {
         err = unkeyedContainer->decodeUInt16(brakePotentiometer2); if (err != Core::DecodeError::None) return err;
         err = unkeyedContainer->decodeUInt8(brakeStatus); if (err != Core::DecodeError::None) return err;
         err = unkeyedContainer->decodeUInt8(acceleratorStatus); if (err != Core::DecodeError::None) return err;
+        return Core::DecodeError::None;
     }
-    
-    return Core::DecodeError::None;
+
+    return Core::DecodeError::NoContainer;
 }
 
 Core::EncodeError PedalMessage::encode(Core::iEncoder& encoder, Core::Data& out) const {
     auto keyedContainer = encoder.keyedContainer();
+    auto unkeyedContainer = encoder.unkeyedContainer();
+    Core::EncodeError err = Core::EncodeError::None;
+
     if (keyedContainer != nullptr) {
-        Core::EncodeError err = Core::EncodeError::None;
         err = keyedContainer->encodeUInt8(acceleratorPedalPercentage, ACCELERATOR_PEDAL_PERCENTAGE); if (err != Core::EncodeError::None) return err;
         err = keyedContainer->encodeBool(isBraking, IS_BRAKING); if (err != Core::EncodeError::None) return err;
         err = keyedContainer->encodeUInt16(acceleratorPotentiometer1, ACCELERATOR_POT1); if (err != Core::EncodeError::None) return err;
@@ -49,23 +49,21 @@ Core::EncodeError PedalMessage::encode(Core::iEncoder& encoder, Core::Data& out)
         err = keyedContainer->encodeUInt16(brakePotentiometer2, BRAKE_POT2); if (err != Core::EncodeError::None) return err;
         err = keyedContainer->encodeUInt8(brakeStatus, BRAKE_STATUS); if (err != Core::EncodeError::None) return err;
         err = keyedContainer->encodeUInt8(acceleratorStatus, ACCELERATOR_STATUS); if (err != Core::EncodeError::None) return err;
-        out = keyedContainer->data();
         return Core::EncodeError::None;
-    } else {
-        auto unkeyedContainer = encoder.unkeyedContainer();
-        if (unkeyedContainer != nullptr) {
-            Core::EncodeError err = Core::EncodeError::None;
-            err = unkeyedContainer->encodeUInt8(acceleratorPedalPercentage); if (err != Core::EncodeError::None) return err;
-            err = unkeyedContainer->encodeBool(isBraking); if (err != Core::EncodeError::None) return err;
-            err = unkeyedContainer->encodeUInt16(acceleratorPotentiometer1); if (err != Core::EncodeError::None) return err;
-            err = unkeyedContainer->encodeUInt16(acceleratorPotentiometer2); if (err != Core::EncodeError::None) return err;
-            err = unkeyedContainer->encodeUInt16(brakePotentiometer1); if (err != Core::EncodeError::None) return err;
-            err = unkeyedContainer->encodeUInt16(brakePotentiometer2); if (err != Core::EncodeError::None) return err;
-            err = unkeyedContainer->encodeUInt8(brakeStatus); if (err != Core::EncodeError::None) return err;
-            err = unkeyedContainer->encodeUInt8(acceleratorStatus); if (err != Core::EncodeError::None) return err;
-            return Core::EncodeError::None;
-        }
     }
+
+    if (unkeyedContainer != nullptr) {
+        err = unkeyedContainer->encodeUInt8(acceleratorPedalPercentage); if (err != Core::EncodeError::None) return err;
+        err = unkeyedContainer->encodeBool(isBraking); if (err != Core::EncodeError::None) return err;
+        err = unkeyedContainer->encodeUInt16(acceleratorPotentiometer1); if (err != Core::EncodeError::None) return err;
+        err = unkeyedContainer->encodeUInt16(acceleratorPotentiometer2); if (err != Core::EncodeError::None) return err;
+        err = unkeyedContainer->encodeUInt16(brakePotentiometer1); if (err != Core::EncodeError::None) return err;
+        err = unkeyedContainer->encodeUInt16(brakePotentiometer2); if (err != Core::EncodeError::None) return err;
+        err = unkeyedContainer->encodeUInt8(brakeStatus); if (err != Core::EncodeError::None) return err;
+        err = unkeyedContainer->encodeUInt8(acceleratorStatus); if (err != Core::EncodeError::None) return err;
+        return Core::EncodeError::None;
+    }
+
     return Core::EncodeError::NoContainer;
 }
 

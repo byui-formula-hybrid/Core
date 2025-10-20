@@ -7,8 +7,6 @@ namespace Core {
 
 class BinaryEncoder: public iEncoder {
 public:
-    BinaryEncoder();
-
     iKeyedEncodingContainer* keyedContainer();
     iUnkeyedEncodingContainer* unkeyedContainer();
 

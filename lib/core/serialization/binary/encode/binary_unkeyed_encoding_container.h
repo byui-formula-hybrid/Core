@@ -9,7 +9,7 @@ namespace Core {
 
 class BinaryUnkeyedEncodingContainer: public iUnkeyedEncodingContainer {
 public:
-    BinaryUnkeyedEncodingContainer();
+    BinaryUnkeyedEncodingContainer() : buffer(8) {}
 
     const uint8_t count() const;
     const bool isAtEnd() const;

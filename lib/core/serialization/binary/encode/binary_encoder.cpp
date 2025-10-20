@@ -3,8 +3,6 @@
 
 namespace Core {
 
-BinaryEncoder::BinaryEncoder() : binaryUnkeyedContainer() {}
-
 iKeyedEncodingContainer* BinaryEncoder::keyedContainer() {
     return nullptr;
 }

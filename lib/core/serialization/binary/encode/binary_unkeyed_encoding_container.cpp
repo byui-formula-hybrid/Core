@@ -5,22 +5,24 @@
 
 namespace Core {
 
-BinaryUnkeyedEncodingContainer::BinaryUnkeyedEncodingContainer() : buffer(8) {}
-
 const uint8_t BinaryUnkeyedEncodingContainer::count() const { 
-  return buffer.size();
+  return 0;
+  // return buffer.size();
 }
 
 const bool BinaryUnkeyedEncodingContainer::isAtEnd() const { 
-  return buffer.size() >= buffer.capacity();
+  return false;
+  // return buffer.size() >= buffer.capacity();
 }
 
 const uint8_t BinaryUnkeyedEncodingContainer::currentIndex() const { 
-  return buffer.size();
+  return 0;
+  // return buffer.size();
 }
 
 const uint8_t* BinaryUnkeyedEncodingContainer::data() const { 
-  return buffer.bytes();
+  return nullptr;
+  // return buffer.bytes();
 }
 
 const EncodeError BinaryUnkeyedEncodingContainer::encodeBool(const bool in) { 

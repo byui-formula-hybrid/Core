@@ -10,9 +10,11 @@ void test_pedal_binary_encoding() {
     PedalMessage message;
     BinaryEncoder encoder;
     Data out(8);
-    auto err = encoder.encode(out);
+    auto err = message.encode(encoder, out);
     TEST_ASSERT_EQUAL(EncodeError::None, err);
-    TEST_ASSERT_EQUAL({0,0,0,0,0,0,0,0}, out.bytes());
+    for (size_t i = 0; i < out.size(); i++) {
+        TEST_ASSERT_EQUAL(0, out[i]);
+    }
 };
 
 void run_pedal_message_tests() {
