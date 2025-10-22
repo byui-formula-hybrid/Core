@@ -11,12 +11,9 @@ void tearDown(void) {
     // Clean up any test artifacts
 }
 
-void test_pedals_basic() {
-    TEST_ASSERT_TRUE(true);
-}
-
 int main() {
     UNITY_BEGIN();
     run_pot_converter_tests();
+    run_pedal_message_tests();
     return UNITY_END();
 }
