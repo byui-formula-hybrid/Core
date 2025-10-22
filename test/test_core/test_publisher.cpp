@@ -2,11 +2,11 @@
 #include <memory>
 
 // Include test helpers and events
-#include "../helpers/TestPublisherFactory.h"
-#include "../mocks/events/TestEvent.h"
+#include "../helpers/test_publisher_factory.h"
+#include "../mocks/events/test_event.h"
 
 // Include the publisher components
-#include "../../lib/core/reactive/Publisher.h"
+#include "../../lib/core/observer/publisher.h"
 
 using namespace Core;
 

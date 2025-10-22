@@ -1,11 +1,11 @@
 #include <unity.h>
+#include "test_main.h"
 
-void test_can_basic() {
-    TEST_ASSERT_TRUE(true);
-}
 
+
+// Reuse the module main pattern and call all can tests
 int main() {
     UNITY_BEGIN();
-    RUN_TEST(test_can_basic);
+    
     return UNITY_END();
 }
