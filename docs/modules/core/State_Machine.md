@@ -75,7 +75,7 @@ This kind of flow chart can represent different subsystems of the car like contr
         }
     }
 
-This subsystem has 6 different states as defined by the enum section of the code: GLV_OFF, TS_OFF_GLV_ON, PRECHARGE, TS_ENERGIZED_NOT_RDY, TS_ENERGIZED_RDY, and FAULT.
+This subsystem has six different states as defined by the enum section of the code: GLV_OFF, TS_OFF_GLV_ON, PRECHARGE, TS_ENERGIZED_NOT_RDY, TS_ENERGIZED_RDY, and FAULT.
 
 This code tells the car under what conditions does the car switch from one state to another and what states to switch to. This code in particular will cycle through the states listed above in sequential order, indicating specific moments describing when the subsystem should switch states.
 
