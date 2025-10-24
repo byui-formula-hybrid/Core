@@ -243,7 +243,7 @@ function Uninstall-Python {
     if ($PYExe) {
         Start-Process -FilePath $PYExe -ArgumentList "/uninstall /quiet" -Wait
     } else {
-        Print-Warning "Failed to uninstall Python, do so manually"
+        Print-Error "Failed to uninstall Python, do so manually"
     }
 
     # Attempting via traditional installer, creates a residual pip problem afterwards
@@ -482,7 +482,7 @@ function Uninstall-MinGW {
         Remove-Item -Recurse -Force $mingwDir
         Print-Success "MinGW removed!"
     } else {
-        Print-Warning "MinGW wasn't found"
+        Print-Error "MinGW wasn't found"
     }
 }
 
