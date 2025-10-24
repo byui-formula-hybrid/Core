@@ -15,7 +15,7 @@ Installs all required software for development:
 
 **Usage:**
 ```powershell
-.\.\.scripts\powershell\powershell\install.ps1
+.\.scripts\powershell\powershell\install.ps1
 ```
 
 **Supported Platforms:**
@@ -71,7 +71,7 @@ Removes PlatformIO and project build files (keeps Python, Git, VS Code).
 
 **Usage:**
 ```powershell
-.\.\.scripts\powershell\powershell\uninstall.ps1
+.\.scripts\powershell\powershell\uninstall.ps1
 ```
 
 ## Shared Functions
@@ -89,22 +89,22 @@ Contains shared functions used by other scripts:
 
 1. **Initial setup:**
    ```powershell
-   .\.\.scripts\powershell\powershell\install.ps1
+   .\.scripts\powershell\powershell\install.ps1
    ```
 
 2. **Run tests:**
    ```powershell
-   .\.\.scripts\powershell\powershell\test.ps1
+   .\.scripts\powershell\powershell\test.ps1
    ```
 
 3. **Build for ESP32:**
    ```powershell
-   .\.\.scripts\powershell\powershell\build.ps1
+   .\.scripts\powershell\powershell\build.ps1
    ```
 
 4. **Build and upload:**
    ```powershell
-   .\.\.scripts\powershell\powershell\build.ps1 --upload --monitor
+   .\.scripts\powershell\powershell\build.ps1 --upload --monitor
    ```
 
 ## Cross-Platform Support
