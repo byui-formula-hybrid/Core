@@ -1,29 +1,55 @@
 #include "pot_converter.h"
 
-static const int MAX_ADC_VALUE = 4095;
-static const int MIN_ADC_VALUE = 0;
+PotConverter::PotConverter() {
+    head = nullptr;
+    tail = nullptr;
+    count = 0;
+    total = 0;
+}
 
-static const int NUM_SAMPLES = 10;  // for smoothing
-static double samples[NUM_SAMPLES];
-static int index = 0;
-static double total = 0;
+PotConverter::~PotConverter() {
+    // Free all nodes in the linked list to avoid memory leaks
+    Node* current = head;
+    while (current) {
+        Node* temp = current;
+        current = current->next;
+        delete temp;
+    }
+}
 
-// --- Convert raw ADC to percentage (0–100)
-double convertPotReading(int reading) {
+// Converts a raw ADC value (0–4095) to a percentage (0–100)
+double PotConverter::convertPotReading(int reading) {
     if (reading < MIN_ADC_VALUE || reading > MAX_ADC_VALUE) {
         Serial.println("Error: ADC value out of range!");
-        throw std::out_of_range("ADC reading must be between 0 and 4095");
+        return -1.0;
     }
-
     return (reading / 4095.0) * 100.0;
 }
 
-// --- Apply moving average to smooth out bumps
-double smoothReading(double newValue) {
-    total -= samples[index];
-    samples[index] = newValue;
-    total += samples[index];
-    index = (index + 1) % NUM_SAMPLES;
+// Adds a new reading to the linked list and computes the moving average
+double PotConverter::smoothReading(double newValue) {
+    // Create a new node for the new reading
+    Node* newNode = new Node{newValue, nullptr};
+    total += newValue;
 
-    return total / NUM_SAMPLES;
+    // Add it to the end of the linked list
+    if (!head) {
+        head = tail = newNode;
+    } else {
+        tail->next = newNode;
+        tail = newNode;
+    }
+    count++;
+
+    // If we exceed the max number of samples, remove the oldest one
+    if (count > MAX_SAMPLES) {
+        Node* oldNode = head;
+        total -= oldNode->value;
+        head = head->next;
+        delete oldNode;
+        count--;
+    }
+
+    // Return the current average
+    return total / count;
 }
