@@ -1,6 +1,6 @@
 # ESP32 Formula Hybrid Core Library - Scripts
 
-This folder contains cross-platform scripts for managing the project.
+This folder contains cross-platform scripts for managing the project, except Windows, see the powershell folder for that or use the Git Bash installation for Windows then these apply.
 
 ## Scripts
 
@@ -23,7 +23,7 @@ Installs all required software for development:
 - Windows (via chocolatey, winget)
 
 ### `test.sh` - Run Tests
-Runs the native unit test suite with Arduino mocks.
+Runs the native unit test suite with ESP32 mocks.
 
 **Usage:**
 ```bash
