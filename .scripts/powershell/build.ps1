@@ -8,6 +8,7 @@ $SharedPath = Join-Path $PSScriptRoot "shared.ps1"
 . $SharedPath
 
 Print-Header("Build Script")
+Validate-Directory
 
 # Default values
 $Environment = "esp32dev"

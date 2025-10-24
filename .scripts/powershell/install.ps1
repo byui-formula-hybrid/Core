@@ -6,6 +6,10 @@ Set-Location $ProjectRoot
 $SharedPath = Join-Path $PSScriptRoot "shared.ps1"
 . $SharedPath
 
+Print-Header "Installation Script"
+Validate-Directory
+Check-Elevation
+
 # Default: not running in CI
 $CI_MODE = $false
 
@@ -42,7 +46,6 @@ if ($args.Count -gt 0) {
 	}
 }
 
-Print-Header "Installation Script"
 
 Install-Winget
 
@@ -52,6 +55,7 @@ if (-not $CI_MODE) {
 
 Install-Python
 if (-not $CI_MODE) {
+	# Ask if the user wants MSYS2 or MinGW
 	Install-MSYS2
 } else {
 	# Print-Warning "Github Pipeline CI has storage limits, it will not let you install the g++ compiler because it exceeds 500 MB"

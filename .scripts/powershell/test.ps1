@@ -12,6 +12,7 @@ $SharedPath = Join-Path $PSScriptRoot "shared.ps1"
 . $SharedPath
 
 Print-Header "Test Suite"
+Validate-Directory
 
 # Function to run tests
 function Run-Tests {

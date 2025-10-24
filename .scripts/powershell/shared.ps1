@@ -35,6 +35,40 @@ function Refresh-Env {
     Start-Sleep -Seconds 1
 }
 
+function Check-Elevation {
+    $myWindowsID=[System.Security.Principal.WindowsIdentity]::GetCurrent()
+    $myWindowsPrincipal=new-object System.Security.Principal.WindowsPrincipal($myWindowsID)
+    $adminRole=[System.Security.Principal.WindowsBuiltInRole]::Administrator
+
+    if (-not ($myWindowsPrincipal.IsInRole($adminRole))) {
+        # Start-Process powershell -Verb RunAs -ArgumentList "-File `"$($MyInvocation.MyCommand.Path)`""
+        Print-Error "The powershell script needs to be ran with administrative privileges!"
+        exit 1
+    }
+}
+
+function Validate-Directory {
+    if ((Get-Location).Path -match '\s') {
+        Print-Error "The current directoyr posses spaces in the path, this will result in PlatformIO errors."
+        Print-Warning "Move the repository to a different directory without spaces in it."
+        Print-Warning "A typical good spot is in your Documents folder on your local machine."
+        exit 1
+    }
+    # Directory is a valid one!
+}
+
+function User-Answer($ans) {
+    if ($ans.Trim().ToLower() -eq "y" -or $ans.Trim().ToLower() -eq "yes") {
+        $true
+    } elseif ($ans.Trim().ToLower() -eq "n" -or $ans.Trim().ToLower() -eq "no") {
+        Print-Warning "Skipping VS Code installation"
+        return $false
+    } else {
+        Print-Warning "Couldn't interpret input assuming no"
+        return $false
+    }
+}
+
 # ================================
 # COMMAND CHECK
 # ================================
@@ -452,7 +486,9 @@ function Install-VSCode {
     }
 
     $confirm = Read-Host "Do you want to install VS Code? (y/N)"
-    if ($confirm -ne "y") {
+    if (User-Answer($confirm)) {
+        Print-Info "Beginning VS Code installation"
+    } else {
         Print-Warning "Skipping VS Code installation"
         return
     }
@@ -485,7 +521,9 @@ function Install-VSCodeExtensions {
     }
 
     $confirm = Read-Host "Install recommended VS Code extensions? (y/N)"
-    if ($confirm -ne "y") {
+    if (User-Answer($confirm)) {
+        Print-Info "Installing extentions"
+    } else {
         Print-Warning "Skipping extension installation"
         return
     }

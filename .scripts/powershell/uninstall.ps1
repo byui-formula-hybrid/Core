@@ -7,6 +7,7 @@ $SharedPath = Join-Path $PSScriptRoot "shared.ps1"
 . $SharedPath
 
 Print-Header "Uninstall Script"
+Check-Elevation
 
 # Default: not running in CI
 $CI_MODE = $false
@@ -56,20 +57,20 @@ if ($CI_MODE) {
 } else {
     # ask if the user wants tools removed
     $confirm = Read-Host "Do you want to uninstall Python? (y/N)"
-    if ($confirm -ne "y") {
-        Print-Warning "Skipping Python uninstallation"
-    } else {
+	if (User-Answer($confirm)) {
         Uninstall-Python
-    }
+	} else {
+        Print-Warning "Skipping Python uninstallation"
+	}
 
     $mingwDir = "C:\Program Files\MinGW"
     if (Test-Path $mingwDir) {
         $confirm = Read-Host "Do you want to uninstall MinGW? (y/N)"
-        if ($confirm -ne "y") {
-            Print-Warning "Skipping MinGW uninstallation"
-        } else {
+		if (User-Answer($confirm)) {
             Uninstall-MinGW
-        }
+		} else {
+            Print-Warning "Skipping MinGW uninstallation"
+		}
     }
 }
 

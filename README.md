@@ -84,7 +84,10 @@ cd Core
 >
 > winget install --id Git.Git -e --silent --source winget
 >
-> Open PowerShell and run:
+> Open PowerShell as an administrator and change the current working directory to where you want the repository cloned to, then run:
+>
+> WARNING!!! Do not clone it into a directory where it has a space in it. Your school's One Drive path has a space in it so do not put it there, PlatformIO panicks and quits
+>
 > ```powershell
 > # 1. Clone the repository
 > git clone https://github.com/byui-formula-hybrid/Core.git
