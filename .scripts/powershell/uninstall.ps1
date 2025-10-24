@@ -55,7 +55,6 @@ if ($CI_MODE) {
     Uninstall-Python
     # Uninstall-PlatformIO
 } else {
-    # ask if the user wants tools removed
     $confirm = Read-Host "Do you want to uninstall Python? (y/N)"
 	if (User-Answer($confirm)) {
         Uninstall-Python
@@ -64,6 +63,7 @@ if ($CI_MODE) {
 	}
 
     $mingwDir = "C:\Program Files\MinGW"
+	$msys2Dir = "C:\Program Files\msys64"
     if (Test-Path $mingwDir) {
         $confirm = Read-Host "Do you want to uninstall MinGW? (y/N)"
 		if (User-Answer($confirm)) {
@@ -71,7 +71,15 @@ if ($CI_MODE) {
 		} else {
             Print-Warning "Skipping MinGW uninstallation"
 		}
-    }
+    } elseif (Test-Path $msys2Dir) {
+		$confirm = Read-Host "Do you want to uninstall MSYS2? (y/N)"
+		if (User-Answer($confirm)) {
+			# Still being implemented
+			# Uninstall-MSYS2
+		} else {
+			Print-Warning "Skipping MSYS2 uninstallation"
+		}
+	}
 }
 
 Refresh-Env

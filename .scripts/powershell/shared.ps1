@@ -49,7 +49,7 @@ function Check-Elevation {
 
 function Validate-Directory {
     if ((Get-Location).Path -match '\s') {
-        Print-Error "The current directoyr posses spaces in the path, this will result in PlatformIO errors."
+        Print-Error "The current directory possesses spaces in the path, this will result in PlatformIO errors."
         Print-Warning "Move the repository to a different directory without spaces in it."
         Print-Warning "A typical good spot is in your Documents folder on your local machine."
         exit 1
@@ -239,18 +239,38 @@ function Uninstall-Python {
         }
     }
 
-    Print-Info "Found these packages:"
-    $pyPackages | ForEach-Object {
-        Print-Info "Name: $($_.Name), Id: $($_.Id), Version: $($_.Version)"
+    $pyDir = ""
+    if (Command-Exists "python") {
+        $pyDir = ((Get-Command python).Source.split('\') | Select -SkipLast 1) -join '\'
+        [Environment]::SetEnvironmentVariable("Path", ($env:Path -split ";" | Where-Object {$_ -notmatch "Python"}) -join ";", "User")
+        [Environment]::SetEnvironmentVariable("Path", ($env:Path -split ";" | Where-Object {$_ -notmatch "Python"}) -join ";", "Machine")
+        Remove-Item -Recurse -Force "$pyDir"
+        return
+    } elseif (Command-Exists "python3") {
+        $pyDir = ((Get-Command python).Source.split('\') | Select -SkipLast 1) -join '\'
+        [Environment]::SetEnvironmentVariable("Path", ($env:Path -split ";" | Where-Object {$_ -notmatch "Python3"}) -join ";", "User")
+        [Environment]::SetEnvironmentVariable("Path", ($env:Path -split ";" | Where-Object {$_ -notmatch "Python3"}) -join ";", "Machine")
+        Remove-Item -Recurse -Force "$pyDir"
+        return
+    } else {
+        Print-Error "Python couldn't be found!"
+        return
     }
-    foreach ($pkg in $pyPackages) {
-        Print-Info "Uninstalling $pkg"
-        winget uninstall --name $pkg.Name --version $pkg.Version --silent
-    }
+
+
+
+    # Print-Info "Found these packages:"
+    # $pyPackages | ForEach-Object {
+    #     Print-Info "Name: $($_.Name), Id: $($_.Id), Version: $($_.Version)"
+    # }
+    # foreach ($pkg in $pyPackages) {
+    #     Print-Info "Uninstalling $pkg"
+    #     winget uninstall --name $pkg.Name --version $pkg.Version --silent
+    # }
 }
 
 # ================================
-# GIT, WINGET, MSYS2
+# GIT, WINGET, MSYS2, MINGW
 # ================================
 function Install-Git {
     if (Command-Exists git) {
@@ -424,6 +444,12 @@ function Install-Mingw {
         Print-Error "Failed to install g++ and gcc compilers!"
         exit 1
     }
+}
+
+function Uninstall-MSYS2 {
+    $machPath = [System.Environment]::GetEnvironmentVariable("PATH", "Machine")
+    $msys2Dir = "C:\Program Files\msys64"
+    [Environment]::SetEnvironmentVariable("Path", ($env:Path -split ";" | Where-Object {$_ -notmatch "msys64"}) -join ";", "Machine")
 }
 
 function Uninstall-MinGW {
