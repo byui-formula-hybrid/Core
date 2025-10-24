@@ -61,7 +61,6 @@ function User-Answer($ans) {
     if ($ans.Trim().ToLower() -eq "y" -or $ans.Trim().ToLower() -eq "yes") {
         $true
     } elseif ($ans.Trim().ToLower() -eq "n" -or $ans.Trim().ToLower() -eq "no") {
-        Print-Warning "Skipping VS Code installation"
         return $false
     } else {
         Print-Warning "Couldn't interpret input assuming no"
@@ -447,9 +446,13 @@ function Install-Mingw {
 }
 
 function Uninstall-MSYS2 {
-    $machPath = [System.Environment]::GetEnvironmentVariable("PATH", "Machine")
     $msys2Dir = "C:\Program Files\msys64"
-    [Environment]::SetEnvironmentVariable("Path", ($env:Path -split ";" | Where-Object {$_ -notmatch "msys64"}) -join ";", "Machine")
+    $msys2Uninstaller = Join-Path $msys2Dir "uninstall.exe"
+    if (Test-Path $msys2Uninstaller) {
+        Start-Process $msys2Uninstaller -ArgumentList "purge --confirm-command" -Wait
+    } else {
+        Print-Error "Couldn't find the uninstaller for MSYS2"
+    }
 }
 
 function Uninstall-MinGW {
