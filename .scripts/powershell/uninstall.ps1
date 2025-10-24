@@ -57,6 +57,7 @@ if ($CI_MODE) {
 } else {
     $confirm = Read-Host "Do you want to uninstall Python? (y/N)"
 	if (User-Answer($confirm)) {
+		# Currently some issues exist
         Uninstall-Python
 	} else {
         Print-Warning "Skipping Python uninstallation"
@@ -74,8 +75,7 @@ if ($CI_MODE) {
     } elseif (Test-Path $msys2Dir) {
 		$confirm = Read-Host "Do you want to uninstall MSYS2? (y/N)"
 		if (User-Answer($confirm)) {
-			# Still being implemented
-			# Uninstall-MSYS2
+			Uninstall-MSYS2
 		} else {
 			Print-Warning "Skipping MSYS2 uninstallation"
 		}
