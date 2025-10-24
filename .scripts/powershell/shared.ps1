@@ -227,36 +227,47 @@ function Uninstall-PythonVirtualEnvironment {
 }
 
 function Uninstall-Python {
-    $pyPackages = winget list python | Select-String -Pattern '^Python' | ForEach-Object {
-        $columns = $_ -split '\s{2,}'
-        if ($columns.Count -ge 3) {
-            [PSCustomObject]@{
-                Name = $columns[0]
-                Id = $columns[1]
-                Version = $columns
-            }
-        }
-    }
+    # $pyPackages = winget list python | Select-String -Pattern '^Python' | ForEach-Object {
+    #     $columns = $_ -split '\s{2,}'
+    #     if ($columns.Count -ge 3) {
+    #         [PSCustomObject]@{
+    #             Name = $columns[0]
+    #             Id = $columns[1]
+    #             Version = $columns
+    #         }
+    #     }
+    # }
 
-    $pyDir = ""
-    if (Command-Exists "python") {
-        $pyDir = ((Get-Command python).Source.split('\') | Select -SkipLast 1) -join '\'
-        [Environment]::SetEnvironmentVariable("Path", ($env:Path -split ";" | Where-Object {$_ -notmatch "Python"}) -join ";", "User")
-        [Environment]::SetEnvironmentVariable("Path", ($env:Path -split ";" | Where-Object {$_ -notmatch "Python"}) -join ";", "Machine")
-        Remove-Item -Recurse -Force "$pyDir"
-        return
-    } elseif (Command-Exists "python3") {
-        $pyDir = ((Get-Command python).Source.split('\') | Select -SkipLast 1) -join '\'
-        [Environment]::SetEnvironmentVariable("Path", ($env:Path -split ";" | Where-Object {$_ -notmatch "Python3"}) -join ";", "User")
-        [Environment]::SetEnvironmentVariable("Path", ($env:Path -split ";" | Where-Object {$_ -notmatch "Python3"}) -join ";", "Machine")
-        Remove-Item -Recurse -Force "$pyDir"
-        return
+    # Attempting to use the package installer from the cache, works if present in the cache
+    $PYExe = (Get-ChildItem "$Env:LOCALAPPDATA\Package Cache\" -Recurse | Where-Object Name -Match 'python.*\.exe').FullName
+    if ($PYExe) {
+        Start-Process -FilePath $PYExe -ArgumentList "/uninstall /quiet" -Wait
     } else {
-        Print-Error "Python couldn't be found!"
-        return
+        Print-Warning "Failed to uninstall Python, do so manually"
     }
 
+    # Attempting via traditional installer, creates a residual pip problem afterwards
+    # Get-CimInstance Win32_Product | Where-Object Name -like "Python*" | Invoke-CimMethod -MethodName Uninstall
 
+
+    # A brute force method but with possible issues, avoid
+    # $pyDir = ""
+    # if (Command-Exists "python") {
+    #     $pyDir = ((Get-Command python).Source.split('\') | Select -SkipLast 1) -join '\'
+    #     [Environment]::SetEnvironmentVariable("Path", ($env:Path -split ";" | Where-Object {$_ -notmatch "Python"}) -join ";", "User")
+    #     [Environment]::SetEnvironmentVariable("Path", ($env:Path -split ";" | Where-Object {$_ -notmatch "Python"}) -join ";", "Machine")
+    #     Remove-Item -Recurse -Force "$pyDir"
+    #     return
+    # } elseif (Command-Exists "python3") {
+    #     $pyDir = ((Get-Command python).Source.split('\') | Select -SkipLast 1) -join '\'
+    #     [Environment]::SetEnvironmentVariable("Path", ($env:Path -split ";" | Where-Object {$_ -notmatch "Python3"}) -join ";", "User")
+    #     [Environment]::SetEnvironmentVariable("Path", ($env:Path -split ";" | Where-Object {$_ -notmatch "Python3"}) -join ";", "Machine")
+    #     Remove-Item -Recurse -Force "$pyDir"
+    #     return
+    # } else {
+    #     Print-Error "Python couldn't be found!"
+    #     return
+    # }
 
     # Print-Info "Found these packages:"
     # $pyPackages | ForEach-Object {
