@@ -64,9 +64,16 @@ cd Core
 #### For Windows
 > **🪟 Windows Notice:**
 >
-> You have two options for running project scripts on Windows:
+> You may encounter an error when running any of the below powershell scripts, make sure you are running an elevated (Administrator) powershell window first.
+> If you get an error saying "cannot be loaded because running scripts is disabled on this system." Then you need to allow running scripts using the command below:
+>
+> Set-ExecutionPolicy Unrestricted
+>
+> If prompted for options type: A
 >
 > **Option 1: Use PowerShell scripts**
+>
+> This assumes you already have git, or github desktop already installed, otherwise clone the repository manually without
 >
 > Open PowerShell and run:
 > ```powershell
@@ -85,7 +92,6 @@ cd Core
 > ```
 >
 > **Option 2: Use Git Bash and bash scripts**
->
 > 1. Open PowerShell and run:
 >    ```powershell
 >    .\.scripts\setup-gitbash.ps1
