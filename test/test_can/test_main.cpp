@@ -11,11 +11,6 @@ void tearDown(void) {
     // Clean up any test artifacts
 }
 
-void test_can_basic() {
-    TEST_ASSERT_TRUE(true);
-}
-
-
 // Reuse the module main pattern and call all can tests
 int main() {
     UNITY_BEGIN();
