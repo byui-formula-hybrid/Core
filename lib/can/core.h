@@ -52,46 +52,7 @@ T decode(const Frame& frame) {
 /*
  * Manager class for handling CAN operations.
  */
-class Manager {
-public:
-    Manager() = default;
-
-    /*
-     * Sets the transmit pin for the CAN manager.
-     * @param pin The GPIO pin number to set as the transmit pin.
-     */
-    void set_transmit_pin(uint8_t pin);
-
-    /*
-     * Sets the receive pin for the CAN manager.
-     * @param pin The GPIO pin number to set as the receive pin.
-     */
-    void set_receive_pin(uint8_t pin);
-    
-    /*
-     * Sets the transmit queue size for the CAN manager.
-     * @param size The size of the transmit queue.
-     */
-    void set_transmit_queue_size(uint16_t size);
-
-    /*
-     * Sets the receive queue size for the CAN manager.
-     * @param size The size of the receive queue.
-     */
-    void set_receive_queue_size(uint16_t size);
-    
-    /*
-     * Sets the filter configuration for the CAN manager.
-     * @param filter_config The filter configuration to set.
-     */
-    void set_filter(const twai_filter_config_t& filter_config);
-
-    /*
-     * Sets the timing configuration for the CAN manager.
-     * @param timing_config The timing configuration to set.
-     */
-    void set_timing(const twai_timing_config_t& timing_config);
-    
+struct Manager {
     /*
      * Sets the current status of the CAN manager.
      * @returns true if status was set successfully, false otherwise.
@@ -139,9 +100,18 @@ public:
      */
     bool receive(Frame& frame, uint32_t timeout = 1000);
 
-    ~Manager() = default;
+    /*
+     * Installs the CAN driver.
+     * @returns true if installation was successful, false otherwise.
+     */
+    bool install_driver();
 
-private:
+    /*
+     * Uninstalls the CAN driver.
+     * @returns true if uninstallation was successful, false otherwise.
+     */
+    bool uninstall_driver();
+
     // Indicates whether the CAN manager is currently running.
     bool is_running = false;
     // TWAI status information.

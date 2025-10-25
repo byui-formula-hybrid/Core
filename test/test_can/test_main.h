@@ -1,1 +1,1 @@
-// Declarations for can module tests
+void run_core_can_tests();

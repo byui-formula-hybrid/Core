@@ -19,6 +19,6 @@ void test_can_basic() {
 // Reuse the module main pattern and call all can tests
 int main() {
     UNITY_BEGIN();
-    
+    run_core_can_tests();
     return UNITY_END();
 }
