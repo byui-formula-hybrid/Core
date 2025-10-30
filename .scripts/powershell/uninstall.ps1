@@ -48,17 +48,23 @@ if ($args.Count -gt 0) {
 Uninstall-BuildArtifacts
 Uninstall-PioArtifacts
 
-Uninstall-PythonVirtualEnvironment
 
 if ($CI_MODE) {
     Uninstall-MinGW
+	Start-PythonVirtualEnvironment
+    Uninstall-PlatformIO
+	Stop-PythonVirtualEnvironment
+	Uninstall-PythonVirtualEnvironment
     Uninstall-Python
-    # Uninstall-PlatformIO
 } else {
-    $confirm = Read-Host "Do you want to uninstall Python? (y/N)"
+    $confirm = Read-Host "Do you want to uninstall Python? -Note: This will remove platformIO too (y/N)"
 	if (User-Answer($confirm)) {
 		# Currently some issues exist
-        Uninstall-Python
+		Start-PythonVirtualEnvironment
+		Uninstall-PlatformIO
+		Stop-PythonVirtualEnvironment
+		Uninstall-PythonVirtualEnvironment
+		Uninstall-Python
 	} else {
         Print-Warning "Skipping Python uninstallation"
 	}

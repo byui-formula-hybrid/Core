@@ -506,6 +506,23 @@ function Install-PlatformIO {
     }
 }
 
+function Uninstall-PlatformIO {
+    Run-Python @("-m", "pip", "uninstall", "platformio")
+    
+    if ($LASTEXITCODE -eq 0) {
+        Refresh-Env
+        Print-Success "PlatformIO uninstalled successfully"
+    } else {
+        Print-Error "Failed to uninstall PlatformIO via pip"
+    }
+
+    $PioPath = Join-Path $env:USERPROFILE ".platformio"
+    if (Test-Path $PioPath) {
+        Remove-Item -Recurse -Force $PioPath
+        Print-Success "PlatformIO remnants removed!"
+    }
+}
+
 function Uninstall-PioArtifacts {
     $PioPath = Join-Path $ProjectRoot ".pio"
     if (Test-Path $PioPath) {

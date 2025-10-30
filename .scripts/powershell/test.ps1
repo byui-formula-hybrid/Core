@@ -111,10 +111,10 @@ if ($filter) {
 
 
 Print-Info "Quick commands:"
-Write-Host "  Run all tests:     .scripts/powershell/test.sh"
-Write-Host "  Verbose output:    .scripts/powershell/test.sh --verbose"
-Write-Host "  Specific module:   .scripts/powershell/test.sh --filter test_core_module"
-Write-Host "  Build project:     .scripts/powershell/build.sh"
+Write-Host "  Run all tests:     .scripts\powershell\test.ps1"
+Write-Host "  Verbose output:    .scripts\powershell\test.ps1 --verbose"
+Write-Host "  Specific module:   .scripts\powershell\test.ps1 --filter test_core_module"
+Write-Host "  Build project:     .scripts\powershell\build.ps1"
 Write-Host "  Clean build:       pio run -t clean"
 
 # Exit with test result
