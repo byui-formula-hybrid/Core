@@ -1,8 +1,6 @@
 #ifndef POT_CONVERTER_H
 #define POT_CONVERTER_H
 
-#include <Arduino.h>
-
 class PotConverter {
 private:
     // Node structure for linked list
@@ -25,6 +23,7 @@ public:
     ~PotConverter();
 
     // Converts an analog ADC reading (0–4095) to a percentage (0–100)
+    // TODO: we need to handle errors better here - Look up "returning errors and passing by reference for return values c++ embedded programming"
     double convertPotReading(int reading);
 
     // Adds a new value and returns the smoothed (average) result
