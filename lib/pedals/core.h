@@ -1,17 +1,29 @@
 #pragma once
+#include <cstdint>
 
 namespace Pedals {
 
-// enum Status {
-//     OK = 0,
-//     WARNING = 1,
-//     CRITICAL = 2
-// }
+enum Status {
+    OK = 0,
+    WARNING = 1,
+    CRITICAL = 2
+};
 
-// void calculate_rate_of_change(uint16_t &rate_of_change, uint16_t* data, time_interval_t interval);
+/**
+ * @brief Calculates average of N readings.
+ */
+unsigned int calculate_average(const unsigned int* readings, unsigned int size);
 
-// Status evaluate_pedal_slew_rate(uint16_t* rate_of_change, uint16_t threshold_warning, uint16_t threshold_critical);
+/**
+ * @brief Calculates slew rate (rate of change) between two averaged readings.
+ */
+void rate_of_change_calculation(unsigned int& out, unsigned int a, unsigned int b, unsigned int t_ms);
 
-void rate_of_change_calculation(unsigned int& out, unsigned int a, unsigned int b, unsigned int t);
+/**
+ * @brief Evaluates slew rate against warning/critical thresholds.
+ */
+Status evaluate_pedal_slew_rate(unsigned int rate_of_change,
+                                unsigned int threshold_warning,
+                                unsigned int threshold_critical);
 
 }
