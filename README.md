@@ -64,31 +64,49 @@ cd Core
 #### For Windows
 > **🪟 Windows Notice:**
 >
-> You have two options for running project scripts on Windows:
+> DO NOT USE WSL, WSL IS A VM AND YOU WILL HAVE HARDWARE ISSUES WHEN WORKING WITH A MICROCONTROLLER
+>
+> You may encounter an error when running any of the below powershell scripts, make sure you are running an elevated (Administrator) powershell window first.
+> If you get an error saying "cannot be loaded because running scripts is disabled on this system." Then you need to allow running scripts using the command below:
+>
+> Set-ExecutionPolicy Unrestricted
+>
+> If prompted for options type: A
+>
+>
+> You can run the following command to see the current state of the policy of running scripts:
+>
+> Get-ExecutionPolicy
 >
 > **Option 1: Use PowerShell scripts**
 >
-> Open PowerShell and run:
+> This assumes you already have git, or github desktop already installed, if not run the following command to install it (you will then need to close and reopen powershell):
+>
+> winget install --id Git.Git -e --silent --source winget
+>
+> Open PowerShell as an administrator and change the current working directory to where you want the repository cloned to, then run:
+>
+> WARNING!!! Do not clone it into a directory where it has a space in it. Your school's One Drive path has a space in it so do not put it there, PlatformIO panicks and quits
+>
 > ```powershell
 > # 1. Clone the repository
 > git clone https://github.com/byui-formula-hybrid/Core.git
 > cd Core
 >
 > # 2. Run the automated setup script
-> ./.scripts/powershell/install.ps1
+> .\.scripts\powershell\install.ps1
 >
 > # 3. Test that everything works
-> ./.scripts/powershell/test.ps1
+> .\.scripts\powershell\test.ps1
 >
 > # 4. Build for ESP32
-> ./.scripts/powershell/build.ps1
+> .\.scripts\powershell\build.ps1
 > ```
 >
 > **Option 2: Use Git Bash and bash scripts**
->
 > 1. Open PowerShell and run:
 >    ```powershell
->    ./.scripts/setup-gitbash.ps1
+>    .\.scripts\setup-gitbash.ps1
 >    ```
 > 2. After setup, open a Git Bash terminal (not PowerShell or CMD).
 > 3. Run all project scripts (e.g., `build.sh`, `test.sh`, `install.sh`) in Git Bash using the same syntax as on macOS/Linux:
