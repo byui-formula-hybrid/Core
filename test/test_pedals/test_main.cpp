@@ -1,4 +1,5 @@
 #include <unity.h>
+#include "test_main.h"
 
 // Setup function called before each test
 void setUp(void) {
@@ -16,6 +17,6 @@ void test_pedals_basic() {
 
 int main() {
     UNITY_BEGIN();
-    RUN_TEST(test_pedals_basic);
+    run_pot_converter_tests();
     return UNITY_END();
 }
