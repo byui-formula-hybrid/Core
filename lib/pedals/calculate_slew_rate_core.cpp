@@ -90,3 +90,8 @@ SlewResult Pedals::evaluate_pedal_slew(
 
     return result;
 }
+
+SlewOutputs Pedals::validate_slew_rates(uint16_t accel_current, uint16_t accel_previous, uint16_t brake_current, uint16_t brake_previous, uint32_t now_ms)
+{
+    return SlewOutputs();
+}

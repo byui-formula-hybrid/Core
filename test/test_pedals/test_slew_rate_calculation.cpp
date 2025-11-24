@@ -27,10 +27,8 @@ void test_critical_detection() {
     TEST_ASSERT_EQUAL(Pedals::SlewStatus::CRITICAL, out.accel_status);
 }
 
-int main() {
-    UNITY_BEGIN();
+void tests_slew_rate() {
     RUN_TEST(test_slew_calculation);
     RUN_TEST(test_warning_detection);
-    RUN_TEST(test_critical_detection);
-    return UNITY_END();
+    RUN_TEST(test_critical_detection);   
 }

@@ -17,6 +17,8 @@ void test_pedals_basic() {
 
 int main() {
     UNITY_BEGIN();
-    run_pot_converter_tests();
+    tests_slew_rate();   
     return UNITY_END();
 }
+
+// .\.scripts\powershell\test.ps1 --verbose ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ THIS HELPSSSSSSS when you open powershell

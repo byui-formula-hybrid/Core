@@ -1,1 +1,1 @@
-void run_pot_converter_tests();
+void tests_slew_rate();
