@@ -1,23 +1,24 @@
-#include "core.h"
+#include "manager.h"
 
 using namespace CAN;
+using namespace TWAI;
+
+bool Manager::set_status() {
+    return provider->status_info(&status) == Result::OK;
+}
 
 bool Manager::install_driver() {
     // Reset GPIO pins
-    gpio_reset_pin((gpio_num_t)transmit_pin);
-    gpio_reset_pin((gpio_num_t)receive_pin);
+    provider->reset_pin(transmit_pin);
+    provider->reset_pin(receive_pin);
 
     // Configure TWAI driver
-    twai_timing_config_t t_config = timing_config;
-    twai_filter_config_t f_config = filter_config;
-    twai_general_config_t g_config = TWAI_GENERAL_CONFIG_DEFAULT(
-        (gpio_num_t)transmit_pin, 
-        (gpio_num_t)receive_pin, 
-        TWAI_MODE_NORMAL
-    );
+    TimingConfig t_config = timing_config;
+    FilterConfig f_config = filter_config;
+    GeneralConfig g_config = GeneralConfig(transmit_pin, receive_pin, Mode::NORMAL);
 
     // Install and start TWAI driver
-    if (twai_driver_install(&g_config, &t_config, &f_config) != ESP_OK) {
+    if (provider->install_driver(&g_config, &t_config, &f_config) != Result::OK) {
         // Failed to install TWAI driver
         return false;
     }
@@ -26,7 +27,7 @@ bool Manager::install_driver() {
 }
 
 bool Manager::uninstall_driver() {
-    return twai_driver_uninstall() != ESP_OK;
+    return provider->uninstall_driver() == Result::OK;
 }
 
 bool Manager::begin() {
@@ -42,7 +43,7 @@ bool Manager::begin() {
     }
 
     // Start TWAI driver
-    if (twai_start() != ESP_OK) {
+    if (provider->start() != Result::OK) {
         // Failed to start TWAI driver
         end();
         return false;
@@ -60,11 +61,11 @@ bool Manager::recover() {
     }
 
     switch (status.state) {
-        case TWAI_STATE_BUS_OFF:
-            return twai_initiate_recovery();
-        case TWAI_STATE_STOPPED:
+        case State::BUS_OFF:
+            return provider->initiate_recovery() == Result::OK;
+        case State::STOPPED:
             return true;
-        case TWAI_STATE_RECOVERING:
+        case State::RECOVERING:
             return true;
         default:
             return false;
@@ -78,9 +79,9 @@ bool Manager::restart() {
     }
 
     switch (status.state) {
-        case TWAI_STATE_STOPPED:
+        case State::STOPPED:
             // If stopped, start the driver
-            return twai_start();
+            return provider->start() == Result::OK;
         default:
             // For other states, restart is not applicable
             return false;
@@ -89,21 +90,21 @@ bool Manager::restart() {
 
 bool Manager::end() {
     // Stop and uninstall TWAI driver
-    bool did_stop = twai_stop() != ESP_OK;
+    bool did_stop = provider->stop() == Result::OK;
     bool did_uninstall = uninstall_driver();
     is_running = false;
     return did_stop && did_uninstall;
 }
 
 bool Manager::transmit(const Frame& frame, uint32_t timeout) {
-    if (twai_transmit(&frame, timeout) != ESP_OK) {
+    if (provider->transmit(&frame, timeout) != Result::OK) {
         return false;
     }
     return true;
 }
 
 bool Manager::receive(Frame& frame, uint32_t timeout) {
-    if (twai_receive(&frame, timeout) != ESP_OK) {
+    if (provider->receive(&frame, timeout) != Result::OK) {
         return false;
     }
     return true;

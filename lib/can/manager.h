@@ -1,10 +1,17 @@
 #pragma once
 
-#include <driver/twai.h>
+#include "twai_provider.h"
+#include <stdint.h>
+
+using namespace TWAI;
 
 namespace CAN {
 
-typedef twai_message_t Frame;
+template<typename T>
+struct Message {
+    uint32_t id;
+    T* data;
+};
 
 /*
  * Encodes a message of type T into a CAN frame.
@@ -15,7 +22,7 @@ typedef twai_message_t Frame;
 template<typename T>
 Frame encode(uint32_t id, const T& message) {
     const uint8_t* msg_ptr = (const uint8_t*) &message;
-    Frame frame;
+    Frame frame = {};
     frame.identifier = id;
     frame.data_length_code = 8;
     frame.data[0] = msg_ptr[0];
@@ -35,30 +42,41 @@ Frame encode(uint32_t id, const T& message) {
  * @returns The decoded message of type T.
  */ 
 template<typename T>
-Message<T> decode(const Frame& frame) {
-    Message<T> message;
+Message<T> decode(const Frame* frame) {
+    Message<T> message = {};
     // todo ensure that frame data length code is 8
     // error handling
-    message.data = (const T*) &frame.data;
-    message.id = frame.identifier;
+    message.data = (T*) frame->data;
+    message.id = frame->identifier;
     return message;
 }
-
-template<typename T>
-struct Message {
-    uint32_t id;
-    T data;
-};
 
 /*
  * Manager class for handling CAN operations.
  */
-struct Manager {
-    /*
-     * Sets the current status of the CAN manager.
-     * @returns true if status was set successfully, false otherwise.
-     */
-    bool set_status();
+class Manager {
+public:
+    // Indicates whether the CAN manager is currently running.
+    bool is_running = false;
+    // TWAI status information.
+    PIN transmit_pin;
+    // Receive pin for the CAN manager.
+    PIN receive_pin;
+    // Transmit queue size.
+    uint16_t transmit_queue_size = 5;
+    // Receive queue size.
+    uint16_t receive_queue_size = 5;
+    // Filter configuration for the CAN manager.
+    FilterConfig filter_config = FilterConfig(); // TWAI_FILTER_CONFIG_ACCEPT_ALL();
+    // Timing configuration for the CAN manager.
+    TimingConfig timing_config = TimingConfig(); // TWAI_TIMING_CONFIG_500KBITS();
+    // Status information for the CAN manager.
+    StatusInfo status;
+
+    Manager(TwaiProvider* provider, PIN transmit_pin, PIN receive_pin) : transmit_pin(transmit_pin), receive_pin(receive_pin) {}
+    Manager(TwaiProvider* provider) : provider(provider), transmit_pin(UNUSED), receive_pin(UNUSED) {}
+
+    ~Manager() = default;
 
     /*
      * Initializes the CAN manager.
@@ -113,22 +131,15 @@ struct Manager {
      */
     bool uninstall_driver();
 
-    // Indicates whether the CAN manager is currently running.
-    bool is_running = false;
-    // TWAI status information.
-    uint8_t transmit_pin = -1;
-    // Receive pin for the CAN manager.
-    uint8_t receive_pin = -1;
-    // Transmit queue size.
-    uint16_t transmit_queue_size = 5;
-    // Receive queue size.
-    uint16_t receive_queue_size = 5;
-    // Filter configuration for the CAN manager.
-    twai_filter_config_t filter_config = TWAI_FILTER_CONFIG_ACCEPT_ALL();
-    // Timing configuration for the CAN manager.
-    twai_timing_config_t timing_config = TWAI_TIMING_CONFIG_500KBITS();
-    // Status information for the CAN manager.
-    twai_status_info_t status;
+    private:
+    // Provides a wrapped implementation of the TWAI interface
+    TwaiProvider* provider;
+
+    /*
+     * Sets the current status of the CAN manager.
+     * @returns true if status was set successfully, false otherwise.
+     */
+    bool set_status();
 };
 
 } // namespace CAN

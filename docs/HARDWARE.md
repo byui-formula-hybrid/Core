@@ -13,7 +13,7 @@ PCBs that are customized to our needs
 All of our custom boards have the following as part of the boards. 
 
 #### Micro Controller
-- ESP32
+- ESP32 S3
 
 #### Connectivity
 - USB C

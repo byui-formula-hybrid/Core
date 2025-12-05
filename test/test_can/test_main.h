@@ -1,1 +1,1 @@
-void run_core_can_tests();
+void run_manager_can_tests();

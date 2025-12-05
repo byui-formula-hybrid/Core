@@ -7,6 +7,8 @@ export SCRIPT_DIR
 # Source shared functions
 source "$SCRIPT_DIR/shared.sh"
 
+CI_MODE=false
+
 while [[ $# -gt 0 ]]; do
     case $1 in
         --ci|-c)

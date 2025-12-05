@@ -14,6 +14,6 @@ void tearDown(void) {
 // Reuse the module main pattern and call all can tests
 int main() {
     UNITY_BEGIN();
-    run_core_can_tests();
+    run_manager_can_tests();
     return UNITY_END();
 }
