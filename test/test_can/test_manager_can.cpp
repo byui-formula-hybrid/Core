@@ -27,13 +27,6 @@ inline ManagerBundle make_manager() {
     return { manager, mock };
 }
 
-// TODO: Determine if we need to test this function or if it should/can remain private
-void test_can_set_status() {
-//     ManagerBundle bundle = make_manager();
-//     bool result = bundle.set_status();
-    // TEST_ASSERT_TRUE(result);
-}
-
 void test_can_begin() {
     ManagerBundle bundle = make_manager();
     bool result = bundle.manager.begin();
@@ -128,7 +121,6 @@ void test_can_decode() {
 }
 
 void run_manager_can_tests() {
-    RUN_TEST(test_can_set_status);
     RUN_TEST(test_can_begin);
     RUN_TEST(test_can_recover);
     RUN_TEST(test_can_restart);
