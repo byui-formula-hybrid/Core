@@ -1,7 +1,7 @@
 #include <unity.h>
 #include <cstring>
 #include "../../lib/pedals/message.h"
-#include "../../lib/can/core.h"
+#include "../../lib/can/service.h"
 
 using namespace Pedals;
 using namespace CAN;
@@ -19,17 +19,16 @@ void test_pedal_decoding() {
     frame.data[6] = 0x00;
     frame.data[7] = 0x00;
 
-    auto message = decode<Pedals::Message>(&frame);
+    auto message = frame.decode<Message>();
 
-    TEST_ASSERT_EQUAL(0x123, message.id);
-    TEST_ASSERT_EQUAL(0, message.data->accelerator_percentage);
-    TEST_ASSERT_EQUAL(false, message.data->is_braking);
-    TEST_ASSERT_EQUAL(0, message.data->accelerator_potentiometer1);
-    TEST_ASSERT_EQUAL(0, message.data->accelerator_potentiometer2);
-    TEST_ASSERT_EQUAL(0, message.data->brake_potentiometer1);
-    TEST_ASSERT_EQUAL(0, message.data->brake_potentiometer2);
-    TEST_ASSERT_EQUAL(0, message.data->brake_status);
-    TEST_ASSERT_EQUAL(0, message.data->accelerator_status);
+    TEST_ASSERT_EQUAL(0, message->accelerator_percentage);
+    TEST_ASSERT_EQUAL(false, message->is_braking);
+    TEST_ASSERT_EQUAL(0, message->accelerator_potentiometer1);
+    TEST_ASSERT_EQUAL(0, message->accelerator_potentiometer2);
+    TEST_ASSERT_EQUAL(0, message->brake_potentiometer1);
+    TEST_ASSERT_EQUAL(0, message->brake_potentiometer2);
+    TEST_ASSERT_EQUAL(0, message->brake_status);
+    TEST_ASSERT_EQUAL(0, message->accelerator_status);
 }
 
 void test_pedal_complex_binary_decoding() {
@@ -56,34 +55,31 @@ void test_pedal_complex_binary_decoding() {
     frame.data[6] = 0x87;
     frame.data[7] = 0x12;
     
-    auto message = decode<Pedals::Message>(&frame);
+    auto message = frame.decode<Pedals::Message>();
 
-    TEST_ASSERT_EQUAL(0x123, message.id);
-    TEST_ASSERT_EQUAL(63, message.data->accelerator_percentage);
-    TEST_ASSERT_EQUAL(true, message.data->is_braking);
-    TEST_ASSERT_EQUAL(2807, message.data->accelerator_potentiometer1);
-    TEST_ASSERT_EQUAL(4080, message.data->accelerator_potentiometer2);
-    TEST_ASSERT_EQUAL(1439, message.data->brake_potentiometer1);
-    TEST_ASSERT_EQUAL(2172, message.data->brake_potentiometer2);
-    TEST_ASSERT_EQUAL(Status::SLEW_WARNING, message.data->brake_status);
-    TEST_ASSERT_EQUAL(Status::SLEW_WARNING, message.data->accelerator_status);
+    TEST_ASSERT_EQUAL(63, message->accelerator_percentage);
+    TEST_ASSERT_EQUAL(true, message->is_braking);
+    TEST_ASSERT_EQUAL(2807, message->accelerator_potentiometer1);
+    TEST_ASSERT_EQUAL(4080, message->accelerator_potentiometer2);
+    TEST_ASSERT_EQUAL(1439, message->brake_potentiometer1);
+    TEST_ASSERT_EQUAL(2172, message->brake_potentiometer2);
+    TEST_ASSERT_EQUAL(Status::SLEW_WARNING, message->brake_status);
+    TEST_ASSERT_EQUAL(Status::SLEW_WARNING, message->accelerator_status);
 }
 
 void test_pedal_binary_encoding() {
-    CAN::Message<Pedals::Message> message;
-    message.data = new Pedals::Message();
-    message.id = 0x123;
+    Pedals::Message message;
 
-    message.data->accelerator_percentage = 0;
-    message.data->is_braking = false;
-    message.data->accelerator_potentiometer1 = 0;
-    message.data->accelerator_potentiometer2 = 0;
-    message.data->brake_potentiometer1 = 0;
-    message.data->brake_potentiometer2 = 0;
-    message.data->brake_status = Status::OK;
-    message.data->accelerator_status = Status::OK;
+    message.accelerator_percentage = 0;
+    message.is_braking = false;
+    message.accelerator_potentiometer1 = 0;
+    message.accelerator_potentiometer2 = 0;
+    message.brake_potentiometer1 = 0;
+    message.brake_potentiometer2 = 0;
+    message.brake_status = Status::OK;
+    message.accelerator_status = Status::OK;
 
-    auto frame = encode(message);
+    Frame frame(0, &message);
 
     TEST_ASSERT_EQUAL(0, frame.data[0]);
     TEST_ASSERT_EQUAL(0, frame.data[1]);
@@ -106,11 +102,7 @@ void test_pedal_complex_binary_encoding() {
     message.brake_status = (Status)0x4;
     message.accelerator_status = (Status)0x2;
 
-    CAN::Message<Pedals::Message> pedal_message;
-    pedal_message.id = 0x123;
-    pedal_message.data = &message;
-
-    auto frame = encode(pedal_message);
+    Frame frame(0, &message);
 
     TEST_ASSERT_EQUAL(0x39, frame.data[0]);
     TEST_ASSERT_EQUAL(0x00, frame.data[1]);

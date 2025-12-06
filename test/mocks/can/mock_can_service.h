@@ -1,13 +1,13 @@
 #pragma once
 #include <functional>
 #include <cstdint>
-#include "../../../lib/can/twai_provider.h"
+#include "../../../lib/can/service.h"
 
-using namespace TWAI;
+using namespace CAN;
 
 namespace MOCKS {
 
-class MockTwaiProvider : public TwaiProvider {
+class MockCanService : public Service {
 public:
     std::function<Result(const GeneralConfig*, const TimingConfig*, const FilterConfig*)>
         on_install_driver =

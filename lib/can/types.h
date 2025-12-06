@@ -2,7 +2,7 @@
 
 #include <stdint.h>
 
-namespace TWAI {
+namespace CAN {
 
 typedef uint32_t Tick;
 typedef uint32_t Alert;
@@ -98,7 +98,7 @@ enum PIN {
 struct Frame {
     union {
         struct {
-            //The order of these bits must match deprecated message flags for compatibility reasons
+            // The order of these bits must match deprecated message flags for compatibility reasons
             uint32_t extd: 1;           /**< Extended Frame Format (29bit ID) */
             uint32_t rtr: 1;            /**< Message is a Remote Frame */
             uint32_t ss: 1;             /**< Transmit as a Single Shot Transmission. Unused for received. */
@@ -111,6 +111,42 @@ struct Frame {
     uint32_t identifier;                /**< 11 or 29 bit identifier */
     uint8_t data_length_code;           /**< Data length code */
     uint8_t data[8];    /**< Data bytes (not relevant in RTR frame) */
+
+    Frame() {}
+
+    template<typename T>
+    Frame(uint32_t identifier, T* message) {
+        this->data_length_code = 8;
+        this->identifier = identifier;
+
+        const uint8_t* msg_ptr = (const uint8_t*) message;
+        this->data[0] = msg_ptr[0];
+        this->data[1] = msg_ptr[1];
+        this->data[2] = msg_ptr[2];
+        this->data[3] = msg_ptr[3];
+        this->data[4] = msg_ptr[4];
+        this->data[5] = msg_ptr[5];
+        this->data[6] = msg_ptr[6];
+        this->data[7] = msg_ptr[7];
+    }
+
+    Frame(uint32_t identifier, uint8_t* data) {
+        this->data_length_code = 8;
+        this->identifier = identifier;
+        this->data[0] = data[0];
+        this->data[1] = data[1];
+        this->data[2] = data[2];
+        this->data[3] = data[3];
+        this->data[4] = data[4];
+        this->data[5] = data[5];
+        this->data[6] = data[6];
+        this->data[7] = data[7];
+    }
+
+    template<typename T>
+    T* decode() {
+        return (T*) data;
+    }
 };
 
 struct FilterConfig {
@@ -181,23 +217,4 @@ struct GeneralConfig {
     }
 };
 
-class TwaiProvider {
-public: 
-    virtual const Result install_driver(const GeneralConfig *g_config, const TimingConfig *t_config, const FilterConfig *f_config) = 0;
-    virtual const Result uninstall_driver() = 0;
-    virtual const Result start() = 0;
-    virtual const Result stop() = 0;
-    virtual const Result transmit(const Frame *frame, Tick ticks_to_wait) = 0;
-    virtual const Result receive(Frame *frame, Tick ticks_to_wait) = 0;
-    virtual const Result alerts(Alert *alerts, Tick ticks_to_wait) = 0;
-    virtual const Result reconfigure_alerts(Alert alerts_enabled, Alert *current_alerts) = 0;
-    virtual const Result initiate_recovery() = 0;
-    virtual const Result status_info(StatusInfo *status_info) = 0;
-    virtual const Result clear_transmit_queue() = 0;
-    virtual const Result clear_receive_queue() = 0;
-    virtual const Result reset_pin(const PIN pin) = 0;
-
-    ~TwaiProvider() = default;
-};
-
-}
+} // namespace CAN

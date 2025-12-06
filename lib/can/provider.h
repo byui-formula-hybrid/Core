@@ -1,18 +1,16 @@
 #pragma once
 
-#include "twai_provider.h"
+#include "service.h"
 #include <stdint.h>
-
-using namespace TWAI;
 
 namespace CAN {
 
 /*
- * Manager class for handling CAN operations.
+ * Provider class for handling CAN operations.
  */
-class Manager {
+class Provider {
 public:
-    // Indicates whether the CAN manager is currently running.
+    // Indicates whether the CAN provider is currently running.
     bool is_running = false;
     // TWAI status information.
     PIN transmit_pin;
@@ -29,32 +27,32 @@ public:
     // Status information for the CAN manager.
     StatusInfo status;
 
-    Manager(TwaiProvider* provider, PIN transmit_pin, PIN receive_pin) : transmit_pin(transmit_pin), receive_pin(receive_pin) {}
-    Manager(TwaiProvider* provider) : provider(provider), transmit_pin(UNUSED), receive_pin(UNUSED) {}
+    Provider(Service* service, PIN transmit_pin, PIN receive_pin) : service(service), transmit_pin(transmit_pin), receive_pin(receive_pin) {}
+    Provider(Service* service) : service(service), transmit_pin(UNUSED), receive_pin(UNUSED) {}
 
-    ~Manager() = default;
+    ~Provider() = default;
 
     /*
-     * Initializes the CAN manager.
+     * Initializes the CAN provider.
      * @returns true if initialization was successful, false otherwise.
      */
     bool begin();
 
     /*
-     * Recovers the CAN manager from a bus-off state.
+     * Recovers the CAN provider from a bus-off state.
      * @returns true if recovery was successful, false otherwise.
      */
     bool recover();
 
     /*
-     * Restarts the CAN manager.
+     * Restarts the CAN provider.
      * @returns true if restart was successful, false otherwise.
      */
     bool restart();
 
 
     /*
-     * Ends the CAN manager.
+     * Ends the CAN provider.
      * @returns true if end was successful, false otherwise.
      */
     bool end();
@@ -89,10 +87,10 @@ public:
 
     private:
     // Provides a wrapped implementation of the TWAI interface
-    TwaiProvider* provider;
+    Service* service;
 
     /*
-     * Sets the current status of the CAN manager.
+     * Sets the current status of the CAN provider.
      * @returns true if status was set successfully, false otherwise.
      */
     bool set_status();

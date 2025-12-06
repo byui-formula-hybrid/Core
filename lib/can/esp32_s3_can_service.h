@@ -1,14 +1,12 @@
 #pragma once
 
-#include "twai_provider.h"
+#include "service.h"
 #include <driver/twai.h>
 #include <driver/gpio.h>
 
-using namespace TWAI;
-
 namespace CAN {
 
-class ESP32S3TwaiProvider : public TwaiProvider {
+class ESP32S3CanService : public Service {
 public:
 
     const Result install_driver(
