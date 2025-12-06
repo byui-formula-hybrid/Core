@@ -1,50 +1,44 @@
 #include <unity.h>
 #include <cstring>
 #include "../../lib/pedals/message.h"
+#include "../../lib/can/core.h"
 
-// using namespace Pedals;
-
-struct Message {
-    unsigned char accelerator_percentage: 7;
-    bool is_braking: 1;
-    unsigned short accelerator_potentiometer1: 12;
-    unsigned short accelerator_potentiometer2: 12;
-    unsigned short brake_potentiometer1: 12;
-    unsigned short brake_potentiometer2: 12;
-    unsigned char brake_status: 3;
-    unsigned char accelerator_status: 3;
-    unsigned char reserved: 2;
-};
-
-enum class Status: unsigned short {
-    OK = 0,
-    HARDWARE_FAILURE = 1,
-    SLEW_WARNING = 2,
-    SLEW_CRITICAL = 3,
-    CALIBRATION_WARNING = 4,
-    CALIBRATION_CRITICAL = 5
-};
-
+using namespace Pedals;
+using namespace CAN;
 
 void test_pedal_decoding() {
-    uint8_t raw_buffer[8] = { 0, 0, 0, 0, 0, 0, 0, 0 };
-    uint8_t* raw_buffer_ptr = raw_buffer;
-    auto* message = reinterpret_cast<Message*>(raw_buffer_ptr);
+    Frame frame;
+    frame.identifier = 0x123;
+    frame.data_length_code = 8;
+    frame.data[0] = 0x00;
+    frame.data[1] = 0x00;
+    frame.data[2] = 0x00;
+    frame.data[3] = 0x00;
+    frame.data[4] = 0x00;
+    frame.data[5] = 0x00;
+    frame.data[6] = 0x00;
+    frame.data[7] = 0x00;
 
-    TEST_ASSERT_EQUAL(0, message->accelerator_percentage);
-    TEST_ASSERT_EQUAL(false, message->is_braking);
-    TEST_ASSERT_EQUAL(0, message->accelerator_potentiometer1);
-    TEST_ASSERT_EQUAL(0, message->accelerator_potentiometer2);
-    TEST_ASSERT_EQUAL(0, message->brake_potentiometer1);
-    TEST_ASSERT_EQUAL(0, message->brake_potentiometer2);
-    TEST_ASSERT_EQUAL(0, message->brake_status);
-    TEST_ASSERT_EQUAL(0, message->accelerator_status);
+    auto message = decode<Pedals::Message>(&frame);
+
+    TEST_ASSERT_EQUAL(0x123, message.id);
+    TEST_ASSERT_EQUAL(0, message.data->accelerator_percentage);
+    TEST_ASSERT_EQUAL(false, message.data->is_braking);
+    TEST_ASSERT_EQUAL(0, message.data->accelerator_potentiometer1);
+    TEST_ASSERT_EQUAL(0, message.data->accelerator_potentiometer2);
+    TEST_ASSERT_EQUAL(0, message.data->brake_potentiometer1);
+    TEST_ASSERT_EQUAL(0, message.data->brake_potentiometer2);
+    TEST_ASSERT_EQUAL(0, message.data->brake_status);
+    TEST_ASSERT_EQUAL(0, message.data->accelerator_status);
 }
 
 void test_pedal_complex_binary_decoding() {
-    Message message;
+    Frame frame;
+    frame.identifier = 0x123;
+    frame.data_length_code = 8;
+
     /*   
-    * 0111 111       - 7  bits accelerator_percentage
+    * 0011 111       - 7  bits accelerator_percentage
     * 1              - 1  bit is_braking
     * 1010 1111 0111 - 12 bits accelerator_potentiometer1
     * 1111 1111 0000 - 12 bits accelerator_potentiometer2
@@ -53,59 +47,79 @@ void test_pedal_complex_binary_decoding() {
     * 0010           - 4  bits brake_status
     * 0010           - 4  bits accelerator_status
     */
-    uint8_t raw_buffer[8] = { 0x7F, 0xAF, 0x7F, 0xF0, 0x59, 0xF8, 0x7C, 0x22 };
-    uint8_t* raw_buffer_ptr = raw_buffer;
-    std::memcpy(&message, raw_buffer_ptr, sizeof(Message));
+    frame.data[0] = 0xBF;
+    frame.data[1] = 0xF7;
+    frame.data[2] = 0x0A;
+    frame.data[3] = 0xFF;
+    frame.data[4] = 0x9F;
+    frame.data[5] = 0xC5;
+    frame.data[6] = 0x87;
+    frame.data[7] = 0x12;
+    
+    auto message = decode<Pedals::Message>(&frame);
 
-    TEST_ASSERT_EQUAL(63, message.accelerator_percentage);
-    TEST_ASSERT_EQUAL(true, message.is_braking);
-    TEST_ASSERT_EQUAL(2807, message.accelerator_potentiometer1);
-    TEST_ASSERT_EQUAL(4080, message.accelerator_potentiometer2);
-    TEST_ASSERT_EQUAL(1439, message.brake_potentiometer1);
-    TEST_ASSERT_EQUAL(2172, message.brake_potentiometer2);
-    TEST_ASSERT_EQUAL(2, message.brake_status);
-    TEST_ASSERT_EQUAL(2, message.accelerator_status);
+    TEST_ASSERT_EQUAL(0x123, message.id);
+    TEST_ASSERT_EQUAL(63, message.data->accelerator_percentage);
+    TEST_ASSERT_EQUAL(true, message.data->is_braking);
+    TEST_ASSERT_EQUAL(2807, message.data->accelerator_potentiometer1);
+    TEST_ASSERT_EQUAL(4080, message.data->accelerator_potentiometer2);
+    TEST_ASSERT_EQUAL(1439, message.data->brake_potentiometer1);
+    TEST_ASSERT_EQUAL(2172, message.data->brake_potentiometer2);
+    TEST_ASSERT_EQUAL(Status::SLEW_WARNING, message.data->brake_status);
+    TEST_ASSERT_EQUAL(Status::SLEW_WARNING, message.data->accelerator_status);
 }
 
 void test_pedal_binary_encoding() {
-    Message message; 
-    uint8_t raw_buffer[8] = {};
-    uint8_t* raw_buffer_ptr = raw_buffer;
-    std::memcpy(raw_buffer_ptr, &message, sizeof(Message));
+    CAN::Message<Pedals::Message> message;
+    message.data = new Pedals::Message();
+    message.id = 0x123;
 
-    TEST_ASSERT_EQUAL(0, raw_buffer[0]);
-    TEST_ASSERT_EQUAL(0, raw_buffer[1]);
-    TEST_ASSERT_EQUAL(0, raw_buffer[2]);
-    TEST_ASSERT_EQUAL(0, raw_buffer[3]);
-    TEST_ASSERT_EQUAL(0, raw_buffer[4]);
-    TEST_ASSERT_EQUAL(0, raw_buffer[5]);
-    TEST_ASSERT_EQUAL(0, raw_buffer[6]);
-    TEST_ASSERT_EQUAL(0, raw_buffer[7]);
+    message.data->accelerator_percentage = 0;
+    message.data->is_braking = false;
+    message.data->accelerator_potentiometer1 = 0;
+    message.data->accelerator_potentiometer2 = 0;
+    message.data->brake_potentiometer1 = 0;
+    message.data->brake_potentiometer2 = 0;
+    message.data->brake_status = Status::OK;
+    message.data->accelerator_status = Status::OK;
+
+    auto frame = encode(message);
+
+    TEST_ASSERT_EQUAL(0, frame.data[0]);
+    TEST_ASSERT_EQUAL(0, frame.data[1]);
+    TEST_ASSERT_EQUAL(0, frame.data[2]);
+    TEST_ASSERT_EQUAL(0, frame.data[3]);
+    TEST_ASSERT_EQUAL(0, frame.data[4]);
+    TEST_ASSERT_EQUAL(0, frame.data[5]);
+    TEST_ASSERT_EQUAL(0, frame.data[6]);
+    TEST_ASSERT_EQUAL(0, frame.data[7]);
 }
 
 void test_pedal_complex_binary_encoding() {
-    Message message;
-    message.accelerator_percentage = 57;
-    message.is_braking = false;
-    message.accelerator_potentiometer1 = 0;
-    message.accelerator_potentiometer2 = 4095;
-    message.brake_potentiometer1 = 2375;
-    message.brake_potentiometer2 = 3749;
-    message.brake_status = 0;
-    message.accelerator_status = 4;
+    Pedals::Message message;
+    message.accelerator_percentage = 0x39;
+    message.is_braking = 0x0;
+    message.accelerator_potentiometer1 = 0x0;
+    message.accelerator_potentiometer2 = 0xFFF;
+    message.brake_potentiometer1 = 0x947;
+    message.brake_potentiometer2 = 0xEAD;
+    message.brake_status = (Status)0x4;
+    message.accelerator_status = (Status)0x2;
 
-    uint8_t raw_buffer[8] = {};
-    uint8_t* raw_buffer_ptr = raw_buffer;
-    std::memcpy(raw_buffer_ptr, &message, sizeof(Message));
+    CAN::Message<Pedals::Message> pedal_message;
+    pedal_message.id = 0x123;
+    pedal_message.data = &message;
 
-    TEST_ASSERT_EQUAL(0x39, raw_buffer[0]);
-    TEST_ASSERT_EQUAL(0x00, raw_buffer[1]);
-    TEST_ASSERT_EQUAL(0xD2, raw_buffer[2]);
-    TEST_ASSERT_EQUAL(0xFF, raw_buffer[3]);
-    TEST_ASSERT_EQUAL(0x57, raw_buffer[4]);
-    TEST_ASSERT_EQUAL(0xAB, raw_buffer[5]);
-    TEST_ASSERT_EQUAL(0x00, raw_buffer[6]);
-    TEST_ASSERT_EQUAL(0x40, raw_buffer[7]);
+    auto frame = encode(pedal_message);
+
+    TEST_ASSERT_EQUAL(0x39, frame.data[0]);
+    TEST_ASSERT_EQUAL(0x00, frame.data[1]);
+    TEST_ASSERT_EQUAL(0xF0, frame.data[2]);
+    TEST_ASSERT_EQUAL(0xFF, frame.data[3]);
+    TEST_ASSERT_EQUAL(0x47, frame.data[4]);
+    TEST_ASSERT_EQUAL(0xD9, frame.data[5]);
+    TEST_ASSERT_EQUAL(0xEA, frame.data[6]);
+    TEST_ASSERT_EQUAL(0x14, frame.data[7]);
 }
 
 void run_pedal_message_tests() {

@@ -15,5 +15,6 @@ void tearDown(void) {
 int main() {
     UNITY_BEGIN();
     run_manager_can_tests();
+    run_can_coding_tests();
     return UNITY_END();
 }

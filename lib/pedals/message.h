@@ -5,6 +5,18 @@
 namespace Pedals {
 
 /* 
+ * Status codes for pedal system.
+ */
+enum class Status: uint64_t {
+    OK = 0,
+    HARDWARE_FAILURE = 1,
+    SLEW_WARNING = 2,
+    SLEW_CRITICAL = 3,
+    CALIBRATION_WARNING = 4,
+    CALIBRATION_CRITICAL = 5
+};
+
+/* 
  * Message structure for pedal data communication.
  * Uses bit-fields to optimize data size.
  * Total size: 8 bytes (64 bits)
@@ -25,21 +37,9 @@ struct Message {
     uint64_t accelerator_potentiometer2: 12;
     uint64_t brake_potentiometer1: 12;
     uint64_t brake_potentiometer2: 12;
-    uint64_t brake_status: 3;
-    uint64_t accelerator_status: 3;
+    Status brake_status: 3;
+    Status accelerator_status: 3;
     uint64_t reserved: 2;
-};
-
-/* 
- * Status codes for pedal system.
- */
-enum class Status: uint64_t {
-    OK = 0,
-    HARDWARE_FAILURE = 1,
-    SLEW_WARNING = 2,
-    SLEW_CRITICAL = 3,
-    CALIBRATION_WARNING = 4,
-    CALIBRATION_CRITICAL = 5
 };
 
 }
