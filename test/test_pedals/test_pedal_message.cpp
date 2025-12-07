@@ -7,17 +7,8 @@ using namespace Pedals;
 using namespace CAN;
 
 void test_pedal_decoding() {
-    Frame frame;
-    frame.identifier = 0x123;
-    frame.data_length_code = 8;
-    frame.data[0] = 0x00;
-    frame.data[1] = 0x00;
-    frame.data[2] = 0x00;
-    frame.data[3] = 0x00;
-    frame.data[4] = 0x00;
-    frame.data[5] = 0x00;
-    frame.data[6] = 0x00;
-    frame.data[7] = 0x00;
+    uint8_t data[8] = {0,0,0,0,0,0,0,0};
+    Frame frame = Frame(0x123, data);
 
     auto message = frame.decode<Message>();
 
@@ -32,28 +23,8 @@ void test_pedal_decoding() {
 }
 
 void test_pedal_complex_binary_decoding() {
-    Frame frame;
-    frame.identifier = 0x123;
-    frame.data_length_code = 8;
-
-    /*   
-    * 0011 111       - 7  bits accelerator_percentage
-    * 1              - 1  bit is_braking
-    * 1010 1111 0111 - 12 bits accelerator_potentiometer1
-    * 1111 1111 0000 - 12 bits accelerator_potentiometer2
-    * 0101 1001 1111 - 12 bits brake_potentiometer1
-    * 1000 0111 1100 - 12 bits brake_potentiometer2
-    * 0010           - 4  bits brake_status
-    * 0010           - 4  bits accelerator_status
-    */
-    frame.data[0] = 0xBF;
-    frame.data[1] = 0xF7;
-    frame.data[2] = 0x0A;
-    frame.data[3] = 0xFF;
-    frame.data[4] = 0x9F;
-    frame.data[5] = 0xC5;
-    frame.data[6] = 0x87;
-    frame.data[7] = 0x12;
+    uint8_t data[8] = { 0xBF, 0xF7, 0x0A, 0xFF, 0x9F, 0xC5, 0x87, 0x12 };
+    Frame frame = Frame(0x123, data);
     
     auto message = frame.decode<Pedals::Message>();
 
