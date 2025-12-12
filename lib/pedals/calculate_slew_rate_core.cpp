@@ -36,26 +36,13 @@ void Pedals::rate_of_change_calculation(
 
 // -------- SLEW VALIDATION LOGIC -------- //
 SlewResult Pedals::evaluate_pedal_slew(
-    uint16_t accel_current,
-    uint16_t accel_previous,
-    uint16_t brake_current,
-    uint16_t brake_previous,
+    uint16_t accel_slew,
+    uint16_t brake_slew,
     uint32_t now_ms
 ) {
-    uint16_t accel_slew = 0;
-    uint16_t brake_slew = 0;
-
-    // 5 ms sampling
-    const uint16_t DT_MS = 5;
-
-    rate_of_change_calculation(accel_current, accel_previous, DT_MS, accel_slew);
-    rate_of_change_calculation(brake_current, brake_previous, DT_MS, brake_slew);
-
     SlewResult result;
     result.accel_status = SlewStatus::OK;
     result.brake_status = SlewStatus::OK;
-
-
 
     // -------- Accelerator checks --------
     if (accel_slew > CRITICAL_THRESHOLD) {
@@ -71,7 +58,7 @@ SlewResult Pedals::evaluate_pedal_slew(
         last_brake_warning_time = now_ms;
     }
 
-
+    
 
     // -------- TIME WINDOW EVALUATION --------
     // Accelerator
@@ -93,5 +80,23 @@ SlewResult Pedals::evaluate_pedal_slew(
 
 SlewOutputs Pedals::validate_slew_rates(uint16_t accel_current, uint16_t accel_previous, uint16_t brake_current, uint16_t brake_previous, uint32_t now_ms)
 {
-    return SlewOutputs();
+    uint16_t accel_slew = 0;
+    uint16_t brake_slew = 0;
+
+    // 5 ms sampling
+    const uint16_t DT_MS = 5;
+
+    rate_of_change_calculation(accel_current, accel_previous, DT_MS, accel_slew);
+    rate_of_change_calculation(brake_current, brake_previous, DT_MS, brake_slew);
+
+    SlewResult evaluated_slew = evaluate_pedal_slew(accel_slew, brake_slew, now_ms);
+
+    // output = SlewOutputs();
+    SlewOutputs validated_slew;
+    validated_slew.accel_slew = accel_slew;
+    validated_slew.brake_slew = brake_slew;
+    validated_slew.accel_status = evaluated_slew.accel_status;
+    validated_slew.brake_status = evaluated_slew.brake_status;
+    return validated_slew;
 }
+

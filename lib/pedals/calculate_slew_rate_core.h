@@ -30,10 +30,8 @@ void rate_of_change_calculation(
 );
 
 SlewResult evaluate_pedal_slew(
-    uint16_t accel_current,
-    uint16_t accel_previous,
-    uint16_t brake_current,
-    uint16_t brake_previous,
+    uint16_t accel_slew,
+    uint16_t brake_slew,
     uint32_t now_ms       // system time in ms
 );
 

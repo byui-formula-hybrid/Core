@@ -3,8 +3,8 @@
 
 void test_slew_calculation() {
     uint16_t slew = 0;
-    Pedals::rate_of_change_calculation(2000, 1000, 5, slew);
-    TEST_ASSERT_EQUAL_UINT16(200, slew); // (2000-1000)/5 = 200
+    Pedals::rate_of_change_calculation(10000, 7000, 5, slew);
+    TEST_ASSERT_EQUAL_UINT16(600, slew);
 }
 
 void test_warning_detection() {
