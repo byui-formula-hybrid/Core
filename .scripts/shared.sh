@@ -745,7 +745,6 @@ install_vscode_extensions() {
         return 1
     fi
 
-    install_vscode_extension "platformio.platformio-ide" "PlatformIO IDE"
     install_vscode_extension "bierner.markdown-mermaid" "Markdown Mermaid Preview"
     install_vscode_extension "yzhang.markdown-all-in-one" "Markdown All in One"
     install_vscode_extension "ms-python.python" "Python"
@@ -758,6 +757,7 @@ install_vscode_extensions() {
     install_vscode_extension "yzhang.markdown-all-in-one" "Markdown All in One"
     install_vscode_extension "aaron-bond.better-comments" "Better Comments"
     install_vscode_extension "yzhang.markdown-all-in-one" "Markdown All in One"
+    install_vscode_extension "platformio.platformio-ide" "PlatformIO IDE"
 }
 
 uninstall_vscode_extensions() {
