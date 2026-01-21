@@ -27,7 +27,7 @@ struct Message1F {
     ControlMode control_mode: 8;
     uint64_t target_iq: 16;
     uint64_t motor_position: 16;
-    bool is_motor_still: 1;
+    uint64_t is_motor_still: 1;
     uint64_t reserved: 23;
 };
 
