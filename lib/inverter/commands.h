@@ -6,8 +6,7 @@
 // https://zapdrive.eu/docs/assets/common/can_docs/v25/DTI%20CAN%20manual%20V2.5.pdf
 
 namespace Inverter {
-
-// TODO: Stick with CommandXX, or use name in documentation
+namespace Command {
 
 /*******************************
  * ID: 0x01
@@ -21,7 +20,7 @@ namespace Inverter {
  *                    parameters)
  * @param unused: Not relevant to the command. Fill with FFs or use 2-byte DLC
  ******************************/
-struct Command01 {
+struct SetACCurrent {
     uint64_t ac_current : 16;
     uint64_t unused : 48;
 };
@@ -34,7 +33,7 @@ struct Command01 {
  *                       currents are accepted
  * @param unused: Not relevant to the command. Fill with FFs or use 2-byte DLC. 
  ******************************/
-struct Command02 {
+struct SetBrakeCurrent {
     uint64_t brake_current : 16;
     uint64_t unused : 48;
 };
@@ -48,7 +47,7 @@ struct Command02 {
  *              Equation: ERPM = Motor RPM * number of the motor pole pairs
  * @param unused: Not relevant to the command. Fill with FFs or use 2-byte DLC. 
  ******************************/
-struct Command03 {
+struct SetSpeed {
     uint64_t erpm : 32;
     uint32_t unused : 32;
 };
@@ -61,7 +60,7 @@ struct Command03 {
  *                  The value has to be multiplied by 10 before sending.
  * @param unused: Not relevant to the command. Fill with FFs or use 2-byte DLC. 
  ******************************/
-struct Command04 {
+struct SetPosition {
     uint64_t position : 16;
     uint64_t unused : 48;
 };
@@ -78,7 +77,7 @@ struct Command04 {
  *                             by 10 before sending.
  * @param unused: Not relevant to the command. Fill with FFs or use 2-byte DLC. 
  ******************************/
-struct Command05 {
+struct SetRelativeACCurrent {
     uint64_t relative_ac_current : 16;
     uint64_t unused : 48;
 };
@@ -94,7 +93,7 @@ struct Command05 {
  *                                10 before sending
  * @param unused: Not relevant to the command. Fill with FFs or use 2-byte DLC. 
  ******************************/
-struct Command06 {
+struct SetRelativeBrakeCurrent {
     uint64_t relative_brake_current : 16;
     uint64_t unused : 48;
 };
@@ -105,13 +104,15 @@ struct Command06 {
  * @param digital_output_2: Sets the digital output 2 to HIGH (1) or LOW (0) state
  * @param digital_output_3: Sets the digital output 3 to HIGH (1) or LOW (0) state
  * @param digital_output_4: Sets the digital output 4 to HIGH (1) or LOW (0) state
+ * @param unused: Not document, likely treat like other unused, Fill with FFs
  ******************************/
-struct Command07 {
+struct SetDigitalOutput {
     uint64_t digital_output_1 : 8;
     uint64_t digital_output_1 : 8;
     uint64_t digital_output_1 : 8;
     uint64_t digital_output_1 : 8;
-}; // TODO: Documentations only lists 4 bytes but defines this as 8 bytes
+    uint64_t unused : 32;
+}; 
 
 /*******************************
  * ID: 0x08
@@ -121,7 +122,7 @@ struct Command07 {
  *                        The value must be multiplied by 10 before sending.
  * @param unused: Not relevant to the command. Fill with FFs or use 2-byte DLC. 
  ******************************/
-struct Command08 {
+struct SetMaxACCurrent {
     uint64_t max_ac_current : 16;
     uint64_t unused : 48;
 };
@@ -134,7 +135,7 @@ struct Command08 {
  *                           currents are accepted.
  * @param unused: Not relevant to the command. Fill with FFs or use 2-byte DLC. 
  ******************************/
-struct Command09 {
+struct SetMaxBrakeCurrent {
     uint64_t max_brake_current : 16;
     uint64_t unused : 48;
 };
@@ -147,7 +148,7 @@ struct Command09 {
  *                        The value has to be multiplied by 10 before sending.
  * @param unused: Not relevant to the command. Fill with FFs or use 2-byte DLC. 
  ******************************/
-struct Command0A {
+struct SetMaxDCCurrent {
     uint64_t max_dc_current : 16;
     uint64_t unused : 48;
 };
@@ -162,7 +163,7 @@ struct Command0A {
  *                              currents are accepted.
  * @param unused: Not relevant to the command. Fill with FFs or use 2-byte DLC. 
  ******************************/
-struct Command0B {
+struct SetMaxBrakeDCCurrent {
     uint64_t max_brake_dc_current : 16;
     uint64_t unused : 48;
 };
@@ -175,8 +176,10 @@ struct Command0B {
  *                      enabled. (250ms recommended)
  * @param unused: Not relevant to the command. Fill with FFs or use 1-byte DLC. 
  ******************************/
-struct Command0C {
+struct SetDriveEnable {
     uint64_t drive_enable : 8;
     uint64_t unused : 56;
+};
+
 };
 };
