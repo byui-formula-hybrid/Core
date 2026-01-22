@@ -7,6 +7,11 @@
 
 namespace Inverter {
 
+/**
+ * @brief Describes the control mode of the inverter 
+ *        Mainly used in multi-controller configurations for internal
+ *        communication. 
+ **/
 enum class ControlMode : uint64_t {
     // UNUSED MODES 0, 5, 6
     CONTROL_MODE_SPEED = 1,
@@ -16,7 +21,7 @@ enum class ControlMode : uint64_t {
     CONTROL_MODE_NONE = 7
 };
 
-/*******************************
+/**
  * @param OVERVOLTAGE:  The input voltage is higher than the set
  *                      maximum
  * @param UNDERVOLTAGE: The input voltage is lower than the set
@@ -35,7 +40,7 @@ enum class ControlMode : uint64_t {
  * @param CAN_COMMAND: CAN message received contains
  *                     parameter out of boundaries
  * @param ANALOG_INPUT: Redundant output out of range
- ******************************/
+ **/
 enum class FaultCodes : uint8_t {
     NONE = 0x00,
     OVERVOLTAGE = 0x01,
@@ -71,7 +76,7 @@ struct Message1F {
     uint64_t reserved: 23;
 };
 
-/*******************************
+/**
  * ID: 0x20
  * @name General data 1
  * @param erpm: Electrical RPM
@@ -79,14 +84,14 @@ struct Message1F {
  *                   the motor is running(positive) current or regenerating (negative)
  *                   current.
  * @param input_voltage: Input voltage is the DC voltage.
- ******************************/
+ **/
 struct Message20 {
     uint64_t erpm : 32;
     uint64_t duty_cycle : 16;
     uint64_t input_voltage : 16;
 };
 
-/*******************************
+/**
  * ID: 0x21
  * @name General data 2
  * @param ac_current: The motor current. The sign of this value represents whether the motor
@@ -95,21 +100,21 @@ struct Message20 {
  *                    whether the motor is running(positive) current or regenerating
  *                    (negative) current.
  * @param reserved: Filled with 0xFFs
- ******************************/
+ **/
 struct Message21 {
     uint64_t ac_current : 16;
     uint64_t dc_current : 16;
     uint64_t reserved : 32;
 };
 
-/*******************************
+/**
  * ID: 0x22
  * @name General data 3
  * @param controller_temp: Temperature of the inverter semiconductors.
  * @param motor_temp: Temperature of the motor measured by the inverter 
  * @param fault_code: Defined with the FaultCodes Enum
  * @param reserved: Filled with 0xFFs
- ******************************/
+ **/
 struct Message22 {
     uint64_t controller_temp : 16;
     uint64_t motor_temp : 16;
@@ -117,18 +122,18 @@ struct Message22 {
     uint64_t reserved : 24;
 };
 
-/*******************************
+/**
  * ID: 0x23
  * General data 4
  * @param id: FOC algorithm component Id
  * @param iq: FOC algorithm component Iq 
- ******************************/
+ **/
 struct Message23 {
     uint64_t id : 32;
     uint64_t iq : 32;
 };
 
-/*******************************
+/**
  * ID: 0x24
  * @name General data 5
  * @param throttle_signal: Throttle signal derived from analog inputs or CAN2
@@ -153,7 +158,7 @@ struct Message23 {
  * @param reserved0: Set to 0
  * @param reservedFF: Filled with 0xFFs
  * @param can_map_version: Indicates the CAN map version. For ex: 25 -> 2,5 (V2,5)
- ******************************/
+ **/
 struct Message24 {
     uint64_t throttle_signal : 8;
     uint64_t brake_signal : 8;
@@ -176,7 +181,7 @@ struct Message24 {
     uint64_t can_map_version : 8;
 };
 
-/*******************************
+/**
  * ID: 0x25
  * @name Configured and available AC currents 
  * @param max_ac_current: Max AC current configured with the DTI CAN tool. 
@@ -187,7 +192,7 @@ struct Message24 {
  * @param av_min_ac_current: Available min AC current. This value affected by the limitation
  *                        functions (igbt temp, motortemp etc.) Defines how much current
  *                        available from the configured one.
- ******************************/
+ **/
 struct Message25 {
    uint64_t max_ac_current : 16;
    uint64_t av_max_ac_current : 16;
@@ -195,7 +200,7 @@ struct Message25 {
    uint64_t av_min_ac_current : 16;
 };
 
-/*******************************
+/**
  * ID: 0x26
  * @name Configured and available DC currents
  * @param max_dc_current: Max DC current configured with the DTI CAN tool. 
@@ -206,7 +211,7 @@ struct Message25 {
  * @param av_min_dc_current: Available min DC current. This value affected by the limitation
  *                        functions (igbt temp, motortemp etc.) Defines how much current
  *                        available from the configured one.
- ******************************/
+ **/
 struct Message26 {
    uint64_t max_dc_current : 16;
    uint64_t av_max_dc_current : 16;
@@ -214,4 +219,4 @@ struct Message26 {
    uint64_t av_min_dc_current : 16;
 };
 
-};
+}; // Inverter
