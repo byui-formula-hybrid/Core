@@ -140,7 +140,7 @@ struct Message23 {
  * @param brake_signal: Brake signal derived from analog inputs or CAN2
  * @param digital_inputs: Digital input pins 1-4, 1 is active and 0 is inactive
  * @param digital_outputs: Digital output pins 1-4, 1 is active and 0 is inactive
- * @param drive_enable: 1 is Drive Enabled and 0 is Drive Disabled. Drive can be enabled/disbled by the digital input or/and via CAN2
+ * @param drive_enable: 1 is Drive Enabled and 0 is Drive Disabled. Drive can be enabled/disabled by the digital input or/and via CAN2
  *                     interface
  * @param capacitor_temp_limit: The inverter can limit the output power to not to overheat the
  *                            internal capacitors. (only valid HW version 3.6 or newer). 1 is Limit active, 0 is limit inactive

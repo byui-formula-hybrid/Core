@@ -49,7 +49,7 @@ struct SetBrakeCurrent {
  **/
 struct SetSpeed {
     uint64_t erpm : 32;
-    uint32_t reserved : 32;
+    uint64_t reserved : 32;
 };
 
 /**
@@ -104,13 +104,13 @@ struct SetRelativeBrakeCurrent {
  * @param digital_output_2: Sets the digital output 2 to HIGH (1) or LOW (0) state
  * @param digital_output_3: Sets the digital output 3 to HIGH (1) or LOW (0) state
  * @param digital_output_4: Sets the digital output 4 to HIGH (1) or LOW (0) state
- * @param reserved: Not document, likely treat like other unused, Fill with FFs
+ * @param reserved: Not documented, likely treated like other unused fields. Fill with FFs.
  **/
 struct SetDigitalOutput {
     uint64_t digital_output_1 : 8;
-    uint64_t digital_output_1 : 8;
-    uint64_t digital_output_1 : 8;
-    uint64_t digital_output_1 : 8;
+    uint64_t digital_output_2 : 8;
+    uint64_t digital_output_3 : 8;
+    uint64_t digital_output_4 : 8;
     uint64_t reserved : 32;
 }; 
 
