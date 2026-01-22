@@ -7,8 +7,7 @@ namespace Pedals {
 /* 
  * Status codes for pedal system.
  */
-[[deprecated]]
- enum class Status: uint64_t {
+ enum class [[deprecated]] Status: uint64_t {
     OK = 0,
     HARDWARE_FAILURE = 1,
     SLEW_WARNING = 2,
@@ -31,8 +30,7 @@ namespace Pedals {
  * - accelerator_status: 3 bits
  * - reserved: 2 bits
  */
-[[deprecated]]
- struct Message {
+ struct [[deprecated]] Message {
     uint64_t accelerator_percentage: 7;
     uint64_t is_braking: 1;
     uint64_t accelerator_potentiometer1: 12;

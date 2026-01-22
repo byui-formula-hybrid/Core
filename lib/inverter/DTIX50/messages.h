@@ -172,11 +172,11 @@ struct Message24 {
     uint64_t igbt_temp_limit : 1;
     uint64_t input_voltage_limit : 1;
     uint64_t motor_accel_temp_limit : 1;
-    uint64_t motor_temp_limit : 1;
+    uint64_t motor_temp_limit : 1; //
     uint64_t rpm_min_limit : 1;
     uint64_t rpm_max_limit : 1;
     uint64_t power_limit : 1;
-    uint64_t reserved0 : 4;
+    uint64_t reserved0 : 5;
     uint64_t reservedFF : 8;
     uint64_t can_map_version : 8;
 };

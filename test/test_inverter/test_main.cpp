@@ -1,4 +1,5 @@
 #include <unity.h>
+#include "test_main.h"
 
 // Setup function called before each test
 void setUp(void) {
@@ -17,5 +18,6 @@ void test_inverter_basic() {
 int main() {
     UNITY_BEGIN();
     RUN_TEST(test_inverter_basic);
+    run_DTIX50_message_tests();
     return UNITY_END();
 }
