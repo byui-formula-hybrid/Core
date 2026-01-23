@@ -100,10 +100,10 @@ struct SetRelativeBrakeCurrent {
 
 /**
  * ID: 0x07
- * @param digital_output_1: Sets the digital output 1 to HIGH (1) or LOW (0) state
- * @param digital_output_2: Sets the digital output 2 to HIGH (1) or LOW (0) state
- * @param digital_output_3: Sets the digital output 3 to HIGH (1) or LOW (0) state
- * @param digital_output_4: Sets the digital output 4 to HIGH (1) or LOW (0) state
+ * @param digital_output_1: Sets the digital output 1 to HIGH (1) or LOW (0) state, Physical pin 2
+ * @param digital_output_2: Sets the digital output 2 to HIGH (1) or LOW (0) state, Physical pin 10
+ * @param digital_output_3: Sets the digital output 3 to HIGH (1) or LOW (0) state, Physical pin 19
+ * @param digital_output_4: Sets the digital output 4 to HIGH (1) or LOW (0) state, Physical pin 20
  * @param reserved: Not documented, likely treated like other unused fields. Fill with FFs.
  **/
 struct SetDigitalOutput {

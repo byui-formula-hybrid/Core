@@ -37,7 +37,7 @@ void test_SetBrakeCurrent_command() {
 }
 
 void test_SetSpeed_command() {
-    SetSpeed command = { 0x0064, 0xFFFFFFFFFFFF };
+    SetSpeed command = { 0x0064, 0xFFFFFFFF };
 
     Frame frame(0x01, &command);
 
