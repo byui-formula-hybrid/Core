@@ -1,11 +1,12 @@
 #include <unity.h>
 #include <cstring>
-#include <cstdio>
 #include <../../lib/inverter/DTIX50/messages.h>
 #include "../../lib/can/service.h"
 
 using namespace Inverter;
 using namespace CAN;
+
+// The inverter expects the information in BIG endian, but for now we are just testing little endian values
 
 void test_message1F_encode_decode() {
     Message1F message_in = { ControlMode::CONTROL_MODE_SPEED, 0x03B6, 0x0167, false, 0x7FFFFF };

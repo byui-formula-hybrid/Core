@@ -19,5 +19,6 @@ int main() {
     UNITY_BEGIN();
     RUN_TEST(test_inverter_basic);
     run_DTIX50_message_tests();
+    run_DTIX50_command_tests();
     return UNITY_END();
 }
