@@ -1,22 +1,19 @@
 #include "can.h"
 
+#include "../core/lock/cmsis_os2_lock_strategy.h"
+
 using namespace CAN;
 
 namespace Inverter {
 namespace DTIX50 {
 
-CAN::CAN(Service *canService) {
+CAN::CAN(Service *canService, std::unique_ptr<iLockStrategy> lock_strategy, std::unique_ptr<iThreadStrategy> thread_strategy) : m_shouldStop_mut(std::move(lock_strategy)), m_thread(std::move(thread_strategy)) {
     m_canService = canService;
 
     enable = { 0x01, 0xFFFFFFFFFFFFFF };
     disable = { 0x00, 0xFFFFFFFFFFFFFF };
 
-    m_heartbeatAttr = 
-    {   
-        .name = "DTIX50.heartbeat", // Thread name for debugging
-        .attr_bits = osThreadJoinable, // We wait for the thread to join before sending a drive disable
-        .priority = osPriorityAboveNormal // Make sure that this thread has some priority
-    };
+    m_thread->setup("inverter.DTIX50.heartbeat", osThreadJoinable, osPriorityAboveNormal);
 }
 
 void CAN::start() {
@@ -39,7 +36,7 @@ void CAN::stop() {
     Frame frame(0x0C52, &disable);
 
     // Wait for the heartbeat to actually stop before sending drive disable
-    osThreadJoin(m_heartbeatID);
+    m_thread->join();
 
     m_canService->transmit(&frame, 1000);
 }
@@ -58,7 +55,7 @@ bool CAN::handleFrame(Frame &frame) {
 }
 
 void CAN::startHeartbeat() {
-    m_heartbeatID = osThreadNew(CAN::heartbeat, this, &m_heartbeatAttr);
+    m_thread->create(CAN::heartbeat, this);
 }
 
 // Sends a drive enable every ~250 milliseconds so the car doesn't stop

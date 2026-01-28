@@ -1,6 +1,9 @@
 #pragma once
 
-#include "../core/lock/cmsis_os2_lock_strategy.h"
+#include <memory>
+
+#include "../core/lock/i_lock_strategy.h"
+#include "../core/thread/i_thread_strategy.h"
 #include "../can/provider.h"
 #include "../can/types.h"
 
@@ -13,7 +16,8 @@ class CAN {
 protected:
     bool m_started;
     bool m_shouldStop;
-    Core::CMSISOS2LockStrategy m_shouldStop_mut;
+    std::unique_ptr<iLockStrategy> m_shouldStop_mut;
+    std::unique_ptr<iThreadStrategy> m_thread;
     Service *m_canService;
 public:
     virtual bool handleFrame(Frame &frame);

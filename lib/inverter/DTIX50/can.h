@@ -1,7 +1,5 @@
 #pragma once
 
-#include <cmsis_os2.h> // We need to generate the right code for the board we end up getting
-
 #include "../can.h"
 #include "commands.h"
 #include "messages.h"
@@ -13,13 +11,10 @@ namespace DTIX50 {
 
 class CAN : public Inverter::CAN {
 private:
-    osThreadAttr_t m_heartbeatAttr;
-    osThreadId_t m_heartbeatID;
-
     Command::SetDriveEnable enable;
     Command::SetDriveEnable disable;
 public:
-    CAN(Service* canService);
+    CAN(Service* canService, std::unique_ptr<iLockStrategy> lock_strategy, std::unique_ptr<iThreadStrategy> thread_strategy);
 
     void start() override;
     void stop() override;
