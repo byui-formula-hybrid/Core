@@ -8,19 +8,20 @@ namespace DTIX50 {
 CAN::CAN(Service *canService) {
     m_canService = canService;
 
+    enable = { 0x01, 0xFFFFFFFFFFFFFF };
+    disable = { 0x00, 0xFFFFFFFFFFFFFF };
+
     m_heartbeatAttr = 
     {   
-        .name = "heartbeat", // Thread name for debugging
+        .name = "DTIX50.heartbeat", // Thread name for debugging
         .attr_bits = osThreadJoinable, // We wait for the thread to join before sending a drive disable
         .priority = osPriorityAboveNormal // Make sure that this thread has some priority
     };
 }
 
 void CAN::start() {
-    // Send the drive enable
-    Command::SetDriveEnable command = { 0x01, 0xFFFFFFFFFFFFFF };
-
-    Frame frame(0x0C52, &command);
+    // Send drive enable
+    Frame frame(0x0C52, &enable);
 
     m_canService->transmit(&frame, 1000);
 
@@ -34,10 +35,8 @@ void CAN::stop() {
     m_shouldStop = true;
     m_shouldStop_mut.unlock();
 
-    // Set up the drive disable command
-    Command::SetDriveEnable command = { 0x0, 0xFFFFFFFFFFFFFF };
-
-    Frame frame(0x0C52, &command);
+    // Send drive disable
+    Frame frame(0x0C52, &disable);
 
     // Wait for the heartbeat to actually stop before sending drive disable
     osThreadJoin(m_heartbeatID);
@@ -73,10 +72,8 @@ void CAN::heartbeat(void* s) {
         if(self->m_shouldStop) return;
         self->m_shouldStop_mut.unlock();
 
-        // Send the drive enable
-        Command::SetDriveEnable command = { 0x01, 0xFFFFFFFFFFFFFF };
-
-        Frame frame(0x0C52, &command);
+        // Send drive enable
+        Frame frame(0x0C52, &enable);
 
         self->m_canService->transmit(&frame, 1000);
     }

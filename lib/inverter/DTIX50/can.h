@@ -15,6 +15,9 @@ class CAN : public Inverter::CAN {
 private:
     osThreadAttr_t m_heartbeatAttr;
     osThreadId_t m_heartbeatID;
+
+    Command::SetDriveEnable enable;
+    Command::SetDriveEnable disable;
 public:
     CAN(Service* canService);
 
