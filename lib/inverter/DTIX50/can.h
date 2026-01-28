@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cmsis_os2.h> // We need to generate the right code for the board we end up getting
+
 #include "../can.h"
 #include "commands.h"
 #include "messages.h"
@@ -16,9 +18,9 @@ private:
 public:
     CAN(Service* canService);
 
-    void start();
-    void stop();
-    bool handleFrame(Frame& frame);
+    void start() override;
+    void stop() override;
+    bool handleFrame(Frame& frame) override;
 private:
     FaultCodes getFaultCode(Frame &frame);
     void startHeartbeat();

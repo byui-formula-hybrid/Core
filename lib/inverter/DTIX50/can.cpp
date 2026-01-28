@@ -1,5 +1,4 @@
 #include "can.h"
-#include <cmsis_os2.h> // We need to generate the right code for the board we end up getting
 
 using namespace CAN;
 
@@ -47,6 +46,7 @@ void CAN::stop() {
 }
 
 // This is the current way that the node will handle messages, still much to do
+// Likely we'll want to write an error enum so that we can track the specific errors
 bool CAN::handleFrame(Frame &frame) {
     switch(frame.identifier) {
         case 0x2252:

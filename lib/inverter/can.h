@@ -1,7 +1,6 @@
 #pragma once
 
-#include <mutex>
-
+#include "../core/lock/cmsis_os2_lock_strategy.h"
 #include "../can/provider.h"
 #include "../can/types.h"
 
@@ -14,7 +13,7 @@ class CAN {
 protected:
     bool m_started;
     bool m_shouldStop;
-    std::mutex m_shouldStop_mut;
+    Core::CMSISOS2LockStrategy m_shouldStop_mut;
     Service *m_canService;
 public:
     virtual bool handleFrame(Frame &frame);
