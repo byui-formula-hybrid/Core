@@ -1,7 +1,7 @@
 #ifndef POT_CONVERTER_H
 #define POT_CONVERTER_H
 
-class PotConverter {
+class [[deprecated]] PotConverter {
 private:
     // Node structure for linked list
     struct Node {
