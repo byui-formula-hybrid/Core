@@ -10,10 +10,7 @@ private:
     std::thread m_thread;
     const char* m_name;
 public:
-    void setup(const char* name, uint32_t priority, uint32_t attributes) override {
-        m_name = name;
-        return;
-    }
+    void setup(const char* name, uint32_t priority, uint32_t attributes) override {}
     uint32_t create(taskFunc task, void* argument) override {
         m_thread = std::thread(task, argument);
         return 0;

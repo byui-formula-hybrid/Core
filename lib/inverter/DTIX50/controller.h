@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../can.h"
+#include "../controller.h"
 #include "commands.h"
 #include "messages.h"
 
@@ -9,12 +9,12 @@ using namespace CAN;
 namespace Inverter {
 namespace DTIX50 {
 
-class CAN : public Inverter::CAN {
+class Controller : public Inverter::Controller {
 private:
     Command::SetDriveEnable enable;
     Command::SetDriveEnable disable;
 public:
-    CAN(Service* canService, std::unique_ptr<Core::iLockStrategy> lock_strategy, std::unique_ptr<Core::iThreadStrategy> thread_strategy);
+    Controller(Service* canService, std::unique_ptr<Core::iLockStrategy> lock_strategy, std::unique_ptr<Core::iThreadStrategy> thread_strategy);
 
     void start() override;
     void stop() override;

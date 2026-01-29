@@ -5,7 +5,7 @@
 #include "../../lib/inverter/DTIX50/commands.h"
 #include "../../lib/inverter/DTIX50/messages.h"
 
-#include "../../lib/inverter/DTIX50/can.h"
+#include "../../lib/inverter/DTIX50/controller.h"
 #include "../mocks/can/mock_can_service.h"
 #include "../mocks/strategies/native_lock_strategy.h"
 #include "../mocks/strategies/native_thread_strategy.h"
@@ -16,7 +16,7 @@ using namespace MOCKS;
 void test_Start_and_Stop() {
     MockCanService* canService;
     canService = new MockCanService();
-    DTIX50::CAN controller(canService, std::unique_ptr<Core::iLockStrategy>(new NativeLockStrategy()), std::unique_ptr<Core::iThreadStrategy>(new nativeThreadStrategy()));
+    DTIX50::Controller controller(canService, std::unique_ptr<Core::iLockStrategy>(new NativeLockStrategy()), std::unique_ptr<Core::iThreadStrategy>(new nativeThreadStrategy()));
     controller.start();
 
     TEST_ASSERT(controller.started());

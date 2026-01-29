@@ -12,7 +12,7 @@ using namespace CAN;
 namespace Inverter {
 
 // Virtual base class that we can use to implement for any inverter
-class CAN {
+class Controller {
 protected:
     bool m_started;
     bool m_shouldStop;
