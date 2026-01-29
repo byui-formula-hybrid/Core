@@ -5,7 +5,7 @@
 
 #include "../../../lib/core/thread/i_thread_strategy.h"
 
-class nativeThreadStrategy : public Core::iThreadStrategy {
+class NativeThreadStrategy : public Core::iThreadStrategy {
 private:
     std::thread m_thread;
     const char* m_name;

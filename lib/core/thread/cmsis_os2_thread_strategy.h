@@ -1,5 +1,6 @@
 #pragma once
 
+// Ensures the following code is only compiled when on an arduino
 #ifndef ARDUINO_ARCH_NATIVE
 
 #include <cmsis_os2.h>

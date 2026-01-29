@@ -16,7 +16,7 @@ using namespace MOCKS;
 void test_Start_and_Stop() {
     MockCanService* canService;
     canService = new MockCanService();
-    DTIX50::Controller controller(canService, std::unique_ptr<Core::iLockStrategy>(new NativeLockStrategy()), std::unique_ptr<Core::iThreadStrategy>(new nativeThreadStrategy()));
+    DTIX50::Controller controller(canService, std::unique_ptr<Core::iLockStrategy>(new NativeLockStrategy()), std::unique_ptr<Core::iThreadStrategy>(new NativeThreadStrategy()));
     controller.start();
 
     TEST_ASSERT(controller.started());

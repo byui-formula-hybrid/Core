@@ -11,7 +11,22 @@ using namespace CAN;
 
 namespace Inverter {
 
-// Virtual base class that we can use to implement for any inverter
+/**
+ * @brief Virtual base class that we can use to implement for any inverter
+ * 
+ * @param m_started: Should be set by start() to indicate that the controller is active
+ * @param m_shouldStop: Made for use with multithreaded controllers to tell threads to stop
+ * @param m_shouldStop_mut: For use in conjunction with m_shouldStop to verify safety in reading and writing
+ * @param m_thread: The thread strategy for a platform-agnostic threading solution
+ * @param m_canService: The Service for transmitting/recieving on the CAN Bus
+ * 
+ * @fn handleFrame: The function to be called to interpret specific messages for the device
+ *                  Currently returns false if there is an error, or true if all is good
+ * @fn start: used to send any startup commands, also used to start the m_thread, sets m_started to true
+ * @fn stop:  used to send any shutdown commands, should set m_shouldStop to false to stop threads, set m_started to false
+ * @fn started: returns m_started
+ */
+
 class Controller {
 protected:
     bool m_started;

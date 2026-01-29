@@ -1,9 +1,9 @@
 #pragma once
 
-#include "i_lock_strategy.h"
-
+// Ensures the following code is only compiled when on an arduino
 #ifndef ARDUINO_ARCH_NATIVE
 
+#include "i_lock_strategy.h"
 #include <cmsis_os2.h>
 #include <portable/IAR/ARM_CM7/r0p1/portmacro.h>
 
