@@ -26,6 +26,8 @@ void CAN::start() {
 
     // Start the heartbeat for drive enable
     startHeartbeat();
+
+    m_started = true;
 }
 
 void CAN::stop() {
@@ -41,6 +43,8 @@ void CAN::stop() {
     m_thread->join();
 
     m_canService->transmit(&frame, 1000);
+
+    m_started = false;
 }
 
 // This is the current way that the node will handle messages, still much to do
@@ -54,6 +58,8 @@ bool CAN::handleFrame(Frame &frame) {
         default:
             return true;
     }
+
+    return true;
 }
 
 void CAN::startHeartbeat() {

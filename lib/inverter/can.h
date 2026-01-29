@@ -20,9 +20,11 @@ protected:
     std::unique_ptr<Core::iThreadStrategy> m_thread;
     Service *m_canService;
 public:
-    virtual bool handleFrame(Frame &frame);
-    virtual void start();
-    virtual void stop();
+    virtual bool handleFrame(Frame &frame) = 0;
+    virtual void start() = 0;
+    virtual void stop() = 0;
+
+    bool started() { return m_started; }
 };
 
 }

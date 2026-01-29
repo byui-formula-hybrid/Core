@@ -3,10 +3,11 @@
 #ifndef ARDUINO_ARCH_NATIVE
 
 #include <cmsis_os2.h>
+#include "i_thread_strategy.h"
 
 namespace Core {
 
-class CMSISOS2Thread {
+class CMSISOS2Thread : public iThreadStrategy {
 private:
     osThreadAttr_t m_attribute;
     osThreadId_t m_id;
