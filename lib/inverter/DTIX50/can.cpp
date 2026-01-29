@@ -7,13 +7,15 @@ using namespace CAN;
 namespace Inverter {
 namespace DTIX50 {
 
-CAN::CAN(Service *canService, std::unique_ptr<iLockStrategy> lock_strategy, std::unique_ptr<iThreadStrategy> thread_strategy) : m_shouldStop_mut(std::move(lock_strategy)), m_thread(std::move(thread_strategy)) {
+CAN::CAN(Service *canService, std::unique_ptr<Core::iLockStrategy> lock_strategy, std::unique_ptr<Core::iThreadStrategy> thread_strategy) {
     m_canService = canService;
+    m_shouldStop_mut = std::move(lock_strategy);
+    m_thread = std::move(thread_strategy);
 
     enable = { 0x01, 0xFFFFFFFFFFFFFF };
     disable = { 0x00, 0xFFFFFFFFFFFFFF };
 
-    m_thread->setup("inverter.DTIX50.heartbeat", osThreadJoinable, osPriorityAboveNormal);
+    m_thread->setup("inverter.DTIX50.heartbeat", 0x01U, 0x20U);
 }
 
 void CAN::start() {
@@ -28,9 +30,9 @@ void CAN::start() {
 
 void CAN::stop() {
     // Set shouldStop so that the heartbeat knows that we're stopping
-    m_shouldStop_mut.lock();
+    m_shouldStop_mut->lock();
     m_shouldStop = true;
-    m_shouldStop_mut.unlock();
+    m_shouldStop_mut->unlock();
 
     // Send drive disable
     Frame frame(0x0C52, &disable);
@@ -62,15 +64,15 @@ void CAN::startHeartbeat() {
 void CAN::heartbeat(void* s) {
     CAN* self = (CAN*)s;
     for(;;) {
-        osDelay(250U);
+        self->m_thread->sleep(250U);
 
         // Check if it's time to stop
-        self->m_shouldStop_mut.lock();
+        self->m_shouldStop_mut->lock();
         if(self->m_shouldStop) return;
-        self->m_shouldStop_mut.unlock();
+        self->m_shouldStop_mut->unlock();
 
         // Send drive enable
-        Frame frame(0x0C52, &enable);
+        Frame frame(0x0C52, &self->enable);
 
         self->m_canService->transmit(&frame, 1000);
     }

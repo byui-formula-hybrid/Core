@@ -26,6 +26,10 @@ public:
     void join() override {
         osThreadJoin(m_id);
     }
+
+    void sleep(uint32_t millis) override {
+        osDelay(millis);
+    }
 };
 
 }

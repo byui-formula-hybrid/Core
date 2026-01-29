@@ -16,8 +16,8 @@ class CAN {
 protected:
     bool m_started;
     bool m_shouldStop;
-    std::unique_ptr<iLockStrategy> m_shouldStop_mut;
-    std::unique_ptr<iThreadStrategy> m_thread;
+    std::unique_ptr<Core::iLockStrategy> m_shouldStop_mut;
+    std::unique_ptr<Core::iThreadStrategy> m_thread;
     Service *m_canService;
 public:
     virtual bool handleFrame(Frame &frame);
