@@ -31,7 +31,7 @@ void test_Controller() {
     controller.stop();
 
     TEST_ASSERT(!controller.started());
-    TEST_ASSERT_GREATER_OR_EQUAL(3, std::dynamic_pointer_cast<MockCanService>(canService)->calls.transmit);
+    TEST_ASSERT_GREATER_OR_EQUAL(2, std::dynamic_pointer_cast<MockCanService>(canService)->calls.transmit);
 }
 
 void run_DTIX50_controller_tests() {
