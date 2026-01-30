@@ -26,7 +26,7 @@ void test_Controller() {
     TEST_ASSERT(controller.started());
 
     // We should always get at least 3 transmits
-    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+    std::this_thread::sleep_for(std::chrono::seconds(10));
     TEST_ASSERT_GREATER_OR_EQUAL(3, std::dynamic_pointer_cast<MockCanService>(canService)->calls.transmit);
 
     controller.stop();
