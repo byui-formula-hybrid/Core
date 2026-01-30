@@ -15,7 +15,10 @@ Controller::Controller(std::shared_ptr<Service> canService, std::unique_ptr<Core
     enable = { 0x01, 0xFFFFFFFFFFFFFF };
     disable = { 0x00, 0xFFFFFFFFFFFFFF };
 
-    m_thread->setup("inverter.DTIX50.heartbeat", 0x01U, 0x20U);
+    m_thread->setup("inverter.DTIX50.heartbeat", // name
+                    0x17U, // priority - osPriorityBelowNormal7
+                    0x01U  // attributes - osThreadJoinable
+                   );
 }
 
 void Controller::start() {
