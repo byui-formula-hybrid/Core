@@ -26,7 +26,7 @@ void test_Controller() {
     TEST_ASSERT(controller.started());
 
     // We should always get at least 3 transmits
-    std::this_thread::sleep_for(std::chrono::seconds(1));
+    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 
     controller.stop();
 
