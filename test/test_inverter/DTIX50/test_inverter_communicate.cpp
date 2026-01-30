@@ -27,11 +27,11 @@ void test_Controller() {
 
     // We should always get at least 3 transmits
     std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+    TEST_ASSERT_GREATER_OR_EQUAL(3, std::dynamic_pointer_cast<MockCanService>(canService)->calls.transmit);
 
     controller.stop();
 
     TEST_ASSERT(!controller.started());
-    TEST_ASSERT_GREATER_OR_EQUAL(2, std::dynamic_pointer_cast<MockCanService>(canService)->calls.transmit);
 }
 
 void run_DTIX50_controller_tests() {
