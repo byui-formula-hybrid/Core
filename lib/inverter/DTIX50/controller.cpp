@@ -77,7 +77,11 @@ void Controller::heartbeat(void* s) {
 
         // Check if it's time to stop
         self->m_shouldStop_mut->lock();
-        if(self->m_shouldStop) return;
+        if(self->m_shouldStop) 
+        {
+            self->m_shouldStop_mut->unlock();
+            return;
+        }
         self->m_shouldStop_mut->unlock();
 
         // Send drive enable
