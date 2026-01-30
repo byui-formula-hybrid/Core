@@ -14,7 +14,7 @@ private:
     Command::SetDriveEnable enable;
     Command::SetDriveEnable disable;
 public:
-    Controller(Service* canService, std::unique_ptr<Core::iLockStrategy> lock_strategy, std::unique_ptr<Core::iThreadStrategy> thread_strategy);
+    Controller(std::shared_ptr<Service> canService, std::unique_ptr<Core::iLockStrategy> lock_strategy, std::unique_ptr<Core::iThreadStrategy> thread_strategy);
 
     void start() override;
     void stop() override;

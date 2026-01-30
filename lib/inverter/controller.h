@@ -33,7 +33,7 @@ protected:
     bool m_shouldStop;
     std::unique_ptr<Core::iLockStrategy> m_shouldStop_mut;
     std::unique_ptr<Core::iThreadStrategy> m_thread;
-    Service *m_canService;
+    std::shared_ptr<Service> m_canService;
 public:
     virtual bool handleFrame(Frame &frame) = 0;
     virtual void start() = 0;

@@ -7,7 +7,7 @@ using namespace CAN;
 namespace Inverter {
 namespace DTIX50 {
 
-Controller::Controller(Service *canService, std::unique_ptr<Core::iLockStrategy> lock_strategy, std::unique_ptr<Core::iThreadStrategy> thread_strategy) {
+Controller::Controller(std::shared_ptr<Service> canService, std::unique_ptr<Core::iLockStrategy> lock_strategy, std::unique_ptr<Core::iThreadStrategy> thread_strategy) {
     m_canService = canService;
     m_shouldStop_mut = std::move(lock_strategy);
     m_thread = std::move(thread_strategy);
