@@ -18,9 +18,9 @@ public:
 
     void start() override;
     void stop() override;
-    bool handleFrame(Frame& frame) override;
+    bool handleFrame(const Frame& frame) override;
 private:
-    FaultCodes getFaultCode(Frame &frame);
+    FaultCodes getFaultCode(const Frame &frame);
     void startHeartbeat();
 
     static void heartbeat(void* s);

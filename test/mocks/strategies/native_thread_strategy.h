@@ -10,7 +10,7 @@ private:
     std::thread m_thread;
     const char* m_name;
 public:
-    void setup(const char* name, uint32_t priority, uint32_t attributes) override {}
+    void setup(const char* name, const uint32_t priority, const uint32_t attributes) override {}
     uint32_t create(taskFunc task, void* argument) override {
         m_thread = std::thread(task, argument);
         return 0;
@@ -20,7 +20,7 @@ public:
         m_thread.join();
     }
 
-    void sleep(uint32_t millis) override {
+    void sleep(const uint32_t millis) override {
         std::this_thread::sleep_for(std::chrono::milliseconds(millis));
     }
 };

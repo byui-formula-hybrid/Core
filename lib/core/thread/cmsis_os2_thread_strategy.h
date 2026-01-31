@@ -13,7 +13,7 @@ private:
     osThreadAttr_t m_attribute;
     osThreadId_t m_id;
 public:
-    void setup(const char* name, uint32_t priority = osPriorityNormal, uint32_t attributes = NULL) override {
+    void setup(const char* name, const uint32_t priority = osPriorityNormal, const uint32_t attributes = NULL) override {
         m_attribute = 
         {
             .name = name,
@@ -29,7 +29,7 @@ public:
         osThreadJoin(m_id);
     }
 
-    void sleep(uint32_t millis) override {
+    void sleep(const uint32_t millis) override {
         osDelay(millis);
     }
 };

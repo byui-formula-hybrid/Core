@@ -54,7 +54,7 @@ void Controller::stop() {
 
 // This is the current way that the node will handle messages, still much to do
 // Likely we'll want to write an error enum so that we can track the specific errors
-bool Controller::handleFrame(Frame &frame) {
+bool Controller::handleFrame(const Frame &frame) {
     switch(frame.identifier) {
         case 0x2252:
             if(getFaultCode(frame) != FaultCodes::NONE)
@@ -94,7 +94,7 @@ void Controller::heartbeat(void* s) {
 }
 
 // Just interprets message22 and sends the error codes
-FaultCodes Controller::getFaultCode(Frame &frame) {
+FaultCodes Controller::getFaultCode(const Frame &frame) {
     auto message = frame.decode<Message22>();
 
     return message->fault_code;

@@ -2,6 +2,8 @@
 
 #include <memory>
 
+#include <map>
+
 #include "../core/lock/i_lock_strategy.h"
 #include "../core/thread/i_thread_strategy.h"
 #include "../can/provider.h"
@@ -35,7 +37,7 @@ protected:
     std::unique_ptr<Core::iThreadStrategy> m_thread;
     std::shared_ptr<Service> m_canService;
 public:
-    virtual bool handleFrame(Frame &frame) = 0;
+    virtual bool handleFrame(const Frame &frame) = 0;
     virtual void start() = 0;
     virtual void stop() = 0;
 
