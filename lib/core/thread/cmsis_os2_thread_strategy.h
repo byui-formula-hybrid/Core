@@ -8,7 +8,7 @@
 
 namespace Core {
 
-class CMSISOS2Thread : public iThreadStrategy {
+class CMSISOS2ThreadStrategy : public iThreadStrategy {
 private:
     osThreadAttr_t m_attribute;
     osThreadId_t m_id;
