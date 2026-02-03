@@ -1,7 +1,5 @@
 #include "controller.h"
 
-#include "../core/lock/cmsis_os2_lock_strategy.h"
-
 using namespace CAN;
 
 namespace Inverter {
