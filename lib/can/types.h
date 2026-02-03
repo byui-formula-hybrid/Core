@@ -144,7 +144,7 @@ struct Frame {
     }
 
     template<typename T>
-    T* decode() {
+    T* decode() const {
         return (T*) data;
     }
 };

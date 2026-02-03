@@ -1,0 +1,30 @@
+#pragma once
+
+#include "../controller.h"
+#include "commands.h"
+#include "messages.h"
+
+using namespace CAN;
+
+namespace Inverter {
+namespace DTIX50 {
+
+class Controller : public Inverter::Controller {
+private:
+    Command::SetDriveEnable enable;
+    Command::SetDriveEnable disable;
+public:
+    Controller(std::shared_ptr<Service> canService, std::unique_ptr<Core::iLockStrategy> lock_strategy, std::unique_ptr<Core::iThreadStrategy> thread_strategy);
+
+    void start() override;
+    void stop() override;
+    bool handleFrame(const Frame& frame) override;
+private:
+    FaultCodes getFaultCode(const Frame &frame);
+    void startHeartbeat();
+
+    static void heartbeat(void* s);
+};
+
+}
+}
