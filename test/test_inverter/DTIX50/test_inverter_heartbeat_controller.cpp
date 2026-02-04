@@ -34,6 +34,8 @@ void test_Heartbeat() {
     heartbeat.stop();
 
     TEST_ASSERT(!heartbeat.started());
+
+    free(canService);
 }
 
 void run_DTIX50_controller_tests() {
