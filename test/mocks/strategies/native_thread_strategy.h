@@ -8,7 +8,6 @@
 class NativeThreadStrategy : public Core::iThreadStrategy {
 private:
     std::thread m_thread;
-    const char* m_name;
 public:
     void setup(const char* name, const uint32_t priority, const uint32_t attributes) override {}
     uint32_t create(taskFunc task, void* argument) override {
@@ -17,7 +16,8 @@ public:
     }
 
     void join() override {
-        m_thread.join();
+        if(m_thread.joinable())
+            m_thread.join();
     }
 
     void sleep(const uint32_t millis) override {
