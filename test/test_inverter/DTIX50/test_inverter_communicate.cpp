@@ -35,7 +35,7 @@ void test_Heartbeat() {
     TEST_ASSERT(!heartbeat.started());
     } catch (const std::exception& e) {
         TEST_FAIL_MESSAGE(("Heartbeat thread exception: " + std::string(e.what())).c_str());
-    } catch {
+    } catch (...) {
         TEST_FAIL_MESSAGE("Heartbeat thread unknown exception");
     }
 }
