@@ -20,18 +20,18 @@ void test_Heartbeat() {
     std::unique_ptr<Core::iLockStrategy> lockStrategy(new NativeLockStrategy()); // We'll want the class to recieve ownership
     std::unique_ptr<Core::iThreadStrategy> threadStrategy(new NativeThreadStrategy()); // We'll want the class to recieve ownership
 
-    DTIX50::Controller controller(canService, std::move(lockStrategy), std::move(threadStrategy));
-    controller.start();
+    DTIX50::Heartbeat heartbeat(canService, std::move(lockStrategy), std::move(threadStrategy));
+    heartbeat.start();
 
-    TEST_ASSERT(controller.started());
+    TEST_ASSERT(heartbeat.started());
 
     // We should always get at least 3 transmits
     std::this_thread::sleep_for(std::chrono::seconds(1));
     TEST_ASSERT_GREATER_OR_EQUAL(3, std::dynamic_pointer_cast<MockCanService>(canService)->calls.transmit);
 
-    controller.stop();
+    heartbeat.stop();
 
-    TEST_ASSERT(!controller.started());
+    TEST_ASSERT(!heartbeat.started());
 }
 
 void run_DTIX50_controller_tests() {

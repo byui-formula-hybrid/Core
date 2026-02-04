@@ -5,7 +5,7 @@ using namespace CAN;
 namespace Inverter {
 namespace DTIX50 {
 
-Controller::Controller(std::shared_ptr<Service> canService, std::unique_ptr<Core::iLockStrategy> lock_strategy, std::unique_ptr<Core::iThreadStrategy> thread_strategy) {
+Heartbeat::Heartbeat(std::shared_ptr<Service> canService, std::unique_ptr<Core::iLockStrategy> lock_strategy, std::unique_ptr<Core::iThreadStrategy> thread_strategy) {
     m_canService = canService;
     m_shouldStop_mut = std::move(lock_strategy);
     m_thread = std::move(thread_strategy);
@@ -21,7 +21,7 @@ Controller::Controller(std::shared_ptr<Service> canService, std::unique_ptr<Core
                    );
 }
 
-void Controller::start() {
+void Heartbeat::start() {
     if(m_started) return;
 
     // Send drive enable
@@ -30,12 +30,12 @@ void Controller::start() {
     m_canService->transmit(&frame, 1000);
 
     // Start the heartbeat for drive enable
-    m_thread->create(Controller::heartbeat, this);
+    m_thread->create(Heartbeat::heartbeat, this);
 
     m_started = true;
 }
 
-void Controller::stop() {
+void Heartbeat::stop() {
     // Set shouldStop so that the heartbeat knows that we're stopping
     m_shouldStop_mut->lock();
     m_shouldStop = true;
@@ -53,8 +53,8 @@ void Controller::stop() {
 }
 
 // Sends a drive enable every ~250 milliseconds so the car doesn't stop
-void Controller::heartbeat(void* s) {
-    Controller* self = (Controller*)s;
+void Heartbeat::heartbeat(void* s) {
+    Heartbeat* self = (Heartbeat*)s;
     for(;;) {
         self->m_thread->sleep(250U);
 
