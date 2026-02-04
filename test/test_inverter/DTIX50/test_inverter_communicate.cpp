@@ -16,6 +16,7 @@ using namespace Inverter;
 using namespace MOCKS;
 
 void test_Heartbeat() {
+    try {
     std::shared_ptr<Service> canService(new MockCanService()); // Most likely the ownership should be outside of the class
     std::unique_ptr<Core::iLockStrategy> lockStrategy(new NativeLockStrategy()); // We'll want the class to recieve ownership
     std::unique_ptr<Core::iThreadStrategy> threadStrategy(new NativeThreadStrategy()); // We'll want the class to recieve ownership
@@ -32,6 +33,11 @@ void test_Heartbeat() {
     heartbeat.stop();
 
     TEST_ASSERT(!heartbeat.started());
+    } catch (const std::exception& e) {
+        TEST_FAIL_MESSAGE(("Heartbeat thread exception: " + std::string(e.what())).c_str());
+    } catch {
+        TEST_FAIL_MESSAGE("Heartbeat thread unknown exception");
+    }
 }
 
 void run_DTIX50_controller_tests() {
