@@ -11,6 +11,7 @@ Heartbeat::Heartbeat(std::shared_ptr<Service> canService, std::unique_ptr<Core::
     m_thread = std::move(thread_strategy);
 
     m_shouldStop = false;
+    m_started = false;
 
     enable = { 0x01, 0xFFFFFFFFFFFFFF };
     disable = { 0x00, 0xFFFFFFFFFFFFFF };
