@@ -1,8 +1,5 @@
 #include <unity.h>
 
-// Include test files
-#include "./test_main.h"
-
 // Setup function called before each test
 void setUp(void) {
     // No platform-specific setup needed for pure reactive components
