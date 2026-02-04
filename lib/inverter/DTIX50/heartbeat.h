@@ -14,7 +14,7 @@ using namespace CAN;
 namespace Inverter {
 namespace DTIX50 {
 
-class Controller {
+class Heartbeat {
 private:
     bool m_started;
     bool m_shouldStop;
@@ -25,7 +25,7 @@ private:
     Command::SetDriveEnable enable;
     Command::SetDriveEnable disable;
 public:
-    Controller(std::shared_ptr<Service> canService, std::unique_ptr<Core::iLockStrategy> lock_strategy, std::unique_ptr<Core::iThreadStrategy> thread_strategy);
+    Heartbeat(std::shared_ptr<Service> canService, std::unique_ptr<Core::iLockStrategy> lock_strategy, std::unique_ptr<Core::iThreadStrategy> thread_strategy);
 
     void start();
     void stop();
