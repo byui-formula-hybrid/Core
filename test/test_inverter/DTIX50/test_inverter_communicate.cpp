@@ -21,8 +21,9 @@ void test_Heartbeat() {
     std::unique_ptr<Core::iThreadStrategy> threadStrategy(new NativeThreadStrategy()); // We'll want the class to recieve ownership
 
     DTIX50::Heartbeat heartbeat(canService, std::move(lockStrategy), std::move(threadStrategy));
+    
+    TEST_ASSERT(!heartbeat.started());
     heartbeat.start();
-
     TEST_ASSERT(heartbeat.started());
 
     // We should always get at least 3 transmits
