@@ -55,6 +55,9 @@ void Heartbeat::heartbeat(void* s) {
         if(self->m_shouldStop) 
         {
             self->m_shouldStop_mut->unlock();
+            // Send drive disable
+            Frame frame(0x0C52, &self->disable);
+            self->m_canProvider->transmit(frame, 1000);
             return;
         }
         self->m_shouldStop_mut->unlock();
@@ -66,10 +69,6 @@ void Heartbeat::heartbeat(void* s) {
         
         self->m_thread->sleep(250U);
     }
-
-    // Send drive disable
-    Frame frame(0x0C52, &self->disable);
-    self->m_canProvider->transmit(frame, 1000);
 }
 
 }
