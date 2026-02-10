@@ -5,7 +5,9 @@ using namespace CAN;
 namespace Inverter {
 namespace DTIX50 {
 
-Heartbeat::Heartbeat(std::shared_ptr<Provider> canProvider, std::unique_ptr<Core::iLockStrategy> lock_strategy, std::unique_ptr<Core::iThreadStrategy> thread_strategy) {
+uint8_t MAX_FAILED_TRANSMITS = 3;
+
+Heartbeat::Heartbeat(std::shared_ptr<Provider> canProvider, std::unique_ptr<Core::iLockStrategy> lock_strategy, std::unique_ptr<Core::iThreadStrategy> thread_strategy, ErrorCallback callback) : onErrorCallback(callback) {
     m_canProvider = canProvider;
     m_shouldStop_mut = std::move(lock_strategy);
     m_thread = std::move(thread_strategy);
@@ -57,7 +59,12 @@ void Heartbeat::heartbeat(void* s) {
             self->m_shouldStop_mut->unlock();
             // Send drive disable
             Frame frame(0x0C52, &self->disable);
-            self->m_canProvider->transmit(frame, 1000);
+            bool success = self->m_canProvider->transmit(frame, 1000);
+
+            if(!success) {
+                self->onErrorCallback(Status::COMM_ERR);
+            }
+
             return;
         }
         self->m_shouldStop_mut->unlock();
@@ -65,7 +72,17 @@ void Heartbeat::heartbeat(void* s) {
         // Send drive enable
         Frame frame(0x0C52, &self->enable);
         
-        self->m_canProvider->transmit(frame, 1000);
+        bool success = self->m_canProvider->transmit(frame, 1000);
+        if(!success) {
+            if(self->failed_transmits > MAX_FAILED_TRANSMITS) {
+                self->onErrorCallback(Status::COMM_ERR);
+            } else {
+                self->onErrorCallback(Status::COMM_WARN);
+                self->failed_transmits++;
+            }
+        } else {
+            self->failed_transmits -= self->failed_transmits > 0 ? 1: 0;
+        }
         
         self->m_thread->sleep(250U);
     }

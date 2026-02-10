@@ -29,7 +29,7 @@ void test_Heartbeat() {
     std::unique_ptr<Core::iLockStrategy> lockStrategy(new NativeLockStrategy()); // We'll want the class to recieve ownership
     std::unique_ptr<Core::iThreadStrategy> threadStrategy(new NativeThreadStrategy()); // We'll want the class to recieve ownership
 
-    DTIX50::Heartbeat heartbeat(canProvider, std::move(lockStrategy), std::move(threadStrategy));
+    DTIX50::Heartbeat heartbeat(canProvider, std::move(lockStrategy), std::move(threadStrategy), nullptr);
     
     TEST_ASSERT(!heartbeat.started());
     heartbeat.start();
