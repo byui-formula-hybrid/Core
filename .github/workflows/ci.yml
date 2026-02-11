@@ -73,7 +73,7 @@ jobs:
         run: ./.scripts/powershell/build.ps1
       - name: Run Tests (bash)
         if: matrix.os != 'windows'
-        run: ./.scripts/test.sh --ci
+        run: ./.scripts/test.sh --ci -v
       - name: Run Tests (PowerShell)
         if: matrix.os == 'windows'
         shell: powershell

@@ -20,7 +20,7 @@ run_tests() {
     # Run tests with verbose output if requested
     local cmd="pio test -e native"
     if [ "$VERBOSE" = true ]; then
-        cmd="$cmd -v"
+        cmd="$cmd -vvv"
     fi
     
     if $cmd; then
@@ -108,7 +108,7 @@ if [ ! -z "$FILTER" ]; then
     echo ""
     cmd="pio test -e native --filter $FILTER"
     if [ "$VERBOSE" = true ]; then
-        cmd="$cmd -v"
+        cmd="$cmd -vvv"
     fi
     
     if $cmd; then
