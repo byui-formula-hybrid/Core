@@ -7,7 +7,7 @@ namespace DTIX50 {
 
 Watchdog::Watchdog(ErrorCallback callback) : onErrorCallback(callback) {}
 
-Status Watchdog::readFrame(const Frame& frame) {
+Status Watchdog::digestFrame(const Frame& frame) const {
     uint32_t id = frame.identifier >> 5;
 
     switch(id) {
@@ -19,7 +19,7 @@ Status Watchdog::readFrame(const Frame& frame) {
     return Status::OK;
 }
 
-Status Watchdog::handleMessage22(const Frame& frame) {
+Status Watchdog::handleMessage22(const Frame& frame) const {
     auto message = frame.decode<Message22>();
 
     // We can expand this to cover all errors, status just doesn't have much support yet

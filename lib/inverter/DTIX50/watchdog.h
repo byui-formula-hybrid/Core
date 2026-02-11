@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../can/types.h"
+#include "../../can/receiver.h"
 
 #include "messages.h"
 
@@ -9,18 +9,18 @@ using namespace CAN;
 namespace Inverter {
 namespace DTIX50 {
 
-class Watchdog {
+class Watchdog : public Receiver {
 public:
     ErrorCallback onErrorCallback;
 public:
     Watchdog(ErrorCallback callback);
 
-    Status readFrame(const Frame& frame);
+    Status digestFrame(const Frame& frame) const override;
 
     void onError(const Status& error);
 private:
 
-    Status handleMessage22(const Frame& frame);
+    Status handleMessage22(const Frame& frame) const;
 };
 
 };

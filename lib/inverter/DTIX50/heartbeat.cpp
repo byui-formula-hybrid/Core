@@ -72,8 +72,7 @@ void Heartbeat::heartbeat(void* s) {
         // Send drive enable
         Frame frame(0x0C52, &self->enable);
         
-        bool success = self->m_canProvider->transmit(frame, 1000);
-        if(!success) {
+        if(!self->m_canProvider->transmit(frame, 100)) {
             if(self->failed_transmits > MAX_FAILED_TRANSMITS) {
                 self->onErrorCallback(Status::COMM_ERR);
             } else {
@@ -81,7 +80,7 @@ void Heartbeat::heartbeat(void* s) {
                 self->failed_transmits++;
             }
         } else {
-            self->failed_transmits -= self->failed_transmits > 0 ? 1: 0;
+            self->failed_transmits = 0;
         }
         
         self->m_thread->sleep(250U);

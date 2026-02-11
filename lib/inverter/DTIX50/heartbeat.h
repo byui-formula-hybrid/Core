@@ -7,7 +7,7 @@
 #include "../core/lock/i_lock_strategy.h"
 #include "../core/thread/i_thread_strategy.h"
 #include "../can/provider.h"
-#include "../can/types.h"
+#include "../can/receiver.h"
 
 using namespace CAN;
 
