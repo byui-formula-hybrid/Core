@@ -34,5 +34,14 @@ void Watchdog::onError(const Status& status) {
     onErrorCallback(status);
 }
 
+uint32_t* Watchdog::getIDs() {
+    uint32_t ids[] = { 0x52 } ;
+    return ids;
+}
+
+uint32_t Watchdog::idCount() {
+    return 1;
+}
+
 };
 };

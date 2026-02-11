@@ -32,6 +32,8 @@ private:
 public:
     virtual Status digestFrame(const Frame&) const = 0;
     virtual void onError(const Status&) = 0;
+    virtual uint32_t* getIDs() = 0;
+    virtual uint32_t idCount() = 0;
 };
 
 };
