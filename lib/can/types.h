@@ -1,5 +1,6 @@
 #pragma once
 
+#include <functional>
 #include <stdint.h>
 
 namespace CAN {
@@ -144,7 +145,7 @@ struct Frame {
     }
 
     template<typename T>
-    T* decode() {
+    T* decode() const {
         return (T*) data;
     }
 };
