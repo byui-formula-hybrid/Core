@@ -1,12 +1,19 @@
-#include <Arduino.h>
+#include <stdio.h>
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
+#include "esp_timer.h"
+#include "lvgl.h"
+#include "lv_conf.h"
 
-void setup() {
-    Serial.begin(115200);
-    Serial.println("ESP32 Core Library - Race Car");
-    Serial.println("Ready to run any module...");
-}
+extern "C" void app_main() {
+    // Initialize LVGL
+    lv_init();
 
-void loop() {
-    // Main loop - modules will be added here
-    delay(1000);
+    // Simple log to prove it works
+    printf("ESP32 Core Library - Race Car\n");
+
+    while(1) {
+        // Keep the task alive
+        vTaskDelay(pdMS_TO_TICKS(1000));
+    }
 }
