@@ -28,8 +28,6 @@ extern "C" {
 #if defined(ENV_STM32F7)
 #include "stm32f7defs.h"
 
-
-// void CycleLEDs(void);
 #endif
 
 int _write(int file, char *ptr, int len);

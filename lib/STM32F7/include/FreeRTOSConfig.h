@@ -25,8 +25,12 @@
  * http://aws.amazon.com/freertos
  *
  * 1 tab == 4 spaces!
+ * 
+  * 
+  * Modifications:
+  * Copyright (c) 2026 Ezekial Curran
+ * 
  */
-/* USER CODE END Header */
 
 #ifndef FREERTOS_CONFIG_H
 #define FREERTOS_CONFIG_H
@@ -43,9 +47,6 @@
  * See http://www.freertos.org/a00110.html
  *----------------------------------------------------------*/
 
-/* USER CODE BEGIN Includes */
-/* Section where include file can be added */
-/* USER CODE END Includes */
 
 /* Ensure definitions are only used by the compiler, and not by the assembler. */
 #if defined(__ICCARM__) || defined(__CC_ARM) || defined(__GNUC__)

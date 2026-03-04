@@ -7,14 +7,14 @@ void SampleDummyTask(void *argument);
 void CANConsumer(void *argument);
 void StartTask02(void *argument);
 
-void MX_FREERTOS_Init(void);
+void FREERTOS_TASK_Init(void);
 
 /**
   * @brief  FreeRTOS initialization  adding tasks
   * @param  None
   * @retval None
   */
-void MX_FREERTOS_Init(void) {
+void FREERTOS_TASK_Init(void) {
   // create tasks
   xTaskCreate(SampleDummyTask, "Dummy", 256, NULL, 10, NULL);
   xTaskCreate(CANConsumer, "CAN", 1024 / sizeof(StackType_t), NULL, 1, NULL);

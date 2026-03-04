@@ -1,13 +1,13 @@
 #include "main.h"
 
-void MX_FREERTOS_Init(void);
+void FREERTOS_TASK_Init(void);
 
 #if defined(ENV_ESP32)
 extern "C" void app_main(void) {
     printf("ESP32 Device started!\n");
 
     // direct to the freertos.cpp file
-    MX_FREERTOS_Init();
+    FREERTOS_TASK_Init();
 
     // TickType_t last_wake_time = xTaskGetTickCount();
     // int counter = 0;
@@ -50,7 +50,7 @@ int main(void) {
     // MX_CAN2_Init();
     MX_USB_OTG_FS_PCD_Init();
     
-    MX_FREERTOS_Init();
+    FREERTOS_TASK_Init();
     
     while (1) {
     }

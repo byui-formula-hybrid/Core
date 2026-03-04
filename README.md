@@ -177,7 +177,9 @@ This project uses GitHub Actions for continuous integration with smart safeguard
 
 ## License
 
-This project is licensed under the Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License - see the [LICENSE](LICENSE) file for details.
+This project contains STM32CubeMX generated code © STMicroelectronics, licensed under ST’s software license - see [LICENSE](LICENSE_ST) file for details.
+
+All original source code and project documentation is licensed under the Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License - see the [LICENSE](LICENSE) file for details.
 
 This means you can:
 - ✅ Use this code for educational purposes
