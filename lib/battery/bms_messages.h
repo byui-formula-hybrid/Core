@@ -1,0 +1,141 @@
+#include <cstdint>
+
+/**
+ * ID: 0x001
+ * @name Pack Instantaneous Voltage and Current
+ * @param packVoltage: Voltage in mV
+ * @param packCurrent: Current in mA
+ * @param packAmpHours: Amp hours in mAh
+ **/ 
+struct Message1{
+    uint16_t packVoltage: 16;
+    uint16_t packCurrent: 16;
+    uint16_t packAmpHours: 16;
+};
+
+/**
+ * ID: 0x002
+ * @name Failsafe & DTC Flags
+ * @param dtcFlags1: DTC (Diagnostic Trouble Codes) flags 1
+ * @param dtcFlags2: DTC (Diagnostic Trouble Codes) flags 2
+ * @param currentLimit: Current limit in mA
+ */
+struct Message2
+{
+    uint16_t dtcFlags1: 16;
+    uint16_t dtcFlags2: 16;
+    uint8_t currentLimit: 8;
+};
+
+/**
+ * ID: 0x003
+ * @name  MPE State
+ * @param mpeState: MPE (Multi-Purpose Enable) Programable output backed
+ *                  by a watchdog which will trigger on certain fault codes
+ *                  (Reference Orion BMS 2 operation Manual pg:49)
+ */
+struct Message3{
+    uint8_t mpeState: 8;
+};
+
+/**
+ * ID: 0x004
+ * @name High and Low Cell Voltages
+ * @param highCellVoltage: Voltage in mV
+ * @param lowCellVoltage:  Voltage in mV
+ */
+struct Message4{
+    uint8_t highCellVoltage: 8;
+    uint8_t lowCellVoltage: 8;
+};
+
+/**
+ * ID: 0x005
+ * @name Constant Value
+ * @param constantValue: User-defined fixed value
+ */
+struct Message5 {
+    uint8_t constantValue : 8;
+};
+
+/**
+ * ID: 0x006
+ * @name Pack Charge/Discharge Limits
+ * @param packDCL: Discharge Current Limit in Amps
+ * @param packCCL: Charge Current Limit in Amps
+ * @param packCurrent: Instantaneous pack current
+ * @param avgCurrent: Averaged pack current
+ */
+struct Message6 {
+    uint8_t packDCL : 8;
+    uint8_t packCCL : 8;
+    uint16_t packCurrent : 16;
+    uint16_t avgCurrent : 16;
+};
+
+/**
+ * ID: 0x202
+ * @name Dynamic Charge Limits
+ * @param packDCL: Pack Discharge Current Limit
+ * @param packCCL: Pack Charge Current Limit
+ */
+struct Message202 {
+    uint8_t packDCL : 8;
+    uint8_t packCCL : 8;
+};
+
+/**
+ * ID: 0x351
+ * @name Maximum and Minimum Pack Voltage
+ * @param maxPackVoltage: Maximum allowed pack voltage
+ * @param packDCL: Pack Discharge Current Limit
+ * @param minPackVoltage: Minimum allowed pack voltage
+ */
+struct Message351 {
+    uint16_t maxPackVoltage : 16;
+    uint8_t packDCL : 8;
+    uint16_t minPackVoltage : 16;
+};
+
+/**
+ * ID: 0x355
+ * @name Pack SOC, Health, and Temperature
+ * @param packSOC: State of Charge (0-100%)
+ * @param packHealth: State of Health (0-100%)
+ */
+struct Message355 {
+    uint8_t packSOC : 8;
+    uint8_t packHealth : 8;
+};
+
+/**
+ * ID: 0x1806E7F4
+ * @name Maximum Pack Voltage + Custom Flag
+ * @param maxPackVoltage: Maximum pack voltage in mV
+ * @param customFlag: User defined flag
+ */
+struct Message1806E7F4 {
+    uint16_t maxPackVoltage : 16;
+    uint8_t customFlag : 8;
+};
+
+/**
+ * ID: 0x1806E5F4 / 0x1806E9F4
+ * @name Maximum Cell Voltage + Custom Flag
+ * @param maxCellVoltage: Maximum cell voltage in mV
+ * @param customFlag: User defined flag
+ */
+struct MessageMaxCellVoltage {
+    uint16_t maxCellVoltage : 16;
+    uint8_t customFlag : 8;
+};
+
+/**
+ * ID: 0x18FF50E5
+ * @name Blank Message
+ * @note Used for logging presence on the bus.
+ */
+struct MessageBlank {
+    // No data parameters defined
+};
+
