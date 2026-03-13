@@ -81,6 +81,12 @@ After the stub builds:
 - Expected result: the LVGL widget gallery shows up on the 480×480 round screen.
 - If colors/orientation look wrong, adjust `LV_COLOR_16_SWAP`, `LV_DISP_ROT_180`, or SPI speed in `lv_conf.h` or the driver init.
 
+[X] **Step 0.5a — Run hardware display smoke test (RGB color bars) on ESP32-S3-Touch-LCD-7** ✅
+
+- Added direct RGB panel init + backlight-on path in `src/display_smoke.cpp`.
+- Uploaded firmware and verified flash/reset success on COM3.
+- This validates upload + basic panel pipeline before full LVGL driver/touch integration.
+
 **Step 0.6 — Learn LVGL basics (do while waiting for display)**
 
 Read the LVGL docs and try these topics in order:
