@@ -13,7 +13,7 @@ if "cortex-m4" in cpu:
     fpu_flags = ["-mfloat-abi=hard", "-mfpu=fpv4-sp-d16"]
 elif "cortex-m7" in cpu:
     # Most M7s use fpv5. For double-precision chips, 
-    # you might remove the "-sp" if needed.
+    # you might need -sp (single precision) on certain M7 processors (STM32F7 sometimes are this case, at which point double precision will break things)
     # fpu_flags = ["-mfloat-abi=hard", "-mfpu=fpv5-sp-d16"]
     fpu_flags = ["-mfloat-abi=hard", "-mfpu=fpv5-d16"]
 elif "cortex-m33" in cpu:
