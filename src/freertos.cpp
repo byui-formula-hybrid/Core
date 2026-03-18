@@ -18,6 +18,9 @@ void FREERTOS_TASK_Init(void);
   * @retval None
   */
 void FREERTOS_TASK_Init(void) {
+  // currently preallocating 10 slots in each queue
+  xCANRxQueue = xQueueCreate(10, sizeof(CAN_Msg_t));
+  xCANTxQueue = xQueueCreate(10, sizeof(CAN_Msg_t));
   // create tasks
   xTaskCreate(SampleDummyTask, "Dummy", 256, NULL, 10, NULL);
   xTaskCreate(CANConsumerTask, "CAN", 1024 / sizeof(StackType_t), NULL, 1, NULL);

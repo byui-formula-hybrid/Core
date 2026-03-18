@@ -8,3 +8,6 @@
 volatile uint8_t button_pressed = 0;
 volatile uint32_t last_press_ms = 0;
 volatile uint8_t msg_received = 0;
+
+QueueHandle_t xCANRxQueue = NULL;
+QueueHandle_t xCANTxQueue = NULL;

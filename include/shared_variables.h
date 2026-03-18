@@ -4,19 +4,17 @@
 #include "main.h"
 
 #ifdef ENV_STM32
-// extern CAN_RxHeaderTypeDef headerFIFO0;
-// extern CAN_RxHeaderTypeDef headerFIFO1;
+// For STM32 specific variables if any
+// same model for esp32 specific variables
 #endif
-// extern uint8_t dataFIFO0[8];
-// extern uint8_t dataFIFO1[8];
 extern volatile uint8_t msg_received;
 extern volatile uint8_t button_pressed;
 extern volatile uint32_t last_press_ms;
 
-TaskHandle_t xCANProducerHandle;
-TaskHandle_t xCANConsumerHandle;
-QueueHandle_t xCANRxQueue;
-QueueHandle_t xCANTxQueue;
+// TaskHandle_t xCANProducerHandle;
+// TaskHandle_t xCANConsumerHandle;
+extern QueueHandle_t xCANRxQueue;
+extern QueueHandle_t xCANTxQueue;
 
 typedef struct {
     uint32_t StdID;
@@ -27,4 +25,4 @@ typedef struct {
     uint8_t Data[8];
 } CAN_Msg_t;
 
-#endif /* __SHARED_VARIABLES_H */
+#endif /* SHARED_VARIABLES_H */
