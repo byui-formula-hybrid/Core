@@ -62,7 +62,7 @@ void MX_CAN1_Init(void) {
       Error_Handler();
   }
   if (HAL_CAN_ActivateNotification(&hcan1, CAN_IT_RX_FIFO0_MSG_PENDING)) {
-      printf("Failed to activate interrupt for hcan1\r\n");
+      printf("Failed to activate interrupt for hcan1\n");
       // attempt to initialize hcan2 instead
       Error_Handler();
   }

@@ -1,3 +1,5 @@
+# This file is designed to enable FreeRTOS and floating point registers for a variety of STM32's. It should work, but your mileage may vary.
+
 Import("env")
 
 # Access the board configuration

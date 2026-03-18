@@ -4,7 +4,10 @@
 // ADD Priority description
 
 void SampleDummyTask(void *argument);
-void CANConsumer(void *argument);
+void CANConsumerTask(void *argument);
+void CANProducerTask(void *argument);
+void PumpPWMTask(void *argument);
+void HeartbeatTask(void *argument);
 void StartTask02(void *argument);
 
 void FREERTOS_TASK_Init(void);
@@ -17,7 +20,7 @@ void FREERTOS_TASK_Init(void);
 void FREERTOS_TASK_Init(void) {
   // create tasks
   xTaskCreate(SampleDummyTask, "Dummy", 256, NULL, 10, NULL);
-  xTaskCreate(CANConsumer, "CAN", 1024 / sizeof(StackType_t), NULL, 1, NULL);
+  xTaskCreate(CANConsumerTask, "CAN", 1024 / sizeof(StackType_t), NULL, 1, NULL);
   vTaskStartScheduler();
 }
 
@@ -45,18 +48,71 @@ void SampleDummyTask(void *argument) {
 * @param argument: Not used
 * @retval None
 */
-void CANConsumer(void *argument) {
+void CANConsumerTask(void *argument) {
+  CAN_Msg_t msg;
   for(;;) {
-    if (msg_received > 0) {
-      printf("ID: 0x%x MSG: ", headerFIFO0.StdId);
-      for (int i = 0; i < headerFIFO0.DLC; i++) {
-        if (dataFIFO0[i] < 0x10) printf("0");
-        printf("%x", dataFIFO0[i]);
+    if (xQueueReceive(xCANRxQueue, &msg, portMAX_DELAY) == pdPASS) {
+      // process the can message here...
+
+      // Simple example for printing the messages (slow), better to send to a function to process the CAN messages:
+      printf("ID: 0x%x MSG: ", msg.StdID);
+      for (int i = 0; i < msg.DLC; i++) {
+        if (msg.Data[i] < 0x10) printf("0");
+        printf("%x", msg.Data[i]);
         printf(" ");
       }
       printf("\n");
-      msg_received = 0;
     }
+  }
+}
+
+/**
+* @brief Sends CAN messages to the CAN bus.
+* @param argument: Not used
+* @retval None
+*/
+void CANProducerTask(void *argument) {
+  CAN_Msg_t msg;
+  uint32_t mailbox;
+
+  // !! == EXAMPLE for adding a CAN message to the queue be sent from other tasks == !!
+  // CAN_Msg_t myMsg;
+  // build up the myMsg (ie. data, DLC, etc...)
+  // xQueueSend(xCANTxQueue, &myMsg, 0);
+  // !! == EXAMPLE for adding a CAN message to the queue be sent from other tasks == !!
+
+  for (;;) {
+    if (xQueueReceive(xCANTxQueue, &msg, portMAX_DELAY) == pdPASS) {
+      // call the hardware specific method for sending a CAN message
+    }
+  }
+}
+
+/**
+* @brief General heartbeat task set up to run every half second.
+* @param argument: Not used
+* @retval None
+*/
+void HeartbeatTask(void *argument) {
+  TickType_t xLastWakeTime = xTaskGetTickCount();
+  const TickType_t xFrequency = pdMS_TO_TICKS(500);
+
+  for(;;) {
+    // do heart beat stuff.....
+    vTaskDelayUntil(&xLastWakeTime, xFrequency);
+  }
+}
+
+/**
+* @brief Pump PWM task.
+* @param argument: Not used
+* @retval None
+*/
+void PumpPWMTask(void *argument) {
+  uint32_t pulseWidth = 0;
+
+  for (;;) {
+    // send PWM signal
   }
 }
 

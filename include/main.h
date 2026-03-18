@@ -25,6 +25,7 @@ extern "C" {
 #elif defined(ENV_STM32)
 #include "FreeRTOS.h"
 #include "task.h"
+#include "queue.h"
 #if defined(ENV_STM32F7)
 #include "stm32f7defs.h"
 
