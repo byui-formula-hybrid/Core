@@ -1,6 +1,7 @@
 #pragma once
 
 #include "esp_err.h"
+#include "esp_lcd_types.h"
 
 namespace dash {
 namespace display {
@@ -16,6 +17,9 @@ esp_err_t draw_solid_color(uint16_t rgb565);
 
 // Control the display backlight via onboard I2C expander.
 esp_err_t set_backlight(bool on);
+
+// Get the initialized LCD panel handle for higher-level renderers (e.g., LVGL).
+esp_lcd_panel_handle_t get_panel_handle();
 
 } // namespace display
 } // namespace dash

@@ -14,6 +14,28 @@
 > Both boards are ESP32-S3 based. They talk to the car over TWAI (CAN) and to each other over UART.
 
 ---
+### NEXT STEPS
+
+- **Phase 3 — Pedal error decoder (small, high value)**
+  - Add `lib/dash/pedal_errors.h` and unit tests in `test/test_dash/test_pedal_errors.cpp`.
+  - This unlocks readable fault text in Diagnostics/Faults pages.
+  - See [Phase 3 — Pedal Error Code Decoder](#phase-3).
+
+- **Phase 5 — UI shell & Drive page (minimal vertical slice)**
+  - Create the UI shell files:
+    - `lib/dash/ui/ui.h/.cpp`
+    - `lib/dash/ui/navigation.h/.cpp`
+    - `lib/dash/ui/page_drive.h/.cpp`
+  - Render live values from `DataModel` on the Drive page.
+  - Keep pages 2–4 as placeholders until Drive page is stable.
+  - See [Phase 5 — LVGL UI Layer (hardware-guarded)](#phase-5).
+
+- **Phase 6 — Hardware integration & run loop**
+  - Move display / CAN / touch initialization into `Dash::Hardware` (guarded for native builds).
+  - Keep `src/main.cpp` as orchestration only.
+  - See [Phase 6 — Hardware Setup & Main Integration](#phase-6).
+
+---
 
 ### Steps
 
@@ -73,13 +95,9 @@ Create `lib/dash/ui/lvgl_stub.h` (ESP32 only, guarded by `#ifndef ARDUINO_ARCH_N
 
 Update `src/main.cpp` to call the stub init. Goal: `pio run -e esp32dev` builds with LVGL linked. Flash to any ESP32-S3 dev board and verify it boots without crashing.
 
-[ ] **Step 0.5 — Run the LVGL `lv_demo_widgets()` as a smoke test**
+[X] **Step 0.5 — (skipped) Run the LVGL `lv_demo_widgets()` smoke test**
 
-After the stub builds:
-- Replace the stub label with `lv_demo_widgets()` (requires `LV_USE_DEMO_WIDGETS 1` in `lv_conf.h`).
-- Flash to the Waveshare board when it arrives.
-- Expected result: the LVGL widget gallery shows up on the 480×480 round screen.
-- If colors/orientation look wrong, adjust `LV_COLOR_16_SWAP`, `LV_DISP_ROT_180`, or SPI speed in `lv_conf.h` or the driver init.
+We already have LVGL rendering to the panel via the stub, so the full demo smoke test is optional and can be revisited if we need it later.
 
 [X] **Step 0.5a — Run hardware display smoke test (RGB color bars) on ESP32-S3-Touch-LCD-7** ✅
 
@@ -196,6 +214,7 @@ Before building the real pages, make a simple navigation test:
 
 ---
 
+<a name="phase-3"></a>
 **Phase 3 — Pedal Error Code Decoder (testable utility)**
 
 [ ] 6. **Create `lib/dash/pedal_errors.h`** — `Dash::PedalErrors` namespace:
@@ -214,6 +233,7 @@ Before building the real pages, make a simple navigation test:
 
 ---
 
+<a name="phase-5"></a>
 **Phase 5 — LVGL UI Layer (hardware-guarded)**
 
 > All files in this phase are **guarded with `#ifndef ARDUINO_ARCH_NATIVE`** (or excluded from native builds) so `pio test -e native` keeps working.
@@ -255,6 +275,7 @@ Before building the real pages, make a simple navigation test:
 
 ---
 
+<a name="phase-6"></a>
 **Phase 6 — Hardware Setup & Main Integration**
 
 [ ] 16. **Create `lib/dash/hardware.h` / `lib/dash/hardware.cpp`** — `Dash::Hardware` (guarded `#ifndef ARDUINO_ARCH_NATIVE`):

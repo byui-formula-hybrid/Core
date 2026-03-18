@@ -206,5 +206,10 @@ esp_err_t set_backlight(bool on)
     return on ? backlight_on() : backlight_off();
 }
 
+esp_lcd_panel_handle_t get_panel_handle()
+{
+    return g_panel;
+}
+
 } // namespace display
 } // namespace dash
