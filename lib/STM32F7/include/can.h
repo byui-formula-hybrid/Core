@@ -19,8 +19,8 @@
   ******************************************************************************
   */
 /* Define to prevent recursive inclusion -------------------------------------*/
-#ifndef __CAN_H__
-#define __CAN_H__
+#ifndef CAN_H
+#define CAN_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -39,5 +39,4 @@ void MX_CAN2_Init(void);
 }
 #endif
 
-#endif /* __CAN_H__ */
-
+#endif /* CAN_H */

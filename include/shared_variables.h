@@ -1,5 +1,5 @@
-#ifndef __SHARED_VARIABLES_H
-#define __SHARED_VARIABLES_H
+#ifndef SHARED_VARIABLES_H
+#define SHARED_VARIABLES_H
 
 #include "main.h"
 

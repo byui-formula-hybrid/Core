@@ -21,8 +21,8 @@
 /* USER CODE END Header */
 
 /* Define to prevent recursive inclusion -------------------------------------*/
-#ifndef __STM32F7xx_IT_H
-#define __STM32F7xx_IT_H
+#ifndef STM32F7xx_IT_H
+#define STM32F7xx_IT_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -69,4 +69,4 @@ void CAN2_RX1_IRQHandler(void);
 }
 #endif
 
-#endif /* __STM32F7xx_IT_H */
+#endif /* STM32F7xx_IT_H */

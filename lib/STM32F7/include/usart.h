@@ -21,8 +21,8 @@
   */
 /* USER CODE END Header */
 /* Define to prevent recursive inclusion -------------------------------------*/
-#ifndef __USART_H__
-#define __USART_H__
+#ifndef USART_H
+#define USART_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -51,5 +51,5 @@ void MX_USART3_UART_Init(void);
 }
 #endif
 
-#endif /* __USART_H__ */
+#endif /* USART_H */
 

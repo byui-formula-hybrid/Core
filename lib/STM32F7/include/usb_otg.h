@@ -21,8 +21,8 @@
   */
 /* USER CODE END Header */
 /* Define to prevent recursive inclusion -------------------------------------*/
-#ifndef __USB_OTG_H__
-#define __USB_OTG_H__
+#ifndef USB_OTG_H
+#define USB_OTG_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -51,5 +51,4 @@ void MX_USB_OTG_FS_PCD_Init(void);
 }
 #endif
 
-#endif /* __USB_OTG_H__ */
-
+#endif /* USB_OTG_H */
