@@ -15,6 +15,7 @@ int main() {
     UNITY_BEGIN();
     run_dash_message_tests();
     run_dash_controller_tests();
+    run_dash_pedal_error_tests();
     
     return UNITY_END();
 }
