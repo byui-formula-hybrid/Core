@@ -11,3 +11,4 @@
 void run_dash_message_tests();
 void run_dash_controller_tests();
 void run_dash_pedal_error_tests();
+void run_dash_page_diagnostics_tests();

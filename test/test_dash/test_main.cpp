@@ -16,6 +16,7 @@ int main() {
     run_dash_message_tests();
     run_dash_controller_tests();
     run_dash_pedal_error_tests();
+    run_dash_page_diagnostics_tests();
     
     return UNITY_END();
 }
