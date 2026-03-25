@@ -1,8 +1,7 @@
-# ESP32 Race Car Core Library - Git Ignore File
-
 # PlatformIO Build Artifacts
 .pio/
 .vscode/
+boards/
 
 # Python Virtual Environment
 .venv/
@@ -93,3 +92,6 @@ race_logs/
 
 # CMake Files
 **/CMakeUserPresets.json
+
+# SDK Configurations
+sdkconfig*
