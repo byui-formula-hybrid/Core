@@ -44,7 +44,7 @@ jobs:
       - name: Ensure Python is present
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: '3.11.15'
           # This is key: setup-python will download a portable version 
           # if the runner doesn't have it.
 
