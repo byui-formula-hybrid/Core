@@ -1,6 +1,7 @@
 #pragma once
 
 #include <stdint.h>
+#include <cstring>
 
 namespace CAN {
 
@@ -116,6 +117,8 @@ struct Frame {
 
     template<typename T>
     Frame(uint32_t identifier, T* message) {
+        static_assert(sizeof(T) <= 8, "Message too large for CAN frame");
+        
         this->data_length_code = 8;
         this->identifier = identifier;
 
@@ -130,7 +133,7 @@ struct Frame {
         this->data[7] = msg_ptr[7];
     }
 
-    Frame(uint32_t identifier, uint8_t* data) {
+    Frame(uint32_t identifier, uint8_t (&data)[8]) {
         this->data_length_code = 8;
         this->identifier = identifier;
         this->data[0] = data[0];
