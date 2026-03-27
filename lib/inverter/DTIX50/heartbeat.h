@@ -7,7 +7,7 @@
 #include "../core/lock/i_lock_strategy.h"
 #include "../core/thread/i_thread_strategy.h"
 #include "../can/provider.h"
-#include "../can/types.h"
+#include "../can/receiver.h"
 
 using namespace CAN;
 
@@ -24,8 +24,11 @@ private:
 
     Command::SetDriveEnable enable;
     Command::SetDriveEnable disable;
+
+    uint8_t failed_transmits; // Counts consecutive failed transmits
+    ErrorCallback onErrorCallback;
 public:
-    Heartbeat(std::shared_ptr<Provider> canProvider, std::unique_ptr<Core::iLockStrategy> lock_strategy, std::unique_ptr<Core::iThreadStrategy> thread_strategy);
+    Heartbeat(std::shared_ptr<Provider> canProvider, std::unique_ptr<Core::iLockStrategy> lock_strategy, std::unique_ptr<Core::iThreadStrategy> thread_strategy, ErrorCallback callback);
 
     void start();
     void stop();
