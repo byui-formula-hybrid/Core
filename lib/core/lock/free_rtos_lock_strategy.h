@@ -5,7 +5,6 @@
 // Only compile this entire file for real ESP32 hardware
 #ifndef ARDUINO_ARCH_NATIVE
 
-#include <Arduino.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/semphr.h"
 

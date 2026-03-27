@@ -14,26 +14,13 @@
 > Both boards are ESP32-S3 based. They talk to the car over TWAI (CAN) and to each other over UART.
 
 ---
-### NEXT STEPS
 
-- **Phase 3 — Pedal error decoder (small, high value)**
-  - Add `lib/dash/pedal_errors.h` and unit tests in `test/test_dash/test_pedal_errors.cpp`.
-  - This unlocks readable fault text in Diagnostics/Faults pages.
-  - See [Phase 3 — Pedal Error Code Decoder](#phase-3).
+### NEXT STEPS (as of 2026-03-26)
 
-- **Phase 5 — UI shell & Drive page (minimal vertical slice)**
-  - Create the UI shell files:
-    - `lib/dash/ui/ui.h/.cpp`
-    - `lib/dash/ui/navigation.h/.cpp`
-    - `lib/dash/ui/page_drive.h/.cpp`
-  - Render live values from `DataModel` on the Drive page.
-  - Keep pages 2–4 as placeholders until Drive page is stable.
-  - See [Phase 5 — LVGL UI Layer (hardware-guarded)](#phase-5).
-
-- **Phase 6 — Hardware integration & run loop**
-  - Move display / CAN / touch initialization into `Dash::Hardware` (guarded for native builds).
-  - Keep `src/main.cpp` as orchestration only.
-  - See [Phase 6 — Hardware Setup & Main Integration](#phase-6).
+- [ ] **Phase 7 — Documentation**
+    - Fill in `docs/modules/DASH.md` with architecture, CAN table, fault behavior, pages, and dependencies.
+    - Update `docs/HARDWARE.md` with dash display hardware notes.
+    - See Phase 7 below.
 
 ---
 
@@ -215,13 +202,14 @@ Before building the real pages, make a simple navigation test:
 ---
 
 <a name="phase-3"></a>
+
 **Phase 3 — Pedal Error Code Decoder (testable utility)**
 
-[ ] 6. **Create `lib/dash/pedal_errors.h`** — `Dash::PedalErrors` namespace:
+[X] 6. **Create `lib/dash/pedal_errors.h`** — `Dash::PedalErrors` namespace:
     - `const char* decode(uint8_t code)` — map codes 1–15 to readable strings ("Pot 1 Open Circuit", "Slew Rate Critical", "Pedal Implausible", etc.). Return `"Unknown"` for unmapped codes, and `nullptr` or `""` for code 0.
     - Use a `constexpr` or `static const` array to keep it embedded-friendly.
 
-[ ] 7. **Create `test/test_dash/test_pedal_errors.cpp`** — Test every code 0–15 maps to the expected string.
+[X] 7. **Create `test/test_dash/test_pedal_errors.cpp`** — Test every code 0–15 maps to the expected string.
 
 ---
 
@@ -234,41 +222,42 @@ Before building the real pages, make a simple navigation test:
 ---
 
 <a name="phase-5"></a>
+
 **Phase 5 — LVGL UI Layer (hardware-guarded)**
 
 > All files in this phase are **guarded with `#ifndef ARDUINO_ARCH_NATIVE`** (or excluded from native builds) so `pio test -e native` keeps working.
 
-[ ] 10. **Create `lib/dash/ui/ui.h` / `lib/dash/ui/ui.cpp`** — `Dash::UI` class:
+[X] 10. **Create `lib/dash/ui/ui.h` / `lib/dash/ui/ui.cpp`** — `Dash::UI` class:
     - **Constructor**: takes a pointer/reference to `Dash::DataModel` snapshot for rendering.
     - **`init()`**: initializes LVGL display, touch input, and screen objects.
     - **`update(const DataModel& snapshot)`**: called periodically; updates LVGL widgets.
     - **`lv_timer_handler()` wrapper**: called every ~5 ms from a FreeRTOS task or the main loop.
 
-[ ] 11. **Create `lib/dash/ui/page_drive.h` / `lib/dash/ui/page_drive.cpp`** — Drive Mode page:
+[X] 11. **Create `lib/dash/ui/page_drive.h` / `lib/dash/ui/page_drive.cpp`** — Drive Mode page:
     - Top bar: `TS: ON/OFF` | `GLV: ON/OFF` | `RTD: YES/NO`
     - Middle indicators: AMS (red/green), IMD (red/green), Pedal Fault (yellow/green), CAN Status (green/"COMM LOST" red banner)
     - Bottom data row: Voltage, Current, Speed, RPM, Throttle %, Brake ON/OFF
     - Color logic: green = normal, yellow = warning, red = critical/fault. Use LVGL styles.
 
-[ ] 12. **Create `lib/dash/ui/page_diagnostics.h` / `lib/dash/ui/page_diagnostics.cpp`** — Diagnostics page:
+[X] 12. **Create `lib/dash/ui/page_diagnostics.h` / `lib/dash/ui/page_diagnostics.cpp`** — Diagnostics page:
     - Cell voltage min/max (from `DataModel`)
     - Cell temperature distribution (bar or gauge)
     - Pedal ADC1 & ADC2 raw values
     - Pedal error code decoded via `PedalErrors::decode()`
     - CAN message status indicators (per-ID last-received timestamp)
 
-[ ] 13. **Create `lib/dash/ui/page_faults.h` / `lib/dash/ui/page_faults.cpp`** — Fault History page:
+[X] 13. **Create `lib/dash/ui/page_faults.h` / `lib/dash/ui/page_faults.cpp`** — Fault History page:
     - Scrollable list of fault entries (timestamp, source string, CAN ID)
     - Touch to expand details
     - Requires a small ring buffer or `std::vector` of `FaultEntry` structs in `DataModel` (or a separate `FaultLog` class): `{ uint32_t timestamp_ms, const char* source, uint32_t can_id, uint8_t code }`.
 
-[ ] 14. **Create `lib/dash/ui/page_charging.h` / `lib/dash/ui/page_charging.cpp`** — Charging page:
+[X] 14. **Create `lib/dash/ui/page_charging.h` / `lib/dash/ui/page_charging.cpp`** — Charging page:
     - Pack SOC (if available from AMS — may need an additional CAN field)
     - Charging voltage / current
     - AMS / IMD active status
     - Charging fault messages
 
-[ ] 15. **Create `lib/dash/ui/navigation.h` / `lib/dash/ui/navigation.cpp`** — Tab bar or swipe-based page navigation:
+[X] 15. **Create `lib/dash/ui/navigation.h` / `lib/dash/ui/navigation.cpp`** — Tab bar or swipe-based page navigation:
     - 4 tabs: Drive | Diagnostics | Faults | Charging
     - Touch handler switches active `lv_obj_t*` screen
     - Defaults to Drive page on boot
@@ -278,14 +267,14 @@ Before building the real pages, make a simple navigation test:
 <a name="phase-6"></a>
 **Phase 6 — Hardware Setup & Main Integration**
 
-[ ] 16. **Create `lib/dash/hardware.h` / `lib/dash/hardware.cpp`** — `Dash::Hardware` (guarded `#ifndef ARDUINO_ARCH_NATIVE`):
+[X] 16. **Create `lib/dash/hardware.h` / `lib/dash/hardware.cpp`** — `Dash::Hardware` (guarded `#ifndef ARDUINO_ARCH_NATIVE`):
     - Pin definitions for CAN TX/RX, SPI/I2C pins for TFT, and touch CS/IRQ. Use placeholders with `// TODO: set to actual pins`.
     - `init_can()`: create `ESP32S3CanService`, wrap in `CAN::Provider`, call `begin()`.
     - `init_display()`: configure the LVGL display driver and flush callback (placeholder for the real driver init, e.g. ILI9488/ST7796).
     - `init_touch()`: configure the LVGL input device (placeholder for FT5x06/GT911).
     - RTD buzzer placeholder: `buzz_rtd()` drives a GPIO/PWM pin for 1–3 seconds at 2000 Hz. Mark `// TODO: confirm if dash owns this`.
 
-[ ] 17. **Update `src/main.cpp`** — Wire everything together (guarded for ESP32 build only):
+[X] 17. **Update `src/main.cpp`** — Wire everything together (guarded for ESP32 build only):
     ```
     // Pseudocode — not actual code
     Dash::Hardware hw;
@@ -390,3 +379,20 @@ test/test_dash/
 - [ ] Decide on large display hardware (specs pending)
 - [ ] Confirm UART GPIO pins for the inter-board data bridge (check both board schematics)
 - [ ] Confirm if the 2.8C "C" variant has touch populated or is it optional (SKU: 30254)
+
+---
+
+### Progress Log (2026-03-26)
+
+- Completed remaining Phase 5 pages:
+    - `page_diagnostics.h/.cpp`
+    - `page_faults.h/.cpp`
+    - `page_charging.h/.cpp`
+- Integrated all four pages into `UI::init()` and `UI::update()`.
+- Completed Phase 6 scaffolding:
+    - Added `lib/dash/hardware.h/.cpp` with CAN/display/touch init and RTD buzzer placeholder.
+    - Updated `src/main.cpp` to initialize `Dash::Hardware`, start `Dash::Controller`, snapshot data, and render UI.
+    - Added `lib/core/thread/free_rtos_thread_strategy.h` for controller task execution on ESP32.
+- Validation:
+    - `pio test -e native -f test_dash` passed.
+    - `pio run -e esp32dev` passed after retry (first run hit a transient GCC internal compiler crash in ESP-IDF source).

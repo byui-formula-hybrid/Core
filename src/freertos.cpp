@@ -58,7 +58,7 @@ void CANConsumerTask(void *argument) {
       // process the can message here...
 
       // Simple example for printing the messages (slow), better to send to a function to process the CAN messages:
-      printf("ID: 0x%x MSG: ", msg.StdID);
+      printf("ID: 0x%lx MSG: ", msg.StdID);
       for (int i = 0; i < msg.DLC; i++) {
         if (msg.Data[i] < 0x10) printf("0");
         printf("%x", msg.Data[i]);

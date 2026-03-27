@@ -27,8 +27,10 @@ public:
     // Status information for the CAN manager.
     StatusInfo status;
 
-    Provider(Service* service, PIN transmit_pin, PIN receive_pin) : service(service), transmit_pin(transmit_pin), receive_pin(receive_pin) {}
-    Provider(Service* service) : service(service), transmit_pin(UNUSED), receive_pin(UNUSED) {}
+    Provider(Service* service, PIN transmit_pin, PIN receive_pin)
+        : transmit_pin(transmit_pin), receive_pin(receive_pin), service(service) {}
+    Provider(Service* service)
+        : transmit_pin(UNUSED), receive_pin(UNUSED), service(service) {}
 
     ~Provider() = default;
 
