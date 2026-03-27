@@ -1,5 +1,7 @@
 #pragma once
 
+#if defined(ESP32)
+
 #include "service.h"
 #include <driver/twai.h>
 #include <driver/gpio.h>
@@ -71,3 +73,5 @@ public:
 };
 
 } // namespace CAN
+
+#endif // ESP32
