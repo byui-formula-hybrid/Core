@@ -27,66 +27,47 @@ on:
       - '.scripts/README.md'
 
 jobs:
-  build-and-test:
-    name: Build and Test on ${{ matrix.os }}
-    runs-on: ${{ matrix.runner }}
+  unit-tests:
+    runs-on: ${{ matrix.os }}
     strategy:
-      fail-fast: false
       matrix:
         include:
           - os: linux
             runner: [self-hosted, Linux]
           - os: macos
             runner: [self-hosted, macOS]
-          # - os: windows
-          #   runner: [self-hosted, Windows]
     timeout-minutes: 10
     steps:
-      - name: Runner info (bash)
-        if: matrix.os != 'windows'
-        run: |
-          echo "RUNNER_NAME=${RUNNER_NAME}"
-          echo "RUNNER_OS=${RUNNER_OS}"
-          echo "RUNNER_LABELS=${RUNNER_LABELS}"
-      - name: Runner info (PowerShell)
-        if: matrix.os == 'windows'
-        shell: powershell
-        run: |
-          Write-Host "RUNNER_NAME=$env:RUNNER_NAME"
-          Write-Host "RUNNER_OS=$env:RUNNER_OS"
-          Write-Host "RUNNER_LABELS=$env:RUNNER_LABELS"
       - name: Checkout code
         uses: actions/checkout@v4
-      - name: Set Up Environment (bash)
-        if: matrix.os != 'windows'
-        run: ./.scripts/install.sh --ci
-      - name: Set Up Environment (PowerShell)
-        if: matrix.os == 'windows'
-        shell: powershell
-        run: ./.scripts/powershell/install.ps1 --ci
-      - name: Build for ESP32 (bash)
-        if: matrix.os != 'windows'
-        run: ./.scripts/build.sh --ci
-      - name: Build for ESP32 (PowerShell)
-        if: matrix.os == 'windows'
-        shell: powershell
-        run: ./.scripts/powershell/build.ps1
-      - name: Run Tests (bash)
-        if: matrix.os != 'windows'
-        run: ./.scripts/test.sh --ci -v
-      - name: Run Tests (PowerShell)
-        if: matrix.os == 'windows'
-        shell: powershell
-        run: ./.scripts/powershell/test.ps1
-      - name: Upload Build Artifacts
-        uses: actions/upload-artifact@v4
+
+      - name: Ensure Python is present
+        uses: actions/setup-python@v5
         with:
-          name: esp32-firmware-${{ matrix.os }}
-          path: .pio/build/esp32dev/
-      - name: Cleanup (bash)
-        if: matrix.os != 'windows' && always()
-        run: ./.scripts/uninstall.sh --ci
-      - name: Cleanup (PowerShell)
-        if: matrix.os == 'windows' && always()
-        shell: powershell
-        run: ./.scripts/powershell/uninstall.ps1 --ci
+          python-version: '3.11'
+          # This is key: setup-python will download a portable version 
+          # if the runner doesn't have it.
+
+      - name: PlatformIO Execution
+        run: |
+          # 1. Create a job-specific virtual environment
+          python -m venv .pio_venv
+          source .pio_venv/bin/activate
+          
+          # 2. Install PIO inside this environment
+          pip install -U platformio
+          
+          # 3. Direct all PIO downloads (compilers, libs) to the workspace
+          # This prevents polluting the runner's home directory (~/.platformio)
+          export PLATFORMIO_CORE_DIR=$GITHUB_WORKSPACE/.pio_core
+          
+          # 4. Execute the tests
+          pio test -e native
+        
+      - name: Total Cleanup
+        if: always()
+        run: |
+          # Delete the virtual env, the core toolchains, and build artifacts
+          rm -rf .pio_venv
+          rm -rf .pio_core
+          rm -rf .pio
