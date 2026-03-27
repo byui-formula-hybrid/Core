@@ -38,36 +38,250 @@ jobs:
             runner: [self-hosted, macOS]
     timeout-minutes: 10
     steps:
-      - name: Checkout code
+      # ── Detect pre-existing state ───────────────────────────────────────────
+      - name: Detect pre-existing tools
+        id: precheck
+        shell: bash
+        run: |
+          echo "had_git=$(command -v git  &>/dev/null && echo true || echo false)" >> "$GITHUB_OUTPUT"
+          echo "had_python=$(command -v python3 &>/dev/null && echo true || echo false)" >> "$GITHUB_OUTPUT"
+          echo "had_pip=$(command -v pip3   &>/dev/null && echo true || echo false)" >> "$GITHUB_OUTPUT"
+
+      # ── Install Git (if absent) ─────────────────────────────────────────────
+      - name: Install git (Linux)
+        if: matrix.os == 'linux' && steps.precheck.outputs.had_git == 'false'
+        shell: bash
+        run: |
+          if command -v apt-get &>/dev/null; then
+            sudo apt-get update -qq
+            sudo apt-get install -y --no-install-recommends git
+          elif command -v yum &>/dev/null; then
+            sudo yum install -y git
+          elif command -v dnf &>/dev/null; then
+            sudo dnf install -y git
+          elif command -v pacman &>/dev/null; then
+            sudo pacman -Sy --noconfirm git
+          else
+            echo "::error::No supported package manager found for git installation"
+            exit 1
+          fi
+
+      - name: Install git (macOS)
+        if: matrix.os == 'macos' && steps.precheck.outputs.had_git == 'false'
+        shell: bash
+        run: |
+          if command -v brew &>/dev/null; then
+            brew install git
+          else
+            # Trigger Xcode CLI tools (git is bundled)
+            xcode-select --install 2>/dev/null || true
+            # Wait up to 60 s for install to complete
+            for i in $(seq 1 12); do
+              command -v git &>/dev/null && break
+              sleep 5
+            done
+            command -v git &>/dev/null || { echo "::error::git installation failed"; exit 1; }
+          fi
+
+      # ── Checkout ────────────────────────────────────────────────────────────
+      - name: Checkout repository
         uses: actions/checkout@v4
-
-      - name: Ensure Python is present
-        uses: actions/setup-python@v5
         with:
-          python-version: '3.11.15'
-          # This is key: setup-python will download a portable version 
-          # if the runner doesn't have it.
+          path: repo
 
-      - name: PlatformIO Execution
+      # ── Install Python 3 (if absent) ────────────────────────────────────────
+      - name: Install Python 3 (Linux)
+        if: matrix.os == 'linux' && steps.precheck.outputs.had_python == 'false'
+        shell: bash
         run: |
-          # 1. Create a job-specific virtual environment
-          python -m venv .pio_venv
-          source .pio_venv/bin/activate
-          
-          # 2. Install PIO inside this environment
-          pip install -U platformio
-          
-          # 3. Direct all PIO downloads (compilers, libs) to the workspace
-          # This prevents polluting the runner's home directory (~/.platformio)
-          export PLATFORMIO_CORE_DIR=$GITHUB_WORKSPACE/.pio_core
-          
-          # 4. Execute the tests
-          pio test -e native
-        
-      - name: Total Cleanup
+          if command -v apt-get &>/dev/null; then
+            sudo apt-get update -qq
+            sudo apt-get install -y --no-install-recommends python3 python3-pip python3-venv
+          elif command -v yum &>/dev/null; then
+            sudo yum install -y python3 python3-pip
+          elif command -v dnf &>/dev/null; then
+            sudo dnf install -y python3 python3-pip
+          elif command -v pacman &>/dev/null; then
+            sudo pacman -Sy --noconfirm python python-pip
+          else
+            echo "::error::No supported package manager found for Python installation"
+            exit 1
+          fi
+
+      - name: Install Python 3 (macOS)
+        if: matrix.os == 'macos' && steps.precheck.outputs.had_python == 'false'
+        shell: bash
+        run: |
+          if command -v brew &>/dev/null; then
+            brew install python3
+          else
+            echo "::error::Homebrew not found; cannot install Python on macOS"
+            exit 1
+          fi
+
+      # ── Create isolated virtualenv for PlatformIO ───────────────────────────
+      - name: Create Python virtualenv
+        shell: bash
+        run: |
+          python3 -m venv "$GITHUB_WORKSPACE/.venv-pio"
+          echo "PIO_VENV=$GITHUB_WORKSPACE/.venv-pio" >> "$GITHUB_ENV"
+          echo "$GITHUB_WORKSPACE/.venv-pio/bin" >> "$GITHUB_PATH"
+
+      # ── Install PlatformIO inside the venv ──────────────────────────────────
+      - name: Install PlatformIO
+        shell: bash
+        run: |
+          pip install --quiet --upgrade pip
+          pip install --quiet platformio
+
+      # ── Install native build toolchain (compiler) ───────────────────────────
+      - name: Install native toolchain (Linux)
+        if: matrix.os == 'linux'
+        shell: bash
+        run: |
+          if command -v apt-get &>/dev/null; then
+            sudo apt-get update -qq
+            sudo apt-get install -y --no-install-recommends build-essential
+          elif command -v yum &>/dev/null; then
+            sudo yum groupinstall -y "Development Tools"
+          elif command -v dnf &>/dev/null; then
+            sudo dnf groupinstall -y "Development Tools"
+          elif command -v pacman &>/dev/null; then
+            sudo pacman -Sy --noconfirm base-devel
+          else
+            echo "::error::No supported package manager found for toolchain"
+            exit 1
+          fi
+          # Record installed package list for cleanup
+          if command -v apt-get &>/dev/null; then
+            echo "TOOLCHAIN_PKG=build-essential" >> "$GITHUB_ENV"
+            echo "PKG_MANAGER=apt" >> "$GITHUB_ENV"
+          elif command -v yum &>/dev/null; then
+            echo "PKG_MANAGER=yum" >> "$GITHUB_ENV"
+          elif command -v dnf &>/dev/null; then
+            echo "PKG_MANAGER=dnf" >> "$GITHUB_ENV"
+          elif command -v pacman &>/dev/null; then
+            echo "TOOLCHAIN_PKG=base-devel" >> "$GITHUB_ENV"
+            echo "PKG_MANAGER=pacman" >> "$GITHUB_ENV"
+          fi
+
+      - name: Install native toolchain (macOS)
+        if: matrix.os == 'macos'
+        shell: bash
+        run: |
+          # Xcode Command Line Tools provide clang/gcc on macOS
+          if ! xcode-select -p &>/dev/null; then
+            xcode-select --install
+            until xcode-select -p &>/dev/null; do sleep 5; done
+          fi
+          echo "INSTALLED_XCODE_CLI=true" >> "$GITHUB_ENV"
+
+      # ── Run PlatformIO tests ─────────────────────────────────────────────────
+      - name: Run PlatformIO tests (native, verbose)
+        shell: bash
+        working-directory: repo
+        run: |
+          pio test --environment native --verbose
+
+      # ════════════════════════════════════════════════════════════════════════
+      # CLEANUP — always runs, even on failure
+      # ════════════════════════════════════════════════════════════════════════
+
+      - name: Cleanup - Remove PlatformIO build artefacts
         if: always()
+        shell: bash
+        working-directory: repo
         run: |
-          # Delete the virtual env, the core toolchains, and build artifacts
-          rm -rf .pio_venv
-          rm -rf .pio_core
           rm -rf .pio
+
+      - name: Cleanup - Remove Python virtualenv
+        if: always()
+        shell: bash
+        run: |
+          rm -rf "$GITHUB_WORKSPACE/.venv-pio"
+
+      - name: Cleanup - Remove repository checkout
+        if: always()
+        shell: bash
+        run: |
+          rm -rf "$GITHUB_WORKSPACE/repo"
+
+      - name: Cleanup - Uninstall native toolchain (Linux, if we installed it)
+        if: always() && matrix.os == 'linux' && steps.precheck.outputs.had_python == 'false'
+        shell: bash
+        run: |
+          case "${PKG_MANAGER:-}" in
+            apt)
+              sudo apt-get remove -y --auto-remove ${TOOLCHAIN_PKG:-build-essential} 2>/dev/null || true
+              ;;
+            yum)
+              sudo yum groupremove -y "Development Tools" 2>/dev/null || true
+              ;;
+            dnf)
+              sudo dnf groupremove -y "Development Tools" 2>/dev/null || true
+              ;;
+            pacman)
+              sudo pacman -Rns --noconfirm ${TOOLCHAIN_PKG:-base-devel} 2>/dev/null || true
+              ;;
+          esac
+
+      - name: Cleanup - Uninstall Python 3 (Linux, if we installed it)
+        if: always() && matrix.os == 'linux' && steps.precheck.outputs.had_python == 'false'
+        shell: bash
+        run: |
+          case "${PKG_MANAGER:-}" in
+            apt)
+              sudo apt-get remove -y --auto-remove python3 python3-pip python3-venv 2>/dev/null || true
+              sudo apt-get autoremove -y 2>/dev/null || true
+              ;;
+            yum)
+              sudo yum remove -y python3 python3-pip 2>/dev/null || true
+              ;;
+            dnf)
+              sudo dnf remove -y python3 python3-pip 2>/dev/null || true
+              ;;
+            pacman)
+              sudo pacman -Rns --noconfirm python python-pip 2>/dev/null || true
+              ;;
+          esac
+
+      - name: Cleanup - Uninstall Python 3 (macOS, if we installed it)
+        if: always() && matrix.os == 'macos' && steps.precheck.outputs.had_python == 'false'
+        shell: bash
+        run: |
+          if command -v brew &>/dev/null; then
+            brew uninstall --ignore-dependencies python3 2>/dev/null || true
+          fi
+
+      - name: Cleanup - Uninstall git (Linux, if we installed it)
+        if: always() && matrix.os == 'linux' && steps.precheck.outputs.had_git == 'false'
+        shell: bash
+        run: |
+          case "${PKG_MANAGER:-}" in
+            apt)  sudo apt-get remove -y --auto-remove git 2>/dev/null || true ;;
+            yum)  sudo yum remove -y git 2>/dev/null || true ;;
+            dnf)  sudo dnf remove -y git 2>/dev/null || true ;;
+            pacman) sudo pacman -Rns --noconfirm git 2>/dev/null || true ;;
+          esac
+
+      - name: Cleanup - Uninstall git (macOS, if we installed it)
+        if: always() && matrix.os == 'macos' && steps.precheck.outputs.had_git == 'false'
+        shell: bash
+        run: |
+          if command -v brew &>/dev/null; then
+            brew uninstall git 2>/dev/null || true
+          fi
+
+      - name: Cleanup - Purge pip cache
+        if: always()
+        shell: bash
+        run: |
+          pip3 cache purge 2>/dev/null || true
+
+      - name: Cleanup - Purge PlatformIO cache / packages
+        if: always()
+        shell: bash
+        run: |
+          # Remove PIO home dir caches (packages, cache, tmp)
+          PIO_HOME="${PLATFORMIO_CORE_DIR:-$HOME/.platformio}"
+          rm -rf "$PIO_HOME/packages" "$PIO_HOME/cache" "$PIO_HOME/.cache" 2>/dev/null || true
