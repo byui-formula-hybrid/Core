@@ -4,10 +4,10 @@
 #include <thread>
 #include <chrono>
 
-#include "../../lib/inverter/DTIX50/commands.h"
-#include "../../lib/inverter/DTIX50/messages.h"
+#include "inverter/DTIX50/commands.h"
+#include "inverter/DTIX50/messages.h"
+#include "inverter/DTIX50/heartbeat.h"
 
-#include "../../lib/inverter/DTIX50/heartbeat.h"
 #include "../mocks/can/mock_can_service.h"
 #include "../mocks/strategies/native_lock_strategy.h"
 #include "../mocks/strategies/native_thread_strategy.h"

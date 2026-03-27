@@ -1,7 +1,9 @@
 #include <unity.h>
 #include <cstdint>
 #include "test_main.h"
-#include "../../lib/can/provider.h"
+
+#include "can/provider.h"
+
 #include "../mocks/can/mock_can_service.h"
 
 using namespace CAN;

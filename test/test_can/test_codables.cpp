@@ -1,7 +1,8 @@
 #include "unity.h"
 #include <cstdint>
-#include "../../lib/can/provider.h"
-#include "../../lib/can/service.h"
+
+#include "can/provider.h"
+#include "can/service.h"
 
 using namespace CAN;
 
