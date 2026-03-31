@@ -1,7 +1,7 @@
 #include <unity.h>
 #include <cstring>
 
-#include <inverter/DTIX50.h>
+#include <DTIX50.h>
 #include <can.h>
 
 using namespace Inverter;

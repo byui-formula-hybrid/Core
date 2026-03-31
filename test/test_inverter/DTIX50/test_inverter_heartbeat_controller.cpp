@@ -4,7 +4,7 @@
 #include <thread>
 #include <chrono>
 
-#include <inverter/DTIX50.h>
+#include <DTIX50.h>
 #include <mocks.h>
 
 using namespace Inverter;
