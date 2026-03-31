@@ -1,3 +1,6 @@
+#ifndef BATTERY_MESSAGES_H
+#define BATTERY_MESSAGES_H
+
 #include <cstdint>
 
 /**
@@ -8,9 +11,10 @@
  * @param packAmpHours: Amp hours in mAh
  **/ 
 struct Message1{
-    uint16_t packVoltage: 16;
-    uint16_t packCurrent: 16;
-    uint16_t packAmpHours: 16;
+    uint64_t packVoltage: 16;
+    uint64_t packCurrent: 16;
+    uint64_t packAmpHours: 16;
+    uint64_t reserved: 16;
 };
 
 /**
@@ -22,9 +26,10 @@ struct Message1{
  */
 struct Message2
 {
-    uint16_t dtcFlags1: 16;
-    uint16_t dtcFlags2: 16;
-    uint8_t currentLimit: 8;
+    uint64_t dtcFlags1: 16;
+    uint64_t dtcFlags2: 16;
+    uint64_t currentLimit: 8;
+    uint64_t reserved: 24;
 };
 
 /**
@@ -35,7 +40,8 @@ struct Message2
  *                  (Reference Orion BMS 2 operation Manual pg:49)
  */
 struct Message3{
-    uint8_t mpeState: 8;
+    uint64_t mpeState: 8;
+    uint64_t reserved: 56;
 };
 
 /**
@@ -45,8 +51,9 @@ struct Message3{
  * @param lowCellVoltage:  Voltage in mV
  */
 struct Message4{
-    uint8_t highCellVoltage: 8;
-    uint8_t lowCellVoltage: 8;
+    uint64_t highCellVoltage: 8;
+    uint64_t lowCellVoltage: 8;
+    uint64_t reserved: 48;
 };
 
 /**
@@ -55,7 +62,8 @@ struct Message4{
  * @param constantValue: User-defined fixed value
  */
 struct Message5 {
-    uint8_t constantValue : 8;
+    uint64_t constantValue : 8;
+    uint64_t reserved : 56;
 };
 
 /**
@@ -67,10 +75,11 @@ struct Message5 {
  * @param avgCurrent: Averaged pack current
  */
 struct Message6 {
-    uint8_t packDCL : 8;
-    uint8_t packCCL : 8;
-    uint16_t packCurrent : 16;
-    uint16_t avgCurrent : 16;
+    uint64_t packDCL : 8;
+    uint64_t packCCL : 8;
+    uint64_t packCurrent : 16;
+    uint64_t avgCurrent : 16;
+    uint64_t reserved : 16;
 };
 
 /**
@@ -80,8 +89,9 @@ struct Message6 {
  * @param packCCL: Pack Charge Current Limit
  */
 struct Message202 {
-    uint8_t packDCL : 8;
-    uint8_t packCCL : 8;
+    uint64_t packDCL : 8;
+    uint64_t packCCL : 8;
+    uint64_t reserved : 48;
 };
 
 /**
@@ -92,9 +102,10 @@ struct Message202 {
  * @param minPackVoltage: Minimum allowed pack voltage
  */
 struct Message351 {
-    uint16_t maxPackVoltage : 16;
-    uint8_t packDCL : 8;
-    uint16_t minPackVoltage : 16;
+    uint64_t maxPackVoltage : 16;
+    uint64_t packDCL : 8;
+    uint64_t minPackVoltage : 16;
+    uint64_t reserved : 24;
 };
 
 /**
@@ -104,8 +115,9 @@ struct Message351 {
  * @param packHealth: State of Health (0-100%)
  */
 struct Message355 {
-    uint8_t packSOC : 8;
-    uint8_t packHealth : 8;
+    uint64_t packSOC : 8;
+    uint64_t packHealth : 8;
+    uint64_t reserved : 48;
 };
 
 /**
@@ -115,8 +127,9 @@ struct Message355 {
  * @param customFlag: User defined flag
  */
 struct Message1806E7F4 {
-    uint16_t maxPackVoltage : 16;
-    uint8_t customFlag : 8;
+    uint64_t maxPackVoltage : 16;
+    uint64_t customFlag : 8;
+    uint64_t reserved : 40;
 };
 
 /**
@@ -126,8 +139,9 @@ struct Message1806E7F4 {
  * @param customFlag: User defined flag
  */
 struct MessageMaxCellVoltage {
-    uint16_t maxCellVoltage : 16;
-    uint8_t customFlag : 8;
+    uint64_t maxCellVoltage : 16;
+    uint64_t customFlag : 8;
+    uint64_t reserved : 40;
 };
 
 /**
@@ -137,5 +151,7 @@ struct MessageMaxCellVoltage {
  */
 struct MessageBlank {
     // No data parameters defined
+    uint64_t reserved : 64;
 };
 
+#endif // BATTERY_MESSAGES_H

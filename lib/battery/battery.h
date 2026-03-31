@@ -2,4 +2,6 @@
 #ifndef BATTERY_H
 #define BATTERY_H
 
+#include "messages.h"
+
 #endif // BATTERY_H
