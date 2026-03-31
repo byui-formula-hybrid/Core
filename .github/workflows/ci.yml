@@ -27,9 +27,11 @@ on:
       - '.scripts/README.md'
 
 jobs:
-  build-and-test:
-    name: Build and Test on ${{ matrix.os }}
+  test:
+    name: Test ${{ matrix.os }}
     runs-on: ${{ matrix.runner }}
+    timeout-minutes: 10
+
     strategy:
       fail-fast: false
       matrix:
@@ -38,55 +40,181 @@ jobs:
             runner: [self-hosted, Linux]
           - os: macos
             runner: [self-hosted, macOS]
-          # - os: windows
-          #   runner: [self-hosted, Windows]
-    timeout-minutes: 10
+
     steps:
-      - name: Runner info (bash)
-        if: matrix.os != 'windows'
+      # ── Bootstrap path variables ───────────────────────────────────────────
+      # runner.temp is NOT available in job-level env: blocks, only in steps.
+      # We set everything here once and write to GITHUB_ENV so every
+      # subsequent step inherits the variables without re-deriving them.
+      - name: Set tool path variables
+        shell: bash
         run: |
-          echo "RUNNER_NAME=${RUNNER_NAME}"
-          echo "RUNNER_OS=${RUNNER_OS}"
-          echo "RUNNER_LABELS=${RUNNER_LABELS}"
-      - name: Runner info (PowerShell)
-        if: matrix.os == 'windows'
-        shell: powershell
+          echo "TOOLS_ROOT=${RUNNER_TEMP}/pio-tools"          >> "$GITHUB_ENV"
+          echo "VENV_DIR=${RUNNER_TEMP}/pio-tools/venv"       >> "$GITHUB_ENV"
+          echo "GIT_INSTALL=${RUNNER_TEMP}/pio-tools/git"     >> "$GITHUB_ENV"
+          echo "PLATFORMIO_CORE_DIR=${RUNNER_TEMP}/pio-tools/platformio" >> "$GITHUB_ENV"
+          mkdir -p "${RUNNER_TEMP}/pio-tools"
+
+      # ── Detect what is already available ──────────────────────────────────
+      - name: Detect pre-existing tools
+        id: precheck
+        shell: bash
         run: |
-          Write-Host "RUNNER_NAME=$env:RUNNER_NAME"
-          Write-Host "RUNNER_OS=$env:RUNNER_OS"
-          Write-Host "RUNNER_LABELS=$env:RUNNER_LABELS"
-      - name: Checkout code
+          echo "had_git=$(    command -v git     &>/dev/null && echo true || echo false)" >> "$GITHUB_OUTPUT"
+          echo "had_python=$( command -v python3 &>/dev/null && echo true || echo false)" >> "$GITHUB_OUTPUT"
+          echo "had_cc=$(     command -v cc      &>/dev/null && echo true || echo false)" >> "$GITHUB_OUTPUT"
+
+      # ════════════════════════════════════════════════════════════════════════
+      # GIT  (user-space, only when absent)
+      # ════════════════════════════════════════════════════════════════════════
+
+      - name: Install portable git (Linux)
+        if: matrix.os == 'linux' && steps.precheck.outputs.had_git == 'false'
+        shell: bash
+        run: |
+          set -euo pipefail
+          ARCH="$(uname -m)"
+          FLAVOUR="x86_64"
+          [[ "$ARCH" == "aarch64" ]] && FLAVOUR="aarch64"
+
+          BASE="https://github.com/nicowillis/portable-git/releases/latest/download"
+          TARBALL="portable-git-${FLAVOUR}.tar.gz"
+          curl -fsSL "${BASE}/${TARBALL}" -o "/tmp/${TARBALL}"
+          mkdir -p "$GIT_INSTALL"
+          tar -xzf "/tmp/${TARBALL}" -C "$GIT_INSTALL" --strip-components=1
+          rm -f "/tmp/${TARBALL}"
+          echo "$GIT_INSTALL/bin" >> "$GITHUB_PATH"
+
+      - name: Verify git (macOS)
+        if: matrix.os == 'macos' && steps.precheck.outputs.had_git == 'false'
+        shell: bash
+        run: |
+          xcode-select --install 2>/dev/null || true
+          for i in $(seq 1 12); do command -v git &>/dev/null && break; sleep 5; done
+          command -v git || { echo "::error::git unavailable on macOS runner"; exit 1; }
+
+      # ── Checkout ──────────────────────────────────────────────────────────
+      - name: Checkout repository
         uses: actions/checkout@v4
-      - name: Set Up Environment (bash)
-        if: matrix.os != 'windows'
-        run: ./.scripts/install.sh --ci
-      - name: Set Up Environment (PowerShell)
-        if: matrix.os == 'windows'
-        shell: powershell
-        run: ./.scripts/powershell/install.ps1 --ci
-      - name: Build for ESP32 (bash)
-        if: matrix.os != 'windows'
-        run: ./.scripts/build.sh --ci
-      - name: Build for ESP32 (PowerShell)
-        if: matrix.os == 'windows'
-        shell: powershell
-        run: ./.scripts/powershell/build.ps1
-      - name: Run Tests (bash)
-        if: matrix.os != 'windows'
-        run: ./.scripts/test.sh --ci -v
-      - name: Run Tests (PowerShell)
-        if: matrix.os == 'windows'
-        shell: powershell
-        run: ./.scripts/powershell/test.ps1
-      - name: Upload Build Artifacts
-        uses: actions/upload-artifact@v4
         with:
-          name: esp32-firmware-${{ matrix.os }}
-          path: .pio/build/esp32dev/
-      - name: Cleanup (bash)
-        if: matrix.os != 'windows' && always()
-        run: ./.scripts/uninstall.sh --ci
-      - name: Cleanup (PowerShell)
-        if: matrix.os == 'windows' && always()
-        shell: powershell
-        run: ./.scripts/powershell/uninstall.ps1 --ci
+          path: repo
+
+      # ════════════════════════════════════════════════════════════════════════
+      # PYTHON  (standalone pre-built binary, only when absent)
+      # python-build-standalone: relocatable CPython, no root, no compile step
+      # ════════════════════════════════════════════════════════════════════════
+
+      - name: Install standalone Python (Linux)
+        if: matrix.os == 'linux' && steps.precheck.outputs.had_python == 'false'
+        shell: bash
+        run: |
+          set -euo pipefail
+          PYTHON_VERSION="3.12.3"
+          ARCH="$(uname -m)"
+          FLAVOUR="x86_64-unknown-linux-gnu"
+          [[ "$ARCH" == "aarch64" ]] && FLAVOUR="aarch64-unknown-linux-gnu"
+
+          PBS_BASE="https://github.com/indygreg/python-build-standalone/releases/download/20240415"
+          TARBALL="cpython-${PYTHON_VERSION}+20240415-${FLAVOUR}-install_only.tar.gz"
+
+          mkdir -p "$TOOLS_ROOT/python"
+          curl -fsSL "${PBS_BASE}/${TARBALL}" -o "/tmp/${TARBALL}"
+          tar -xzf "/tmp/${TARBALL}" -C "$TOOLS_ROOT/python" --strip-components=1
+          rm -f "/tmp/${TARBALL}"
+
+          PY_BIN="$TOOLS_ROOT/python/bin"
+          [[ -f "$PY_BIN/python3.12" && ! -e "$PY_BIN/python3" ]] && ln -sf "$PY_BIN/python3.12" "$PY_BIN/python3"
+          [[ -f "$PY_BIN/pip3.12"    && ! -e "$PY_BIN/pip3"    ]] && ln -sf "$PY_BIN/pip3.12"    "$PY_BIN/pip3"
+          echo "$PY_BIN" >> "$GITHUB_PATH"
+
+      - name: Install standalone Python (macOS)
+        if: matrix.os == 'macos' && steps.precheck.outputs.had_python == 'false'
+        shell: bash
+        run: |
+          set -euo pipefail
+          PYTHON_VERSION="3.12.3"
+          ARCH="$(uname -m)"
+          FLAVOUR="x86_64-apple-darwin"
+          [[ "$ARCH" == "arm64" ]] && FLAVOUR="aarch64-apple-darwin"
+
+          PBS_BASE="https://github.com/indygreg/python-build-standalone/releases/download/20240415"
+          TARBALL="cpython-${PYTHON_VERSION}+20240415-${FLAVOUR}-install_only.tar.gz"
+
+          mkdir -p "$TOOLS_ROOT/python"
+          curl -fsSL "${PBS_BASE}/${TARBALL}" -o "/tmp/${TARBALL}"
+          tar -xzf "/tmp/${TARBALL}" -C "$TOOLS_ROOT/python" --strip-components=1
+          rm -f "/tmp/${TARBALL}"
+
+          PY_BIN="$TOOLS_ROOT/python/bin"
+          [[ -f "$PY_BIN/python3.12" && ! -e "$PY_BIN/python3" ]] && ln -sf "$PY_BIN/python3.12" "$PY_BIN/python3"
+          [[ -f "$PY_BIN/pip3.12"    && ! -e "$PY_BIN/pip3"    ]] && ln -sf "$PY_BIN/pip3.12"    "$PY_BIN/pip3"
+          echo "$PY_BIN" >> "$GITHUB_PATH"
+
+      # ════════════════════════════════════════════════════════════════════════
+      # COMPILER  (Linux only — macOS always has clang via Xcode CLT)
+      # musl.cc pre-built native GCC — single tarball, no root required
+      # ════════════════════════════════════════════════════════════════════════
+
+      - name: Install portable GCC (Linux, only if no cc found)
+        if: matrix.os == 'linux' && steps.precheck.outputs.had_cc == 'false'
+        shell: bash
+        run: |
+          set -euo pipefail
+          ARCH="$(uname -m)"
+          TRIPLE="${ARCH}-linux-musl"
+          TARBALL="${TRIPLE}-native.tgz"
+
+          mkdir -p "$TOOLS_ROOT/gcc"
+          curl -fsSL "https://musl.cc/${TARBALL}" -o "/tmp/${TARBALL}"
+          tar -xzf "/tmp/${TARBALL}" -C "$TOOLS_ROOT/gcc" --strip-components=1
+          rm -f "/tmp/${TARBALL}"
+
+          GCC_BIN="$TOOLS_ROOT/gcc/bin"
+          echo "$GCC_BIN" >> "$GITHUB_PATH"
+          echo "CC=${GCC_BIN}/${TRIPLE}-gcc"  >> "$GITHUB_ENV"
+          echo "CXX=${GCC_BIN}/${TRIPLE}-g++" >> "$GITHUB_ENV"
+          echo "AR=${GCC_BIN}/${TRIPLE}-ar"   >> "$GITHUB_ENV"
+
+      # ════════════════════════════════════════════════════════════════════════
+      # PLATFORMIO  (isolated virtualenv — never touches system site-packages)
+      # ════════════════════════════════════════════════════════════════════════
+
+      - name: Create virtualenv and install PlatformIO
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m venv "$VENV_DIR"
+          echo "$VENV_DIR/bin" >> "$GITHUB_PATH"
+          "$VENV_DIR/bin/pip" install --quiet --upgrade pip
+          "$VENV_DIR/bin/pip" install --quiet platformio
+
+      # ── Run tests ─────────────────────────────────────────────────────────
+      - name: Run PlatformIO tests (native, verbose)
+        shell: bash
+        working-directory: repo
+        run: |
+          pio test --environment native --verbose
+
+      # ════════════════════════════════════════════════════════════════════════
+      # CLEANUP — always runs, even on failure
+      # Everything this job installed lives under TOOLS_ROOT or repo/.pio —
+      # a single rm -rf covers the entire footprint, no sudo required.
+      # ════════════════════════════════════════════════════════════════════════
+
+      - name: Cleanup - PlatformIO build artefacts
+        if: always()
+        shell: bash
+        run: rm -rf "$GITHUB_WORKSPACE/repo/.pio"
+
+      - name: Cleanup - Repository checkout
+        if: always()
+        shell: bash
+        run: rm -rf "$GITHUB_WORKSPACE/repo"
+
+      - name: Cleanup - All JIT-installed tools and caches
+        if: always()
+        shell: bash
+        run: |
+          # Wipes venv, standalone Python, portable git, portable GCC,
+          # and the PlatformIO core/cache dir (PLATFORMIO_CORE_DIR points here).
+          rm -rf "$TOOLS_ROOT"

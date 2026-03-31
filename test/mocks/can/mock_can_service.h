@@ -1,7 +1,9 @@
-#pragma once
+#ifndef MOCK_CAN_SERVICE_H
+#define MOCK_CAN_SERVICE_H
+
 #include <functional>
 #include <cstdint>
-#include "../../../lib/can/service.h"
+#include <can/service.h>
 
 using namespace CAN;
 
@@ -141,3 +143,5 @@ public:
 };
 
 }  // namespace MOCKS
+
+#endif // MOCK_CAN_SERVICE_H

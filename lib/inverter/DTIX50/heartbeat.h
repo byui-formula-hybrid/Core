@@ -1,13 +1,12 @@
-#pragma once
+#ifndef INVERTER_DTIX50_HEARTBEAT_H
+#define INVERTER_DTIX50_HEARTBEAT_H
 
 #include <memory>
 
+#include "core/core.h"
+#include "can/can.h"
 #include "commands.h"
 #include "messages.h"
-#include "../core/lock/i_lock_strategy.h"
-#include "../core/thread/i_thread_strategy.h"
-#include "../can/provider.h"
-#include "../can/types.h"
 
 using namespace CAN;
 
@@ -36,4 +35,7 @@ private:
 };
 
 }
+
 }
+
+#endif // INVERTER_DTIX50_HEARTBEAT_H

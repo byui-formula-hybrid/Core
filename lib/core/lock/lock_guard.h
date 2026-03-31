@@ -1,4 +1,6 @@
-#pragma once
+
+#ifndef CORE_LOCK_LOCK_GUARD_H
+#define CORE_LOCK_LOCK_GUARD_H
 
 #include "i_lock_strategy.h"
 
@@ -38,6 +40,8 @@ public:
     LockGuard& operator=(const LockGuard&) = delete;
     LockGuard(LockGuard&&) = delete;
     LockGuard& operator=(LockGuard&&) = delete;
+
+#endif // CORE_LOCK_LOCK_GUARD_H
 };
 
 } // namespace Core

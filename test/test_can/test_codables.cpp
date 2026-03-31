@@ -1,7 +1,7 @@
-#include "unity.h"
 #include <cstdint>
-#include "../../lib/can/provider.h"
-#include "../../lib/can/service.h"
+#include <can.h>
+
+#include "test_main.h"
 
 using namespace CAN;
 
@@ -14,7 +14,7 @@ struct TestMessage {
 };
 
 void test_can_encode() {
-    TestMessage message;
+    TestMessage message = {};
     message.a_bool = true;
     message.a_uint8 = 0xAB;
     message.a_uint16 = 0xCDEF;
@@ -24,7 +24,7 @@ void test_can_encode() {
     
     TEST_ASSERT_EQUAL(0, frame.identifier);
     TEST_ASSERT_EQUAL(8, frame.data_length_code);
-    TEST_ASSERT_EQUAL(0x01, frame.data[0]);
+    TEST_ASSERT_EQUAL(true, frame.data[0]);
     TEST_ASSERT_EQUAL(0xAB, frame.data[1]);
     TEST_ASSERT_EQUAL(0xEF, frame.data[2]);
     TEST_ASSERT_EQUAL(0xCD, frame.data[3]);

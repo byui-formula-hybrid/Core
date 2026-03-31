@@ -1,4 +1,4 @@
-#include <unity.h>
+#include "test_main.h"
 
 // Setup function called before each test
 void setUp(void) {
@@ -16,8 +16,6 @@ void test_basic() {
 
 int main() {
     UNITY_BEGIN();
-
-    test_basic();
-    
+    RUN_TEST(test_basic);
     return UNITY_END();
 }

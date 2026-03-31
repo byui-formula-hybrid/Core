@@ -1,9 +1,8 @@
-#pragma once
+#ifndef INVERTER_DTIX50_MESSAGES_H
+#define INVERTER_DTIX50_MESSAGES_H
+// https://zapdrive.eu/docs/assets/common/can_docs/v25/DTI%20CAN%20manual%20V2.5.pdf
 
 #include <cstdint>
-
-// Derived from
-// https://zapdrive.eu/docs/assets/common/can_docs/v25/DTI%20CAN%20manual%20V2.5.pdf
 
 namespace Inverter {
 
@@ -41,6 +40,7 @@ enum class ControlMode : uint64_t {
  *                     parameter out of boundaries
  * @param ANALOG_INPUT: Redundant output out of range
  **/
+
 enum class FaultCodes : uint8_t {
     NONE = 0x00,
     OVERVOLTAGE = 0x01,
@@ -220,3 +220,5 @@ struct Message26 {
 };
 
 }; // Inverter
+
+#endif // INVERTER_DTIX50_MESSAGES_H

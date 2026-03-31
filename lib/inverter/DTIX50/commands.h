@@ -1,4 +1,5 @@
-#pragma once
+#ifndef INVERTER_DTIX50_COMMANDS_H
+#define INVERTER_DTIX50_COMMANDS_H
 
 #include <cstdint>
 
@@ -183,3 +184,5 @@ struct SetDriveEnable {
 
 }; // Command
 }; // Inverter
+
+#endif // INVERTER_DTIX50_COMMANDS_H

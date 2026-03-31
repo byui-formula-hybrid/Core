@@ -1,4 +1,6 @@
-#pragma once
+
+#ifndef CAN_PROVIDER_H
+#define CAN_PROVIDER_H
 
 #include "service.h"
 #include <stdint.h>
@@ -50,7 +52,6 @@ public:
      */
     bool restart();
 
-
     /*
      * Ends the CAN provider.
      * @returns true if end was successful, false otherwise.
@@ -85,7 +86,7 @@ public:
      */
     bool uninstall_driver();
 
-    private:
+private:
     // Provides a wrapped implementation of the TWAI interface
     Service* service;
 
@@ -97,3 +98,5 @@ public:
 };
 
 } // namespace CAN
+
+#endif // CAN_PROVIDER_H

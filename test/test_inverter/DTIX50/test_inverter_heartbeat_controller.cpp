@@ -4,13 +4,8 @@
 #include <thread>
 #include <chrono>
 
-#include "../../lib/inverter/DTIX50/commands.h"
-#include "../../lib/inverter/DTIX50/messages.h"
-
-#include "../../lib/inverter/DTIX50/heartbeat.h"
-#include "../mocks/can/mock_can_service.h"
-#include "../mocks/strategies/native_lock_strategy.h"
-#include "../mocks/strategies/native_thread_strategy.h"
+#include <DTIX50.h>
+#include <mocks.h>
 
 using namespace Inverter;
 using namespace MOCKS;
