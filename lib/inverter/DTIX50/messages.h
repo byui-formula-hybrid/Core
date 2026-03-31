@@ -41,7 +41,6 @@ enum class ControlMode : uint64_t {
  * @param ANALOG_INPUT: Redundant output out of range
  **/
 
-#endif // INVERTER_DTIX50_MESSAGES_H
 enum class FaultCodes : uint8_t {
     NONE = 0x00,
     OVERVOLTAGE = 0x01,
@@ -221,3 +220,5 @@ struct Message26 {
 };
 
 }; // Inverter
+
+#endif // INVERTER_DTIX50_MESSAGES_H

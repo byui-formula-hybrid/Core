@@ -39,8 +39,6 @@ struct SetBrakeCurrent {
     uint64_t reserved : 48;
 };
 
-#endif // INVERTER_DTIX50_COMMANDS_H
-
 /**
  * ID: 0x03
  * @param erpm: This command enables the speed control of the motor with a target
@@ -186,3 +184,5 @@ struct SetDriveEnable {
 
 }; // Command
 }; // Inverter
+
+#endif // INVERTER_DTIX50_COMMANDS_H
