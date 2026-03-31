@@ -1,4 +1,6 @@
-#pragma once
+
+#ifndef CORE_THREAD_I_THREAD_STRATEGY_H
+#define CORE_THREAD_I_THREAD_STRATEGY_H
 
 typedef void(*taskFunc)(void*);
 
@@ -22,3 +24,5 @@ public:
 };
 
 }
+
+#endif // CORE_THREAD_I_THREAD_STRATEGY_H

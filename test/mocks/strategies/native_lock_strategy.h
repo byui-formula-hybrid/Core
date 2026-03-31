@@ -1,7 +1,12 @@
-#pragma once
+#ifndef NATIVE_LOCK_STRATEGY_H
+#define NATIVE_LOCK_STRATEGY_H
 
 #include <mutex>
 #include <memory>
+
+#include <core/lock.h>
+
+namespace MOCKS {
 
 /**
  * @brief Native lock strategy using std::mutex for testing on host platform
@@ -36,3 +41,7 @@ public:
     NativeLockStrategy(NativeLockStrategy&&) = delete;
     NativeLockStrategy& operator=(NativeLockStrategy&&) = delete;
 };
+
+} // namespace MOCKS
+
+#endif // NATIVE_LOCK_STRATEGY_H

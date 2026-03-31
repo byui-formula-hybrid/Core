@@ -1,4 +1,6 @@
-#pragma once
+
+#ifndef CORE_THREAD_CMSIS_OS2_THREAD_STRATEGY_H
+#define CORE_THREAD_CMSIS_OS2_THREAD_STRATEGY_H
 
 // Ensures the following code is only compiled when on an arduino
 #ifndef ARDUINO_ARCH_NATIVE
@@ -37,3 +39,5 @@ public:
 }
 
 #endif
+
+#endif // CORE_THREAD_CMSIS_OS2_THREAD_STRATEGY_H

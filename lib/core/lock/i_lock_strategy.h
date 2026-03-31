@@ -1,4 +1,6 @@
-#pragma once
+
+#ifndef CORE_LOCK_I_LOCK_STRATEGY_H
+#define CORE_LOCK_I_LOCK_STRATEGY_H
 
 namespace Core {
 
@@ -13,3 +15,5 @@ public:
 };
 
 } // namespace Core
+
+#endif // CORE_LOCK_I_LOCK_STRATEGY_H

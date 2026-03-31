@@ -1,4 +1,6 @@
-#pragma once
+
+#ifndef CAN_ESP32_S3_CAN_SERVICE_H
+#define CAN_ESP32_S3_CAN_SERVICE_H
 
 #if defined(ESP32)
 
@@ -38,6 +40,8 @@ public:
     const Result transmit(const Frame *frame, Tick ticks_to_wait) override {
         return (Result)twai_transmit((twai_message_t*)frame, ticks_to_wait);
     }
+
+#endif // CAN_ESP32_S3_CAN_SERVICE_H
 
     const Result receive(Frame *frame, Tick ticks_to_wait) override {
         return (Result)twai_receive((twai_message_t*)frame, ticks_to_wait);

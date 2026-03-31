@@ -1,4 +1,5 @@
-#pragma once
+#ifndef CAN_TYPES_H
+#define CAN_TYPES_H
 
 #include <stdint.h>
 #include <cstring>
@@ -221,3 +222,5 @@ struct GeneralConfig {
 };
 
 } // namespace CAN
+
+#endif // CAN_TYPES_H

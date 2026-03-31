@@ -1,4 +1,6 @@
-#pragma once
+
+#ifndef INVERTER_DTIX50_HEARTBEAT_H
+#define INVERTER_DTIX50_HEARTBEAT_H
 
 #include <memory>
 
@@ -36,4 +38,7 @@ private:
 };
 
 }
+
 }
+
+#endif // INVERTER_DTIX50_HEARTBEAT_H

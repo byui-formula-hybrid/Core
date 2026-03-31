@@ -1,8 +1,7 @@
 #include "unity.h"
 #include <cstdint>
 
-#include "can/provider.h"
-#include "can/service.h"
+#include <can.h>
 
 using namespace CAN;
 

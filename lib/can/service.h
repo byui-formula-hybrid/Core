@@ -1,4 +1,6 @@
-#pragma once
+
+#ifndef CAN_SERVICE_H
+#define CAN_SERVICE_H
 
 #include <stdint.h>
 #include "types.h"
@@ -21,7 +23,10 @@ public:
     virtual const Result clear_receive_queue() = 0;
     virtual const Result reset_pin(const PIN pin) = 0;
 
-    ~Service() = default;
+    virtual ~Service() = default;
 };
 
+
 } // namespace CAN
+
+#endif // CAN_SERVICE_H

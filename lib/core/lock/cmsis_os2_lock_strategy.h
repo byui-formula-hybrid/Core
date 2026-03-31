@@ -1,4 +1,6 @@
-#pragma once
+
+#ifndef CORE_LOCK_CMSIS_OS2_LOCK_STRATEGY_H
+#define CORE_LOCK_CMSIS_OS2_LOCK_STRATEGY_H
 
 // Ensures the following code is only compiled when on an arduino
 #ifndef ARDUINO_ARCH_NATIVE
@@ -50,3 +52,5 @@ public:
 } // namespace Core
 
 #endif // ARDUINO_ARCH_NATIVE
+
+#endif // CORE_LOCK_CMSIS_OS2_LOCK_STRATEGY_H

@@ -1,9 +1,12 @@
-#pragma once
+#ifndef NATIVE_THREAD_STRATEGY_H
+#define NATIVE_THREAD_STRATEGY_H
 
 #include <thread>
 #include <chrono>
 
-#include "../../../lib/core/thread/i_thread_strategy.h"
+#include <core/thread.h>
+
+namespace MOCKS {
 
 class NativeThreadStrategy : public Core::iThreadStrategy {
 private:
@@ -24,3 +27,7 @@ public:
         std::this_thread::sleep_for(std::chrono::milliseconds(millis));
     }
 };
+
+} // namespace MOCKS
+
+#endif // NATIVE_THREAD_STRATEGY_H

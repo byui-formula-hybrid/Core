@@ -1,5 +1,7 @@
 #pragma once
 
+#ifndef INVERTER_DTIX50_COMMANDS_H
+#define INVERTER_DTIX50_COMMANDS_H
 #include <cstdint>
 
 // Derived from
@@ -37,6 +39,8 @@ struct SetBrakeCurrent {
     uint64_t brake_current : 16;
     uint64_t reserved : 48;
 };
+
+#endif // INVERTER_DTIX50_COMMANDS_H
 
 /**
  * ID: 0x03

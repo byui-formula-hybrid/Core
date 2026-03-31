@@ -1,4 +1,6 @@
-#pragma once
+
+#ifndef CORE_LOCK_FREE_RTOS_LOCK_STRATEGY_H
+#define CORE_LOCK_FREE_RTOS_LOCK_STRATEGY_H
 
 #include "i_lock_strategy.h"
 
@@ -52,3 +54,5 @@ public:
 } // namespace Core
 
 #endif // ARDUINO_ARCH_NATIVE
+
+#endif // CORE_LOCK_FREE_RTOS_LOCK_STRATEGY_H
