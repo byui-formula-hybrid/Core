@@ -1,4 +1,3 @@
-#include <unity.h>
 #include <cstdint>
 #include <can.h>
 #include <mocks.h>

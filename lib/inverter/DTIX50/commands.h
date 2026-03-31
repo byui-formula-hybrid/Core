@@ -1,7 +1,6 @@
-#pragma once
-
 #ifndef INVERTER_DTIX50_COMMANDS_H
 #define INVERTER_DTIX50_COMMANDS_H
+
 #include <cstdint>
 
 // Derived from

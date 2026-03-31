@@ -1,5 +1,3 @@
-#include <unity.h>
-
 #include "test_main.h"
 
 // Setup function called before each test

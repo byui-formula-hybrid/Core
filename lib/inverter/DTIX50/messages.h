@@ -1,11 +1,8 @@
-#pragma once
-
-#include <cstdint>
-
-
 #ifndef INVERTER_DTIX50_MESSAGES_H
 #define INVERTER_DTIX50_MESSAGES_H
 // https://zapdrive.eu/docs/assets/common/can_docs/v25/DTI%20CAN%20manual%20V2.5.pdf
+
+#include <cstdint>
 
 namespace Inverter {
 

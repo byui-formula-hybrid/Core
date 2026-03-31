@@ -1,7 +1,7 @@
-#include "unity.h"
 #include <cstdint>
-
 #include <can.h>
+
+#include "test_main.h"
 
 using namespace CAN;
 
