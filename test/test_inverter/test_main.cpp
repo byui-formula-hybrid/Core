@@ -11,13 +11,8 @@ void tearDown(void) {
     // Clean up any test artifacts
 }
 
-void test_inverter_basic() {
-    TEST_ASSERT_TRUE(true);
-}
-
 int main() {
     UNITY_BEGIN();
-    RUN_TEST(test_inverter_basic);
     run_DTIX50_message_tests();
     run_DTIX50_command_tests();
     run_DTIX50_controller_tests();

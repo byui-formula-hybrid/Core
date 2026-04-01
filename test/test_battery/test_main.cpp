@@ -10,12 +10,8 @@ void tearDown(void) {
     // Clean up any test artifacts
 }
 
-void test_battery_basic() {
-    TEST_ASSERT_TRUE(true);
-}
-
 int main() {
     UNITY_BEGIN();
-    RUN_TEST(test_battery_basic);
+    run_message_tests();
     return UNITY_END();
 }
