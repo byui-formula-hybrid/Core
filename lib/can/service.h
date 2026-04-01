@@ -3,11 +3,15 @@
 #define CAN_SERVICE_H
 
 #include <stdint.h>
+#include <memory>
 #include "types.h"
+#include "dispatcher.h"
+
+// TODO: Handle Errors
 
 namespace CAN {
 
-class Service {
+class Old_Service {
 public: 
     virtual const Result install_driver(const GeneralConfig *g_config, const TimingConfig *t_config, const FilterConfig *f_config) = 0;
     virtual const Result uninstall_driver() = 0;
@@ -23,7 +27,22 @@ public:
     virtual const Result clear_receive_queue() = 0;
     virtual const Result reset_pin(const PIN pin) = 0;
 
-    virtual ~Service() = default;
+    virtual ~Old_Service() = default;
+};
+
+class Service {
+public:
+    virtual void setup() = 0;
+    virtual void stop_listening() = 0;
+    virtual void start_listening() = 0;
+    virtual void digest_read() = 0; // Grabs from dispatcher
+    virtual void raw_send(void *data) = 0;
+    virtual void raw_read(void *data) = 0;
+    virtual void recover() = 0;
+
+    ~Service() = default;
+private:
+    std::shared_ptr<Dispatcher> m_dispatcher; // dispatcher is a singleton, so Service doesn't own it
 };
 
 
