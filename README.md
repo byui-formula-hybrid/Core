@@ -52,13 +52,7 @@ git clone https://github.com/byui-formula-hybrid/Core.git
 cd Core
 
 # 2. Run the automated setup script
-./.scripts/install.sh
-
-# 3. Test that everything works
-./.scripts/test.sh
-
-# 4. Build for ESP32
-./.scripts/build.sh
+./.scripts/bash/install.sh
 ```
 
 #### For Windows
@@ -95,12 +89,6 @@ cd Core
 >
 > # 2. Run the automated setup script
 > .\.scripts\powershell\install.ps1
->
-> # 3. Test that everything works
-> .\.scripts\powershell\test.ps1
->
-> # 4. Build for ESP32
-> .\.scripts\powershell\build.ps1
 > ```
 >
 > **Option 2: Use Git Bash and bash scripts**
@@ -117,12 +105,6 @@ cd Core
 >
 >    # 2. Run the automated setup script
 >    ./.scripts/install.sh
->
->    # 3. Test that everything works
->    ./.scripts/test.sh
->
->    # 4. Build for ESP32
->    ./.scripts/build.sh
 >    ```
 >
 > This ensures all scripts work correctly and avoids shell compatibility issues.
@@ -138,8 +120,6 @@ The setup script will automatically:
 | Script | Purpose | Example Usage |
 |--------|---------|---------------|
 | `./.scripts/install.sh` | **Setup everything** | `./.scripts/install.sh` |
-| `./.scripts/test.sh` | **Run unit tests** | `./.scripts/test.sh --verbose` |
-| `./.scripts/build.sh` | **Build project** | `./.scripts/build.sh --upload` |
 | `./.scripts/uninstall.sh` | **Clean up** | `./.scripts/uninstall.sh` |
 
 📚 **For detailed script options:** See [`.scripts/README.md`](.scripts/README.md)
