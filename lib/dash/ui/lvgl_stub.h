@@ -45,19 +45,54 @@ inline esp_err_t init_lvgl_stub(esp_lcd_panel_handle_t panel, int hor_res, int v
     lv_init();
 
     static constexpr int kBufferRows = 40;
+    static constexpr int kFallbackBufferRows = 20;
     static lv_disp_draw_buf_t draw_buf;
     static lv_disp_drv_t disp_drv;
     static LvglPanelContext panel_ctx;
     static lv_color_t *buf1 = nullptr;
     static lv_color_t *buf2 = nullptr;
 
-    const size_t buf_pixels = static_cast<size_t>(hor_res) * kBufferRows;
+    size_t buf_pixels = static_cast<size_t>(hor_res) * kBufferRows;
     buf1 = static_cast<lv_color_t *>(
         heap_caps_malloc(buf_pixels * sizeof(lv_color_t), MALLOC_CAP_SPIRAM | MALLOC_CAP_8BIT));
     buf2 = static_cast<lv_color_t *>(
         heap_caps_malloc(buf_pixels * sizeof(lv_color_t), MALLOC_CAP_SPIRAM | MALLOC_CAP_8BIT));
 
+    // Fallback for targets without PSRAM.
     if (buf1 == nullptr || buf2 == nullptr) {
+        if (buf1 != nullptr) {
+            heap_caps_free(buf1);
+            buf1 = nullptr;
+        }
+        if (buf2 != nullptr) {
+            heap_caps_free(buf2);
+            buf2 = nullptr;
+        }
+
+        buf1 = static_cast<lv_color_t *>(
+            heap_caps_malloc(buf_pixels * sizeof(lv_color_t), MALLOC_CAP_8BIT));
+        buf2 = static_cast<lv_color_t *>(
+            heap_caps_malloc(buf_pixels * sizeof(lv_color_t), MALLOC_CAP_8BIT));
+    }
+
+    // Last-resort fallback: smaller single buffer.
+    if (buf1 == nullptr || buf2 == nullptr) {
+        if (buf1 != nullptr) {
+            heap_caps_free(buf1);
+            buf1 = nullptr;
+        }
+        if (buf2 != nullptr) {
+            heap_caps_free(buf2);
+            buf2 = nullptr;
+        }
+
+        buf_pixels = static_cast<size_t>(hor_res) * kFallbackBufferRows;
+        buf1 = static_cast<lv_color_t *>(
+            heap_caps_malloc(buf_pixels * sizeof(lv_color_t), MALLOC_CAP_8BIT));
+        buf2 = nullptr;
+    }
+
+    if (buf1 == nullptr) {
         return ESP_ERR_NO_MEM;
     }
 
