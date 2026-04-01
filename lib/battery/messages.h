@@ -132,13 +132,29 @@ struct Message1806E7F4 {
     uint64_t reserved : 40;
 };
 
+// TODO: This message is sepcific for something but is also a copy of 1806E7F4.
+// TODO: This message details needs to be modified if these two messages are for specific cell sets
 /**
- * ID: 0x1806E5F4 / 0x1806E9F4
+ * ID: 0x1806E5F4
  * @name Maximum Cell Voltage + Custom Flag
  * @param maxCellVoltage: Maximum cell voltage in mV
  * @param customFlag: User defined flag
  */
-struct MessageMaxCellVoltage {
+struct Message1806E5F4 {
+    uint64_t maxCellVoltage : 16;
+    uint64_t customFlag : 8;
+    uint64_t reserved : 40;
+};
+
+// TODO: Look up the specific details of this message and modify the struct accordingly. 
+// TODO: This is currently a copy of 1806E7F4, but it may have different parameters if it's for specific cell sets.
+/**
+ * ID: 0x1806E9F4
+ * @name Maximum Cell Voltage + Custom Flag
+ * @param maxCellVoltage: Maximum cell voltage in mV
+ * @param customFlag: User defined flag
+ */
+struct Message1806E9F4 {
     uint64_t maxCellVoltage : 16;
     uint64_t customFlag : 8;
     uint64_t reserved : 40;
