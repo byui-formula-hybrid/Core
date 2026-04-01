@@ -226,7 +226,7 @@ void test_encode_decode_message_1806E9F4() {
 }
 
 void run_encode_decode_message_18FF50E5() {
-    MessageBlank message_in = { 0x1122334455667788 };
+    Message18FF50E5 message_in = { 0x1122334455667788 };
     Frame frame(0x18FF50E5, &message_in);
     TEST_ASSERT_EQUAL(0x88, frame.data[0]);
     TEST_ASSERT_EQUAL(0x77, frame.data[1]);
@@ -237,7 +237,7 @@ void run_encode_decode_message_18FF50E5() {
     TEST_ASSERT_EQUAL(0x22, frame.data[6]);
     TEST_ASSERT_EQUAL(0x11, frame.data[7]);
 
-    auto message_out = frame.decode<MessageBlank>();
+    auto message_out = frame.decode<Message18FF50E5>();
     TEST_ASSERT_EQUAL(0x1122334455667788, message_out->reserved);
 }
 

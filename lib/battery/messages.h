@@ -165,7 +165,7 @@ struct Message1806E9F4 {
  * @name Blank Message
  * @note Used for logging presence on the bus.
  */
-struct MessageBlank {
+struct Message18FF50E5 {
     // No data parameters defined
     uint64_t reserved : 64;
 };
