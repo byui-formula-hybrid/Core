@@ -2,8 +2,9 @@
 
 #include <map>
 #include <memory>
+#include <queue.h>
+#include <logger.h>
 
-#include "../core/queue/queue.h"
 #include "types.h"
 
 class watchdog;
@@ -12,20 +13,19 @@ namespace CAN {
 
 class Dispatcher {
 public:
-    const void send(const Frame* data);
-    const void digest_read(void *data);
-    // This means that the dispatcher owns the watchdogs, not sure if that is what we want
-    void register_route(std::unique_ptr<watchdog> watchdog);
-    void unregister_route();
+    static Dispatcher& get_instance();
+    Dispatcher(const Dispatcher&) = delete;
+    Dispatcher& operator=(const Dispatcher&) = delete;
 
-    const dispatcher* getInstance();
-    dispatcher(const dispatcher&) = delete;
-    dispatcher& operator=(const dispatcher&) = delete;
+    void enqueue(const Frame& data);
+    void register_route(uint32_t id, IHandler* handler);
+    void dispatch();
+    void set_queue(Core::IQueue<Frame>* q) { queue_rx = q; }
 private:
-    dispatcher();
-    Core::queue queue_rx;
-    Core::queue queue_tx;
-    std::map<uint32_t id, std::unique_ptr<watchdog>> node_routes;
+    Dispatcher();
+    Core::IQueue<Frame>* queue_rx;
+    // O(1) Lookup: Array of pointers to handlers (Size 2048 for 11-bit IDs)
+    IHandler* routes[2048];
 };
 
 } // namespace CAN

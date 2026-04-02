@@ -13,7 +13,7 @@ struct TestMessage {
     uint64_t a_uint32: 32;
 };
 
-void test_can_encode() {
+void test_encode() {
     TestMessage message = {};
     message.a_bool = true;
     message.a_uint8 = 0xAB;
@@ -34,7 +34,7 @@ void test_can_encode() {
     TEST_ASSERT_EQUAL(0x12, frame.data[7]);
 }
 
-void test_can_decode() {
+void test_decode() {
     uint8_t data[8] = { 0x01, 0xAB, 0xEF, 0xCD, 0x78, 0x56, 0x34, 0x12 };
     Frame frame(0, data);
 
@@ -46,7 +46,7 @@ void test_can_decode() {
     TEST_ASSERT_EQUAL(0x12345678, message->a_uint32);
 }
 
-void test_can_encode_and_decode() {
+void test_encode_and_decode() {
     TestMessage original_message;
     original_message.a_bool = true;
     original_message.a_uint8 = 0xAB;
@@ -63,8 +63,8 @@ void test_can_encode_and_decode() {
     TEST_ASSERT_EQUAL(original_message.a_uint32, decoded_message->a_uint32);
 }
 
-void run_can_coding_tests() {
-    RUN_TEST(test_can_encode);
-    RUN_TEST(test_can_decode);
-    RUN_TEST(test_can_encode_and_decode);
+void run_frame_tests() {
+    RUN_TEST(test_encode);
+    RUN_TEST(test_decode);
+    RUN_TEST(test_encode_and_decode);
 }

@@ -2,8 +2,9 @@
 #ifndef CAN_H
 #define CAN_H
 
-#include "provider.h"
+#include "dispatcher.h"
 #include "service.h"
+#include "transmitter.h"
 #include "types.h"
 
 #endif // CAN_H
