@@ -1,7 +1,7 @@
 #ifndef TWAI_SERVICE_H
 #define TWAI_SERVICE_H
 
-#if defined(ESP32)
+#if defined(ENV_ESP32)
 
 #include <driver/twai.h>
 #include <driver/gpio.h>
@@ -28,6 +28,6 @@ public:
     ~TWAIService() = default;
 };
 
-#endif // ESP32
+#endif // ENV_ESP32
 
 #endif // TWAI_SERVICE_H

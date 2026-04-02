@@ -1,4 +1,4 @@
-#if defined(ESP32)
+#if defined(ENV_ESP32)
 
 #include "twai_service.h"
 
