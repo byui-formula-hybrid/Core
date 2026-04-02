@@ -7,6 +7,8 @@
 #include <queue.h>
 
 #include "i_logger.h"
+#include "i_timestamp_provider.h"
+#include "types.h"
 
 namespace Core {
 
@@ -31,7 +33,7 @@ public:
         entry.level = level;
         entry.file = file;
         entry.line = line;
-        entry.timestamp = instance.time_provider->get_system_millis(); // Implement based on ESP32 or STM32
+        entry.timestamp = instance.time_provider->get_timestamp(); // Implement based on ESP32 or STM32
         
         strncpy(entry.tag, tag, sizeof(entry.tag));
 
@@ -60,7 +62,7 @@ public:
         get_instance().queue = queue;
     }
 
-    static void set_time_provider(TimeStampProvider* provider) {
+    static void set_time_provider(ITimeStampProvider* provider) {
         get_instance().time_provider = provider;
     }
 
@@ -116,7 +118,7 @@ private:
     /**
      * @brief The time stamp provider for generating time stamps.
      */
-    TimeStampProvider* time_provider;
+    ITimeStampProvider* time_provider;
     
     /**
      * @brief The maximum timeout for log processing.

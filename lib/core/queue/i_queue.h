@@ -19,7 +19,7 @@ public:
      * @param data The item to copy into the queue.
      * @return true if successful, false if the queue is full.
      */
-    virtual void enqueue(const T& data) = 0;
+    virtual bool enqueue(const T& data) = 0;
     
     /**
      * @brief Removes an item from the queue.

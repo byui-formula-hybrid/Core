@@ -2,6 +2,7 @@
 #define CORE_LOGGER_UMBRELLA_H
 
 #include "logger/i_logger.h"
+#include "logger/i_timestamp_provider.h"
 #include "logger/types.h"
 #include "logger/logger.h"
 

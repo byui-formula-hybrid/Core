@@ -1,4 +1,5 @@
-#pragma once
+#ifndef CAN_DISPATCHER_H
+#define CAN_DISPATCHER_H
 
 #include <map>
 #include <memory>
@@ -61,7 +62,7 @@ public:
      * @brief Sets the maximum number of routes that can be registered.
      * @param max: The maximum number of routes.
      */
-    void set_max_routes(uint8_t max) {
+    void set_max_routes(size_t max) {
         max_routes = max;
         delete[] routes;
         routes = new IHandler*[max_routes](); // Initialize all to nullptr
@@ -89,12 +90,14 @@ private:
     /**
     * @brief An array of pointers to handlers for each possible CAN ID.
     */
-    IHandler* routes;
+    IHandler** routes;
 
     /**
     * @brief The maximum number of routes that can be registered.
     */
-    uint8_t max_routes = 0;
+    size_t max_routes = 0;
 };
 
 } // namespace CAN
+
+#endif // CAN_DISPATCHER_H

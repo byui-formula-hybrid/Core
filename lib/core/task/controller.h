@@ -23,14 +23,14 @@ public:
     * @param task: a function pointer or callable object that represents the task to be executed. This could be a lambda, a function pointer, or any callable that matches the expected signature for FreeRTOS tasks (e.g., void (*taskFunction)(void*)).
     * @return identifier: string  
     */
-    T create_task(U task);
+    virtual T create_task(U task) = 0;
 
     /**
     * @brief Deletes a task from the controller's management.
     * @param identifier: the identifier of the task to be deleted.
     * @return success: true if the task was deleted, false otherwise.
     */
-    bool delete_task(T identifier);
+    virtual bool delete_task(T identifier) = 0;
 
     /**
     * @brief Sets the maximum number of tasks that can be managed by the controller.
