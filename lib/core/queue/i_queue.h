@@ -9,6 +9,9 @@ namespace Core {
 template<typename T>
 class IQueue {
 public:
+    /**
+     * @brief Destructor for the queue.
+     */
     virtual ~IQueue() = default;
 
     /**
@@ -25,7 +28,17 @@ public:
      * @return true if an item was retrieved, false if it timed out.
      */
     virtual bool dequeue(T& data, uint32_t timeout_ms = 0) = 0;
+
+    /**
+     * @brief Returns the number of items in the queue.
+     * @return size: the number of items in the queue.
+     */
     virtual size_t size() const = 0;
+    
+    /**
+     * @brief Checks if the queue is full.
+     * @return true if the queue is full, false otherwise.
+     */
     virtual bool is_full() const = 0;
 };
 

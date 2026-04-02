@@ -6,15 +6,24 @@
 
 namespace CAN {
 
+/**
+* @brief Enum for specifying the type of CAN service configuration.
+*/
 enum ServiceConfigType {
     TWAI
 };
 
+/**
+ * @brief Base class for CAN service configuration.
+ */
 struct BaseServiceConfig {
     ServiceConfigType type;
     explicit BaseServiceConfig(ServiceConfigType t) : type(t) {}
 };
 
+/**
+ * @brief Structure for representing a CAN frame.
+ */
 struct Frame {
     union {
         struct {
@@ -32,8 +41,16 @@ struct Frame {
     uint8_t data_length_code;           /**< Data length code */
     uint8_t data[8];    /**< Data bytes (not relevant in RTR frame) */
 
+    /*
+    ** @brief Default constructor for the CAN frame.
+    */
     Frame() {}
 
+    /**
+     * @brief Constructor for the CAN frame.
+     * @param identifier: The frame identifier.
+     * @param message: A pointer to the message data.
+     */
     template<typename T>
     Frame(uint32_t identifier, T* message) {
         static_assert(sizeof(T) <= 8, "Message too large for CAN frame");
@@ -52,6 +69,11 @@ struct Frame {
         this->data[7] = msg_ptr[7];
     }
 
+    /**
+     * @brief Constructor for the CAN frame.
+     * @param identifier: The frame identifier.
+     * @param data: A reference to the data array.
+     */
     Frame(uint32_t identifier, uint8_t (&data)[8]) {
         this->data_length_code = 8;
         this->identifier = identifier;
@@ -65,15 +87,30 @@ struct Frame {
         this->data[7] = data[7];
     }
 
+    /**
+     * @brief Decodes the frame data into a specific type.
+     * @return pointer to the decoded data.
+     */
     template<typename T>
     T* decode() {
         return (T*) data;
     }
 };
 
+/**
+ * @brief Interface for handling CAN frames.
+ */
 class IHandler {
 public:
+    /**
+     * @brief Handles a CAN frame.
+     * @param data: The frame to handle.
+     */
     virtual void handle(const Frame& data) = 0;
+
+    /**
+     * @brief Destructor for the CAN handler.
+     */
     virtual ~IHandler() = default;
 };
 

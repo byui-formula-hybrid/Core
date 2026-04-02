@@ -5,6 +5,9 @@
 
 namespace Core {
 
+/**
+ * @brief Enumerate representing different log levels
+ */
 enum class LogLevel {
     DEBUG,
     INFO,
@@ -12,6 +15,9 @@ enum class LogLevel {
     CRITICAL
 };
 
+/**
+ * @brief Represents a single log entry
+ */
 struct LogEntry {
     LogLevel level;
     uint32_t timestamp; // System millis

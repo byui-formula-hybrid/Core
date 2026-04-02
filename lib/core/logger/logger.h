@@ -10,15 +10,28 @@
 
 namespace Core {
 
+// TODO: Use the flush method as necessary
+/**
+* @brief A simple logger class for handling log entries
+*/
 class Logger {
 public:
-    // This is the underlying function the Macro will call
+    /**
+     * @brief Logs a message with the specified level and metadata
+     * @param level: The log level
+     * @param file: The file name where the log is called
+     * @param line: The line number where the log is called
+     * @param tag: A tag for categorizing the log
+     * @param format: The format string for the log message
+     * @param ...: Variable arguments for the format string
+     */
     static void log(LogLevel level, const char* file, int line, const char* tag, const char* format, ...) {
+        Logger instance = get_instance();
         LogEntry entry;
         entry.level = level;
         entry.file = file;
         entry.line = line;
-        entry.timestamp = get_system_millis(); // Implement based on ESP32 or STM32
+        entry.timestamp = instance.time_provider->get_system_millis(); // Implement based on ESP32 or STM32
         
         strncpy(entry.tag, tag, sizeof(entry.tag));
 
@@ -28,41 +41,87 @@ public:
         va_end(args);
 
         // Fire and forget: Push to the non-blocking queue
-        get_instance()._queue->enqueue(entry);
+        instance.queue->enqueue(entry);
     }
 
+    /**
+     * @brief Sets the output backend for the logger
+     * @param backend: The logger backend to use
+     */
     static void set_output(ILogger* backend) {
-        get_instance()._backend = backend;
+        get_instance().backend = backend;
     }
 
+    /**
+     * @brief Sets the queue for the logger
+     * @param queue: The queue to use
+     */
     static void set_queue(IQueue<LogEntry>* queue) {
-        get_instance()._queue = queue;
+        get_instance().queue = queue;
     }
 
-    // Call this from a low-priority background task/thread
+    static void set_time_provider(TimeStampProvider* provider) {
+        get_instance().time_provider = provider;
+    }
+
+    /**
+     * @brief Processes the log queue
+     * This should be called in a loop in the main thread to ensure logs are printed.
+     */
     static void process() {
+        Logger instance = get_instance();
         LogEntry entry;
         // Block until a log arrives
-        if (get_instance()._queue->dequeue(entry, 100)) { 
-            if (get_instance()._backend) {
+        if (instance.queue->dequeue(entry, instance.max_timeout_ms)) { 
+            if (instance.backend) {
                 // The backend handles the actual string printing
-                get_instance()._backend->log(entry); 
+                instance.backend->log(entry); 
             }
         }
     }
 
+    /**
+     * @brief Sets the maximum timeout for log processing
+     * @param timeout_ms: The maximum timeout in milliseconds
+     */
+    static void set_max_timeout(uint32_t timeout_ms) {
+        get_instance().max_timeout_ms = timeout_ms;
+    }
+
 private:
+    /**
+     * @brief Constructor for the logger.
+     */
     Logger();
+
+    /**
+     * @brief Returns the singleton instance of the logger.
+     * @return instance: the singleton instance of the logger.
+     */
     static Logger& get_instance() {
         static Logger instance;
         return instance;
     }
 
-    IQueue<LogEntry>* _queue; 
-    ILogger* _backend = nullptr;
-
-    // Platform specific: millis() for Arduino/ESP32 or HAL_GetTick() for STM32
-    static uint32_t get_system_millis(); 
+    /**
+     * @brief The queue for storing log entries.
+     */
+    IQueue<LogEntry>* queue; 
+    
+    /**
+     * @brief The logger backend for outputting log entries.
+     */
+    ILogger* backend = nullptr;
+    
+    /**
+     * @brief The time stamp provider for generating time stamps.
+     */
+    TimeStampProvider* time_provider;
+    
+    /**
+     * @brief The maximum timeout for log processing.
+     */
+    uint32_t max_timeout_ms = 100;
 };
 
 } // namespace Core

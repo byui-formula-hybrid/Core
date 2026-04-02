@@ -10,6 +10,9 @@ namespace Core {
  */
 class ILogger {
 public:
+    /**
+     * @brief Destructor for the logger backend.
+     */
     virtual ~ILogger() = default;
 
     /**
