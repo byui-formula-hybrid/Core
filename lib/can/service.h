@@ -26,6 +26,10 @@ public:
      * @return success: True if the service was torn down successfully, false otherwise.
      */
     virtual bool tear_down() = 0;
+
+    virtual void stop_listening() = 0;
+
+    virtual void start_listening() = 0;
     
     /**
      * @brief Sends a CAN frame.
@@ -35,8 +39,9 @@ public:
     virtual bool send(const Frame& frame) = 0;
     
     /**
-     * @brief Reads a CAN frame.
+     * @brief Reads a CAN frame and passes it to the dispatch callback
      * @return pointer to the read frame, or nullptr if no frame is available.
+     * TODO: Figure out if we actually need a return here
      */
     virtual const Frame* read() = 0;
     
@@ -49,12 +54,12 @@ public:
     /**
     * @brief Destructor for the CAN service.
     */
-    ~Service() = default;
+    virtual ~Service() = default;
 private:
     /**
-    * @brief Dispatcher for routing received frames to handlers. This is a reference to the singleton instance of the dispatcher, allowing the service to register handlers or dispatch received frames as needed.
+    * @brief Callback that is called from read to pass the incoming data out
     */
-    Dispatcher& dispatcher = Dispatcher::get_instance();
+    void (*dispatch)(void* data);
 };
 
 

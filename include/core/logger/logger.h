@@ -4,7 +4,7 @@
 #include <stdarg.h>
 #include <stdio.h>
 #include <string.h>
-#include <queue.h>
+#include <core/queue.h>
 
 #include "i_logger.h"
 #include "i_timestamp_provider.h"
@@ -94,7 +94,7 @@ private:
     /**
      * @brief Constructor for the logger.
      */
-    Logger();
+    Logger() {};
 
     /**
      * @brief Returns the singleton instance of the logger.

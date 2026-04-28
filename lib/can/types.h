@@ -24,6 +24,9 @@ struct BaseServiceConfig {
 /**
  * @brief Structure for representing a CAN frame.
  */
+
+// TODO: Make sure that this actually lines up with a standard frame, link below has good details
+// https://www.hms-networks.com/tech-blog/blogpost/hms-blog/2024/06/18/can-message-format-an-overview
 struct Frame {
     union {
         struct {

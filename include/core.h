@@ -2,9 +2,9 @@
 #ifndef CORE_H
 #define CORE_H
 
-#include "lock.h"
-#include "thread.h"
-#include "queue.h"
-#include "logger.h"
+#include "core/lock.h"
+#include "core/thread.h"
+#include "core/queue.h"
+#include "core/logger.h"
 
 #endif // CORE_H

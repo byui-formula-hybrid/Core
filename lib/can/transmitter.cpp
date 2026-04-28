@@ -2,9 +2,9 @@
 
 namespace CAN {
 
-Transmitter& Transmitter::get_instance() {
+Transmitter* Transmitter::get_instance() {
     static Transmitter instance;
-    return instance;
+    return &instance;
 }
 
 void Transmitter::set_service(Service* s) {
@@ -22,7 +22,7 @@ bool Transmitter::send(const Frame& frame) {
         return false;
     }
 
-    return service->send(frame);
+    return queue_tx->enqueue(frame);
 }
 
 void Transmitter::transmit() {
@@ -36,7 +36,7 @@ void Transmitter::transmit() {
         // Service or queue not set, cannot process
         LOG_ERR("Transmitter", "Service not set, cannot transmit frames");
         return;
-    }
+    } 
 
     Frame frame;
     if (queue_tx->dequeue(frame)) {

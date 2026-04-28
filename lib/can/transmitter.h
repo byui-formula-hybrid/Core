@@ -1,8 +1,8 @@
 #ifndef CAN_TRANSMITTER_H
 #define CAN_TRANSMITTER_H
 
-#include <queue.h>
-#include <logger.h>
+#include <core/queue.h>
+#include <core/logger.h>
 
 #include "service.h"
 #include "types.h"
@@ -18,7 +18,7 @@ public:
      * @brief Returns the singleton instance of the transmitter.
      * @return instance: the singleton instance of the transmitter.
      */
-    static Transmitter& get_instance();
+    static Transmitter* get_instance();
 
     /** 
      * @brief Deleted copy constructor 
@@ -31,7 +31,7 @@ public:
     Transmitter& operator=(const Transmitter&) = delete;
 
     /** 
-     * @brief Sends a CAN frame.
+     * @brief Non-blocking. Adds Can Frame to the transmit queue.
      * @param frame: The frame to send.
      * @return success: True if the frame was sent successfully, false otherwise.
      */
@@ -58,7 +58,7 @@ private:
     /** 
      * @brief Constructor for the transmitter.
      */
-    Transmitter();
+    Transmitter() {}
 
     /** 
      * @brief The queue for transmitting frames.

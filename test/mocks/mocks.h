@@ -4,6 +4,7 @@
 
 #include "can/mock_can_service.h"
 #include "strategies/native_lock_strategy.h"
+#include "strategies/native_queue_strategy.h"
 #include "strategies/native_thread_strategy.h"
 
 #endif // MOCKS_H

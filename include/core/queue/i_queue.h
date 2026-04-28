@@ -27,7 +27,7 @@ public:
      * @param timeout_ms How long to wait if the queue is empty (0 for non-blocking).
      * @return true if an item was retrieved, false if it timed out.
      */
-    virtual bool dequeue(T& data, uint32_t timeout_ms = 0) = 0;
+    virtual bool dequeue(T& outData, uint32_t timeout_ms = 0) = 0;
 
     /**
      * @brief Returns the number of items in the queue.
@@ -39,7 +39,7 @@ public:
      * @brief Checks if the queue is full.
      * @return true if the queue is full, false otherwise.
      */
-    virtual bool is_full() const = 0;
+    virtual bool is_full() = 0;
 };
 
 } // namespace Core

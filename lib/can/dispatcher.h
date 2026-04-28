@@ -3,8 +3,8 @@
 
 #include <map>
 #include <memory>
-#include <queue.h>
-#include <logger.h>
+#include <core/queue.h>
+#include <core/logger.h>
 
 #include "types.h"
 

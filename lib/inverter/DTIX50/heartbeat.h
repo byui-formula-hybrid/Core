@@ -3,8 +3,8 @@
 
 #include <memory>
 
-#include "core/core.h"
-#include "can/can.h"
+#include <core.h>
+#include <can.h>
 #include "commands.h"
 #include "messages.h"
 
@@ -19,12 +19,12 @@ private:
     bool m_shouldStop;
     std::unique_ptr<Core::iLockStrategy> m_shouldStop_mut;
     std::unique_ptr<Core::iThreadStrategy> m_thread;
-    std::shared_ptr<Provider> m_canProvider;
+    Transmitter* m_canTransmitter;
 
     Command::SetDriveEnable enable;
     Command::SetDriveEnable disable;
 public:
-    Heartbeat(std::shared_ptr<Provider> canProvider, std::unique_ptr<Core::iLockStrategy> lock_strategy, std::unique_ptr<Core::iThreadStrategy> thread_strategy);
+    Heartbeat(Transmitter* canTransmitter, std::unique_ptr<Core::iLockStrategy> lock_strategy, std::unique_ptr<Core::iThreadStrategy> thread_strategy);
 
     void start();
     void stop();
