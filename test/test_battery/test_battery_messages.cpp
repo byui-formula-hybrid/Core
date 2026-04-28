@@ -1,6 +1,6 @@
 #include "test_main.h"
-#include <battery/messages.h>
-#include <can/types.h>
+#include <battery.h>
+#include <can.h>
 #include <cstring>
 
 using namespace CAN;

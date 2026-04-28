@@ -5,8 +5,8 @@ using namespace CAN;
 namespace Inverter {
 namespace DTIX50 {
 
-Heartbeat::Heartbeat(std::shared_ptr<Provider> canProvider, std::unique_ptr<Core::iLockStrategy> lock_strategy, std::unique_ptr<Core::iThreadStrategy> thread_strategy) {
-    m_canProvider = canProvider;
+Heartbeat::Heartbeat(Transmitter* canTransmitter, std::unique_ptr<Core::iLockStrategy> lock_strategy, std::unique_ptr<Core::iThreadStrategy> thread_strategy) {
+    m_canTransmitter = canTransmitter;
     m_shouldStop_mut = std::move(lock_strategy);
     m_thread = std::move(thread_strategy);
 
@@ -50,14 +50,13 @@ void Heartbeat::heartbeat(void* s) {
     for(;;) {
         
         // Check if it's time to stop
-        // TODO: Write a timeout
         self->m_shouldStop_mut->lock();
         if(self->m_shouldStop) 
         {
             self->m_shouldStop_mut->unlock();
             // Send drive disable
             Frame frame(0x0C52, &self->disable);
-            self->m_canProvider->transmit(frame, 1000);
+            self->m_canTransmitter->send(frame);
             return;
         }
         self->m_shouldStop_mut->unlock();
@@ -65,7 +64,7 @@ void Heartbeat::heartbeat(void* s) {
         // Send drive enable
         Frame frame(0x0C52, &self->enable);
         
-        self->m_canProvider->transmit(frame, 1000);
+        self->m_canTransmitter->send(frame);
         
         self->m_thread->sleep(250U);
     }

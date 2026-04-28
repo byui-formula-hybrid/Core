@@ -4,6 +4,8 @@
 
 typedef void(*taskFunc)(void*);
 
+#include <cstdint>
+
 namespace Core {
 
 /**
