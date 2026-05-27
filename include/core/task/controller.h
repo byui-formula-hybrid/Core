@@ -49,11 +49,7 @@ public:
         delete[] task_identifiers; // Clean up allocated memory
     }
 
-private:
-    TaskController() {
-        task_identifiers = new T[max_tasks]();
-    }
-
+protected:
     // TODO: Make this a O(1) data structure
     /**
     * @brief Array to store task identifiers.
@@ -64,6 +60,11 @@ private:
     * @brief The maximum number of tasks that can be managed.
     */
     size_t max_tasks = 0;
+
+private:
+    TaskController() {
+        task_identifiers = new T[max_tasks]();
+    }
 };
 
 } // namespace Core
