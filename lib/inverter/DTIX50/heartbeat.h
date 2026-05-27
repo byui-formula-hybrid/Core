@@ -4,7 +4,7 @@
 #include <memory>
 
 #include <core.h>
-#include <can.h>
+#include <core_can.h>
 #include "commands.h"
 #include "messages.h"
 

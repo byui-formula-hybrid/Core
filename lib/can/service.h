@@ -30,6 +30,12 @@ public:
     virtual void stop_listening() = 0;
 
     virtual void start_listening() = 0;
+
+    /**
+     * @brief Checks if the hardware is able to take a frame to send
+     * @return success: True if the service can accept a frame to send
+     */
+    virtual bool can_send() = 0;
     
     /**
      * @brief Sends a CAN frame.
@@ -56,10 +62,7 @@ public:
     */
     virtual ~Service() = default;
 private:
-    /**
-    * @brief Callback that is called from read to pass the incoming data out
-    */
-    void (*dispatch)(void* data);
+    Dispatcher* m_dispatcher;
 };
 
 

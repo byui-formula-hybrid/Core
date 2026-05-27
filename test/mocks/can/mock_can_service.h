@@ -3,7 +3,7 @@
 
 #include <functional>
 
-#include <can.h>
+#include <core_can.h>
 
 using namespace CAN;
 
@@ -38,6 +38,9 @@ public:
     }
     void start_listening() override {
         calls.start_listening++;
+    }
+    bool can_send() {
+        return true;
     }
     bool send(const Frame& frame) override {
         calls.send++;

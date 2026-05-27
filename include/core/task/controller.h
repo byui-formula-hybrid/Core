@@ -53,12 +53,12 @@ private:
     TaskController() {
         task_identifiers = new T[max_tasks]();
     }
-
+m 
     // TODO: Make this a O(1) data structure
     /**
     * @brief Array to store task identifiers.
     */
-    T* task_identifiers;
+    T** task_identifiers;
 
     /**
     * @brief The maximum number of tasks that can be managed.

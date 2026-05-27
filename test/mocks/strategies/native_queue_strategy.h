@@ -9,7 +9,7 @@ namespace MOCKS {
 template<typename T>
 class NativeQueueStrategy : public Core::IQueue<T> {
 public:
-    bool enqueue(const T& data) override {
+    bool enqueue(const T data) override {
         m_queue.push(data);
 
         return true;

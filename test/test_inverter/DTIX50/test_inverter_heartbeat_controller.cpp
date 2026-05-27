@@ -4,7 +4,7 @@
 #include <thread>
 #include <chrono>
 
-#include <DTIX50.h>
+#include <inverter/DTIX50.h>
 #include <mocks.h>
 
 using namespace Inverter;
@@ -23,12 +23,12 @@ void transmit_loop(void *) {
 void test_Heartbeat() {
     MockCanService* canService = new MockCanService(); // Most likely the ownership should be outside of the class
     int drive_type[2] = {0, 0};
-    canService->on_send = [&drive_type](const Frame& frame){ 
+    canService->on_send = [&drive_type](const Frame& frame){
         if(frame.data[0] == 1)
-            drive_type[0]++; 
+            drive_type[0]++;
         else if (frame.data[0] == 0)
             drive_type[1]++;
-        return true; 
+        return true;
     };
 
     NativeQueueStrategy<Frame>* queue = new NativeQueueStrategy<Frame>();
@@ -39,7 +39,7 @@ void test_Heartbeat() {
     std::unique_ptr<Core::iThreadStrategy> threadStrategy(new NativeThreadStrategy()); // We'll want the class to recieve ownership
 
     DTIX50::Heartbeat heartbeat(canTransmitter, std::move(lockStrategy), std::move(threadStrategy));
-    
+
     std::thread transmit_thread = std::thread(transmit_loop, nullptr);
 
     TEST_ASSERT(!heartbeat.started());
@@ -59,7 +59,7 @@ void test_Heartbeat() {
 
     TEST_ASSERT_EQUAL(1, drive_type[1]); // Verify that only one drive disable has been sent
 
-    free(canService);
+    delete canService;
 }
 
 void run_DTIX50_controller_tests() {

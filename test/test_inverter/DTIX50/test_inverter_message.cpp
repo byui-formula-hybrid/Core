@@ -1,8 +1,8 @@
 #include <unity.h>
 #include <cstring>
 
-#include <DTIX50.h>
-#include <can.h>
+#include <inverter/DTIX50.h>
+#include <core_can.h>
 
 using namespace Inverter;
 using namespace CAN;

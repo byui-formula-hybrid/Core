@@ -1,7 +1,7 @@
-// This is an umbrella header for the battery library. It includes all the necessary headers for using the battery library. 
+// This is an umbrella header for the battery library. It includes all the necessary headers for using the battery library.
 #ifndef BATTERY_H
 #define BATTERY_H
 
-#include "../../lib/battery/messages.h"
+#include "lib/battery/messages.h"
 
 #endif // BATTERY_H

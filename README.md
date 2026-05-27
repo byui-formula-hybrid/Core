@@ -1,11 +1,15 @@
-# ESP32 Race Car Core Library
+# BYUI Formula-Hybrid Race Car Core Library
 
 [![CI Pipeline](https://github.com/byui-formula-hybrid/Core/actions/workflows/ci.yml/badge.svg)](https://github.com/byui-formula-hybrid/Core/actions/workflows/ci.yml)
 
-This is a PlatformIO-based ESP32 project for a race car with multiple modular components. Each component is implemented as a separate library for clean organization and easy testing.
+This is a PlatformIO-based project for a race car with multiple modular components. Each component is implemented as a separate library for clean organization and easy testing. This library is designed to be microcontroller agnostic, which means that we design the general hardware layout and implement hardware agnostic logic.
 
 ## Project Structure
 
+<!-- I think we can safely remove
+     - core (from tests)
+     - imd
+     - pedals -->
 ```
 Core/
 ├── .github/                   # GitHub Actions workflows and templates
@@ -44,6 +48,7 @@ Core/
 
 **New to the project? Start here:**
 
+<!-- TODO: Building should be done in the hardware repository -->
 
 #### For Linux/macOS
 ```bash
@@ -57,7 +62,7 @@ cd Core
 # 3. Test that everything works
 ./.scripts/test.sh
 
-# 4. Build for ESP32
+# 4. Build
 ./.scripts/build.sh
 ```
 
@@ -99,7 +104,7 @@ cd Core
 > # 3. Test that everything works
 > .\.scripts\powershell\test.ps1
 >
-> # 4. Build for ESP32
+> # 4. Build
 > .\.scripts\powershell\build.ps1
 > ```
 >
@@ -120,8 +125,8 @@ cd Core
 >
 >    # 3. Test that everything works
 >    ./.scripts/test.sh
->
->    # 4. Build for ESP32
+>    
+>    # 4. Build
 >    ./.scripts/build.sh
 >    ```
 >
@@ -177,6 +182,7 @@ This project uses GitHub Actions for continuous integration with smart safeguard
 
 ## License
 
+<!-- TODO: I think that this can be removed -->
 This project contains STM32CubeMX generated code © STMicroelectronics, licensed under ST’s software license - see [LICENSE](LICENSE_ST) file for details.
 
 All original source code and project documentation is licensed under the Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License - see the [LICENSE](LICENSE) file for details.

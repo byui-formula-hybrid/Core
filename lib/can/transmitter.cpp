@@ -38,6 +38,9 @@ void Transmitter::transmit() {
         return;
     } 
 
+    if(!service->can_send())
+        return;
+
     Frame frame;
     if (queue_tx->dequeue(frame)) {
         service->send(frame);
