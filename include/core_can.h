@@ -2,9 +2,10 @@
 #ifndef CAN_H
 #define CAN_H
 
-#include "lib/can/dispatcher.h"
-#include "lib/can/service.h"
-#include "lib/can/transmitter.h"
-#include "lib/can/types.h"
+// NOTE: Due to the inclusion of multiple lib folders in hardware, these need to be relative
+#include "../lib/can/dispatcher.h"
+#include "../lib/can/service.h"
+#include "../lib/can/transmitter.h"
+#include "../lib/can/types.h"
 
 #endif // CAN_H

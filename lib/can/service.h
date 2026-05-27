@@ -61,7 +61,7 @@ public:
     * @brief Destructor for the CAN service.
     */
     virtual ~Service() = default;
-private:
+protected:
     Dispatcher* m_dispatcher;
 };
 
