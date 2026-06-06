@@ -50,7 +50,7 @@ public:
     /**
      * @brief Dispatches frames from the queue to the appropriate handlers based on their CAN ID. This function should be called in a loop or a dedicated task to continuously process incoming frames.
      */
-    void dispatch();
+    static void dispatch(void* data);
 
     /**
      * @brief Sets the queue for receiving frames to be dispatched.

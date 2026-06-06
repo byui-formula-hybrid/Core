@@ -25,25 +25,26 @@ bool Transmitter::send(const Frame& frame) {
     return queue_tx->enqueue(frame);
 }
 
-void Transmitter::transmit() {
-    if (queue_tx == nullptr) {
+void Transmitter::transmit(void* data) {
+    Transmitter* self = (Transmitter*)data;
+    if (self->queue_tx == nullptr) {
         // Service or queue not set, cannot process
         LOG_ERR("Transmitter", "Queue not set, cannot transmit frames");
         return;
     }
     
-    if (service == nullptr) {
+    if (self->service == nullptr) {
         // Service or queue not set, cannot process
         LOG_ERR("Transmitter", "Service not set, cannot transmit frames");
         return;
     } 
 
-    if(!service->can_send())
+    if(!self->service->can_send())
         return;
 
     Frame frame;
-    if (queue_tx->dequeue(frame)) {
-        service->send(frame);
+    if (self->queue_tx->dequeue(frame)) {
+        self->service->send(frame);
     }
 };
 

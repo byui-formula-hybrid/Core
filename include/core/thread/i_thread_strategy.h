@@ -18,11 +18,30 @@ namespace Core {
  */
 class iThreadStrategy {
 public:
+    iThreadStrategy() = default;
     virtual ~iThreadStrategy() = default;
     virtual void setup(const char* name = nullptr, const uint32_t priority = 0, const uint32_t attributes = 0) = 0;
     virtual uint32_t create(taskFunc task, void* argument) = 0;
-    virtual void join() = 0;
+    virtual void kill() = 0;
     virtual void sleep(const uint32_t millis) = 0;
+    
+    /**
+    * @brief Set the thread Handle
+    * @param handle: the thread handle
+    */
+    void SetHandle(uint32_t handle) {
+        m_handle = handle;
+    }
+
+    /**
+    * @brief Get the thread Handle
+    * @return the thread handle
+    */
+    uint32_t GetHandle() {
+        return m_handle;
+    }
+protected:
+    uint32_t m_handle;
 };
 
 }

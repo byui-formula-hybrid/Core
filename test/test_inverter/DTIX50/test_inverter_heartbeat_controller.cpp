@@ -14,7 +14,7 @@ Transmitter* canTransmitter = Transmitter::get_instance();
 
 void transmit_loop(void *) {
     for(int i = 0; i < 1000; i++) {
-        canTransmitter->transmit();
+        Transmitter::transmit(canTransmitter);
         // A Slight delay to replicate some real time delay
         std::this_thread::sleep_for(std::chrono::milliseconds(1));
     }
@@ -36,14 +36,13 @@ void test_Heartbeat() {
     canTransmitter->set_service(canService);
     canTransmitter->set_queue(queue);
     std::unique_ptr<Core::iLockStrategy> lockStrategy(new NativeLockStrategy()); // We'll want the class to recieve ownership
-    std::unique_ptr<Core::iThreadStrategy> threadStrategy(new NativeThreadStrategy()); // We'll want the class to recieve ownership
 
-    DTIX50::Heartbeat heartbeat(canTransmitter, std::move(lockStrategy), std::move(threadStrategy));
+    DTIX50::Heartbeat heartbeat(canTransmitter, std::move(lockStrategy));
 
     std::thread transmit_thread = std::thread(transmit_loop, nullptr);
 
     TEST_ASSERT(!heartbeat.started());
-    heartbeat.start();
+    heartbeat.start(new NativeThreadStrategy());
     TEST_ASSERT(heartbeat.started());
 
     // We should always get at least 3 transmits

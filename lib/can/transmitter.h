@@ -51,8 +51,9 @@ public:
 
     /** 
      * @brief Transmits frames from the queue using the service. This function should be called in a loop or a dedicated task to continuously transmit frames.
+     * @param data: Intended use is to pass the singleton instance into the function and to match the task callback signature
      */
-    void transmit();
+    static void transmit(void* data);
 
 private:
     /** 

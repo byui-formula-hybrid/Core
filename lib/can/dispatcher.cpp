@@ -17,16 +17,20 @@ void Dispatcher::enqueue(const Frame& data) {
     queue_rx->enqueue(data);
 }
 
-void Dispatcher::dispatch() {
-    if (queue_rx == nullptr) {
-        // Queue not set, cannot dispatch
-        LOG_ERR("Dispatcher", "Queue not set, cannot dispatch frames");
-        return;
-    }
+void Dispatcher::dispatch(void* data) {
+    Dispatcher* self = (Dispatcher*)data;
+    while(true) {
+        if (self->queue_rx == nullptr) {
+            // Queue not set, cannot dispatch
+            LOG_ERR("Dispatcher", "Queue not set, cannot dispatch frames");
+            return;
+        }
 
-    Frame data;
-    if (queue_rx->dequeue(data) && data.identifier < 2048 && routes[data.identifier] != nullptr) {
-        routes[data.identifier]->handle(data);
+        Frame data;
+        if (self->queue_rx->dequeue(data)) {
+            if(data.identifier < 2048 && self->routes[data.identifier] != nullptr)
+                self->routes[data.identifier]->handle(data);
+        }
     }
 }
 

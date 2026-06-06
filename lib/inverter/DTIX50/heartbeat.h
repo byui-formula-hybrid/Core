@@ -5,6 +5,7 @@
 
 #include <core.h>
 #include <core_can.h>
+#include <core/task.h>
 #include "commands.h"
 #include "messages.h"
 
@@ -18,15 +19,17 @@ private:
     bool m_started;
     bool m_shouldStop;
     std::unique_ptr<Core::iLockStrategy> m_shouldStop_mut;
-    std::unique_ptr<Core::iThreadStrategy> m_thread;
+    Core::TaskController* m_taskController;
+    Core::iThreadStrategy* m_thread_strategy;
+    uint32_t m_thread; // A thread handle
     Transmitter* m_canTransmitter;
 
     Command::SetDriveEnable enable;
     Command::SetDriveEnable disable;
 public:
-    Heartbeat(Transmitter* canTransmitter, std::unique_ptr<Core::iLockStrategy> lock_strategy, std::unique_ptr<Core::iThreadStrategy> thread_strategy);
+    Heartbeat(Transmitter* canTransmitter, std::unique_ptr<Core::iLockStrategy> lock_strategy);
 
-    void start();
+    void start(Core::iThreadStrategy* thread_strategy);
     void stop();
 
     bool started() { return m_started; }

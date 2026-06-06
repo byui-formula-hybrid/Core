@@ -5,29 +5,32 @@ using namespace CAN;
 namespace Inverter {
 namespace DTIX50 {
 
-Heartbeat::Heartbeat(Transmitter* canTransmitter, std::unique_ptr<Core::iLockStrategy> lock_strategy, std::unique_ptr<Core::iThreadStrategy> thread_strategy) {
+Heartbeat::Heartbeat(Transmitter* canTransmitter, std::unique_ptr<Core::iLockStrategy> lock_strategy) {
     m_canTransmitter = canTransmitter;
     m_shouldStop_mut = std::move(lock_strategy);
-    m_thread = std::move(thread_strategy);
+
+    m_taskController = Core::TaskController::get_instance();
+    m_taskController->setup_task("inverter.DTIX50.heartbeat", // name
+                    0x17U, // priority - osPriorityBelowNormal7
+                    0x01U  // attributes - osThreadJoinable
+                   );
 
     m_shouldStop = false;
     m_started = false;
 
     enable = { 0x01, 0xFFFFFFFFFFFFFF };
     disable = { 0x00, 0xFFFFFFFFFFFFFF };
-
-    // TODO: Write an generic enum for thread attributes and priority
-    m_thread->setup("inverter.DTIX50.heartbeat", // name
-                    0x17U, // priority - osPriorityBelowNormal7
-                    0x01U  // attributes - osThreadJoinable
-                   );
 }
 
-void Heartbeat::start() {
+void Heartbeat::start(Core::iThreadStrategy* thread_strategy) {
     if(m_started) return;
 
+    m_thread_strategy = thread_strategy;
+
     // Start the heartbeat for drive enable
-    m_thread->create(Heartbeat::heartbeat, this);
+    uint32_t handle = m_taskController->create_task(thread_strategy, Heartbeat::heartbeat, this);
+
+    m_thread_strategy->SetHandle(handle);
 
     m_started = true;
 }
@@ -39,7 +42,7 @@ void Heartbeat::stop() {
     m_shouldStop_mut->unlock();
 
     // Wait for the heartbeat to actually stop before sending drive disable
-    m_thread->join();
+    m_taskController->delete_task(m_thread_strategy->GetHandle());
 
     m_started = false;
 }
@@ -47,7 +50,8 @@ void Heartbeat::stop() {
 // Sends a drive enable every ~250 milliseconds so the car doesn't stop
 void Heartbeat::heartbeat(void* s) {
     Heartbeat* self = (Heartbeat*)s;
-    for(;;) {
+
+    while(true) {
         
         // Check if it's time to stop
         self->m_shouldStop_mut->lock();
@@ -66,7 +70,7 @@ void Heartbeat::heartbeat(void* s) {
         
         self->m_canTransmitter->send(frame);
         
-        self->m_thread->sleep(250U);
+        self->m_thread_strategy->sleep(250U);
     }
 }
 

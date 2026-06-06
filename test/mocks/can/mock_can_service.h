@@ -39,7 +39,7 @@ public:
     void start_listening() override {
         calls.start_listening++;
     }
-    bool can_send() {
+    bool can_send() override {
         return true;
     }
     bool send(const Frame& frame) override {
