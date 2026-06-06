@@ -21,7 +21,7 @@ public:
      * @brief Returns the singleton instance of the dispatcher.
      * @return instance: the singleton instance of the dispatcher.
      */
-    static Dispatcher& get_instance();
+    static Dispatcher* get_instance();
 
     /**
      * @brief Deleted copy constructor to prevent copying of the singleton instance.

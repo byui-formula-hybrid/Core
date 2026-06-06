@@ -2,9 +2,9 @@
 
 namespace CAN {
 
-Dispatcher& Dispatcher::get_instance() {
+Dispatcher* Dispatcher::get_instance() {
     static Dispatcher instance;
-    return instance;
+    return &instance;
 }
 
 void Dispatcher::enqueue(const Frame& data) {
