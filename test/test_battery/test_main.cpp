@@ -1,5 +1,6 @@
 #include "test_main.h"
 
+
 // Setup function called before each test
 void setUp(void) {
     // No platform-specific setup needed for pure reactive components
@@ -13,5 +14,6 @@ void tearDown(void) {
 int main() {
     UNITY_BEGIN();
     run_message_tests();
+    run_decode_Voltage_Message_tests();
     return UNITY_END();
 }

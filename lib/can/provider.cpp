@@ -1,4 +1,4 @@
-#include "provider.h"
+#include <can/provider.h>
 
 using namespace CAN;
 

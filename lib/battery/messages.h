@@ -132,7 +132,7 @@ struct Message1806E7F4 {
     uint64_t reserved : 40;
 };
 
-// TODO: This message is sepcific for something but is also a copy of 1806E7F4.
+// TODO: This message is specific for something but is also a copy of 1806E7F4.
 // TODO: This message details needs to be modified if these two messages are for specific cell sets
 /**
  * ID: 0x1806E5F4
