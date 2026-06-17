@@ -6,13 +6,13 @@
 /**
  * ID: 0x001
  * @name Pack Instantaneous Voltage and Current
- * @param packVoltage: Voltage in mV
- * @param packCurrent: Current in mA
- * @param packAmpHours: Amp hours in mAh
+ * @param packVoltage: Voltage in V
+ * @param packCurrent: Current in A
+ * @param packAmpHours: Amp hours in Ah
  **/ 
 struct Message1{
     uint64_t packVoltage: 16;
-    uint64_t packCurrent: 16;
+    int64_t packCurrent: 16;  // Current can be negative for discharge
     uint64_t packAmpHours: 16;
     uint64_t reserved: 16;
 };
@@ -22,7 +22,7 @@ struct Message1{
  * @name Failsafe & DTC Flags
  * @param dtcFlags1: DTC (Diagnostic Trouble Codes) flags 1
  * @param dtcFlags2: DTC (Diagnostic Trouble Codes) flags 2
- * @param currentLimit: Current limit in mA
+ * @param currentLimit: Current limit in A
  */
 struct Message2
 {
@@ -47,8 +47,8 @@ struct Message3{
 /**
  * ID: 0x004
  * @name High and Low Cell Voltages
- * @param highCellVoltage: Voltage in mV
- * @param lowCellVoltage:  Voltage in mV
+ * @param highCellVoltage: Voltage in V
+ * @param lowCellVoltage:  Voltage in V
  */
 struct Message4{
     uint64_t highCellVoltage: 8;
@@ -123,7 +123,7 @@ struct Message355 {
 /**
  * ID: 0x1806E7F4
  * @name Maximum Pack Voltage + Custom Flag
- * @param maxPackVoltage: Maximum pack voltage in mV
+ * @param maxPackVoltage: Maximum pack voltage in V
  * @param customFlag: User defined flag
  */
 struct Message1806E7F4 {
@@ -132,12 +132,12 @@ struct Message1806E7F4 {
     uint64_t reserved : 40;
 };
 
-// TODO: This message is sepcific for something but is also a copy of 1806E7F4.
+// TODO: This message is specific for something but is also a copy of 1806E7F4.
 // TODO: This message details needs to be modified if these two messages are for specific cell sets
 /**
  * ID: 0x1806E5F4
  * @name Maximum Cell Voltage + Custom Flag
- * @param maxCellVoltage: Maximum cell voltage in mV
+ * @param maxCellVoltage: Maximum cell voltage in V
  * @param customFlag: User defined flag
  */
 struct Message1806E5F4 {
@@ -151,7 +151,7 @@ struct Message1806E5F4 {
 /**
  * ID: 0x1806E9F4
  * @name Maximum Cell Voltage + Custom Flag
- * @param maxCellVoltage: Maximum cell voltage in mV
+ * @param maxCellVoltage: Maximum cell voltage in V
  * @param customFlag: User defined flag
  */
 struct Message1806E9F4 {
