@@ -18,7 +18,8 @@ void Transmitter::set_queue(Core::IQueue<Frame>* queue) {
 bool Transmitter::send(const Frame& frame) {
     if (service == nullptr) {
         // Service not set, cannot send
-        LOG_ERR("Transmitter", "Service not set, cannot send frame with ID: %u", frame.identifier);
+        //LOG_ERR("Transmitter", "Service not set, cannot send frame with ID: %u", frame.identifier);
+        printf("Transmitter: Service not set, cannot send frame with ID: %u\n", frame.identifier);
         return false;
     }
 
@@ -29,13 +30,15 @@ void Transmitter::transmit(void* data) {
     Transmitter* self = (Transmitter*)data;
     if (self->queue_tx == nullptr) {
         // Service or queue not set, cannot process
-        LOG_ERR("Transmitter", "Queue not set, cannot transmit frames");
+        //LOG_ERR("Transmitter", "Queue not set, cannot transmit frames");
+        printf("Transmitter: Queue not set, cannot transmit frames");
         return;
     }
     
     if (self->service == nullptr) {
         // Service or queue not set, cannot process
-        LOG_ERR("Transmitter", "Service not set, cannot transmit frames");
+        //LOG_ERR("Transmitter", "Service not set, cannot transmit frames");
+        printf("Transmitter: Service not set, cannot transmit frames");
         return;
     } 
 

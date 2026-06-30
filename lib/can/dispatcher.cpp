@@ -10,7 +10,8 @@ Dispatcher* Dispatcher::get_instance() {
 void Dispatcher::enqueue(const Frame& data) {
     if (queue_rx == nullptr) {
         // Queue not set, cannot enqueue
-        LOG_ERR("Dispatcher", "Queue not set, cannot enqueue frame with ID: %u", data.identifier);
+        //LOG_ERR("Dispatcher", "Queue not set, cannot enqueue frame with ID: %u", data.identifier);
+        printf("Dispatcher: Queue not set, cannot enqeue frame with ID: %u\n", data.identifier);
         return;
     }
 
@@ -22,7 +23,8 @@ void Dispatcher::dispatch(void* data) {
     while(true) {
         if (self->queue_rx == nullptr) {
             // Queue not set, cannot dispatch
-            LOG_ERR("Dispatcher", "Queue not set, cannot dispatch frames");
+            //LOG_ERR("Dispatcher", "Queue not set, cannot dispatch frames");
+            printf("Dispatcher: Queue not set, unable to dispatch frames\n");
             return;
         }
 
