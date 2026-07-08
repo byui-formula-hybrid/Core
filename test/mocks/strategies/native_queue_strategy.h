@@ -11,8 +11,12 @@ class NativeQueueStrategy : public Core::IQueue<T> {
 public:
     bool enqueue(const T data) override {
         m_queue.push(data);
-
+        std::this_thread::sleep_for(std::chrono::milliseconds(1));
         return true;
+    }
+
+    bool enqueueFromISR(const T data) override {
+        return enqueue(data);
     }
 
     bool dequeue(T& outData, uint32_t timeout_ms) override

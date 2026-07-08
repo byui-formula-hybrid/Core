@@ -12,14 +12,6 @@ using namespace MOCKS;
 
 Transmitter* canTransmitter = Transmitter::get_instance();
 
-void transmit_loop(void *) {
-    for(int i = 0; i < 1000; i++) {
-        Transmitter::transmit(canTransmitter);
-        // A Slight delay to replicate some real time delay
-        std::this_thread::sleep_for(std::chrono::milliseconds(1));
-    }
-}
-
 void test_Heartbeat() {
     MockCanService* canService = new MockCanService(); // Most likely the ownership should be outside of the class
     int drive_type[2] = {0, 0};
@@ -39,11 +31,13 @@ void test_Heartbeat() {
 
     DTIX50::Heartbeat heartbeat(canTransmitter, std::move(lockStrategy));
 
-    std::thread transmit_thread = std::thread(transmit_loop, nullptr);
+    std::thread transmit_thread = std::thread(Transmitter::transmit, canTransmitter);
 
     TEST_ASSERT(!heartbeat.started());
     heartbeat.start(new NativeThreadStrategy());
     TEST_ASSERT(heartbeat.started());
+
+    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 
     // We should always get at least 3 transmits
     std::this_thread::sleep_for(std::chrono::seconds(1));
@@ -52,6 +46,8 @@ void test_Heartbeat() {
     TEST_ASSERT_GREATER_OR_EQUAL(2, drive_type[0]); // Verify that we have sent at least 2 drive enables.
 
     heartbeat.stop();
+
+    canTransmitter->should_kill_thread = true;
     transmit_thread.join();
 
     TEST_ASSERT(!heartbeat.started());

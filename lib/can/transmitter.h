@@ -7,6 +7,10 @@
 #include "service.h"
 #include "types.h"
 
+#ifdef IS_NATIVE
+#include <atomic>
+#endif
+
 namespace CAN {
 
 /**
@@ -54,6 +58,13 @@ public:
      * @param data: Intended use is to pass the singleton instance into the function and to match the task callback signature
      */
     static void transmit(void* data);
+
+#ifdef IS_NATIVE
+    /**
+     * @brief purely for testing purposes on native machines
+     */
+    std::atomic<bool> should_kill_thread{false};
+#endif
 
 private:
     /** 

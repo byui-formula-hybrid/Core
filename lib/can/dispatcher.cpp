@@ -11,11 +11,11 @@ void Dispatcher::enqueue(const Frame& data) {
     if (queue_rx == nullptr) {
         // Queue not set, cannot enqueue
         //LOG_ERR("Dispatcher", "Queue not set, cannot enqueue frame with ID: %u", data.identifier);
-        printf("Dispatcher: Queue not set, cannot enqeue frame with ID: %u\n", data.identifier);
+        //printf("Dispatcher: Queue not set, cannot enqeue frame with ID: %u\n", data.identifier);
         return;
     }
 
-    queue_rx->enqueue(data);
+    queue_rx->enqueueFromISR(data);
 }
 
 void Dispatcher::dispatch(void* data) {
@@ -25,7 +25,7 @@ void Dispatcher::dispatch(void* data) {
             // Queue not set, cannot dispatch
             //LOG_ERR("Dispatcher", "Queue not set, cannot dispatch frames");
             printf("Dispatcher: Queue not set, unable to dispatch frames\n");
-            return;
+            continue;
         }
 
         Frame data;

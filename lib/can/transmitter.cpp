@@ -28,27 +28,34 @@ bool Transmitter::send(const Frame& frame) {
 
 void Transmitter::transmit(void* data) {
     Transmitter* self = (Transmitter*)data;
-    if (self->queue_tx == nullptr) {
-        // Service or queue not set, cannot process
-        //LOG_ERR("Transmitter", "Queue not set, cannot transmit frames");
-        printf("Transmitter: Queue not set, cannot transmit frames");
-        return;
-    }
-    
-    if (self->service == nullptr) {
-        // Service or queue not set, cannot process
-        //LOG_ERR("Transmitter", "Service not set, cannot transmit frames");
-        printf("Transmitter: Service not set, cannot transmit frames");
-        return;
-    } 
+    while(true) {
+#ifdef IS_NATIVE
+        if(self->should_kill_thread) {
+            break;
+        }
+#endif
+        if (self->queue_tx == nullptr) {
+            // Service or queue not set, cannot process
+            //LOG_ERR("Transmitter", "Queue not set, cannot transmit frames");
+            printf("Transmitter: Queue not set, cannot transmit frames");
+            continue;
+        }
+        
+        if (self->service == nullptr) {
+            // Service or queue not set, cannot process
+            //LOG_ERR("Transmitter", "Service not set, cannot transmit frames");
+            printf("Transmitter: Service not set, cannot transmit frames");
+            continue;
+        } 
 
-    if(!self->service->can_send())
-        return;
+        if(!self->service->can_send())
+            continue;
 
-    Frame frame;
-    if (self->queue_tx->dequeue(frame)) {
-        self->service->send(frame);
+        Frame frame;
+        if (self->queue_tx->dequeue(frame)) {
+            self->service->send(frame);
+        }
     }
-};
+}
 
 } // namespace CAN
