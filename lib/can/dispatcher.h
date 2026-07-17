@@ -85,7 +85,7 @@ private:
     /**
     * @brief The queue for receiving frames to be dispatched.
     */
-    Core::IQueue<Frame>* queue_rx;
+    Core::IQueue<Frame>* queue_rx = nullptr;
 
     /**
     * @brief An array of pointers to handlers for each possible CAN ID.

@@ -30,8 +30,9 @@ void Dispatcher::dispatch(void* data) {
 
         Frame data;
         if (self->queue_rx->dequeue(data)) {
-            if(data.identifier < 2048 && self->routes[data.identifier] != nullptr)
-                self->routes[data.identifier]->handle(data);
+            printf("Recieved CAN Frame with id: %x", data.identifier);
+        //    if(data.identifier < 2048 && self->routes[data.identifier] != nullptr)
+        //        self->routes[data.identifier]->handle(data);
         }
     }
 }
