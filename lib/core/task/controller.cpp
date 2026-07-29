@@ -21,7 +21,7 @@ int TaskController::create_task(iThreadStrategy* thread, taskFunc task, void* ar
     task_setup = false;
 
     thread->setup(setup_info.name, setup_info.priority, setup_info.attrs);
-    
+
     uint32_t id = thread->create(task, arg);
 
     task_identifiers->emplace(id, thread);

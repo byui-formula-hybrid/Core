@@ -20,7 +20,7 @@ public:
      * @return success: True if the service was set up successfully, false otherwise.
      */
     virtual bool setup(const void * config) = 0;
-    
+
     /**
      * @brief Tears down the CAN service.
      * @return success: True if the service was torn down successfully, false otherwise.
@@ -36,21 +36,19 @@ public:
      * @return success: True if the service can accept a frame to send
      */
     virtual bool can_send() = 0;
-    
+
     /**
      * @brief Sends a CAN frame.
      * @param frame: The frame to send.
      * @return success: True if the frame was sent successfully, false otherwise.
      */
     virtual bool send(const Frame& frame) = 0;
-    
+
     /**
-     * @brief Reads a CAN frame and passes it to the dispatch callback
-     * @return pointer to the read frame, or nullptr if no frame is available.
-     * TODO: Figure out if we actually need a return here
+     * @brief Reads a CAN frame and passes it to the dispatcher
      */
-    virtual const Frame* read() = 0;
-    
+    virtual const void read() = 0;
+
     /**
      * @brief Attempts to recover the CAN service from an error state.
      * @return success: True if recovery was successful, false otherwise.

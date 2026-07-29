@@ -7,6 +7,8 @@ namespace Core {
 
 /**
  * @brief Interface for hardware-specific log outputs (Serial, SD Card, etc.)
+ *
+ * TODO: This dies on STM32
  */
 class ILogger {
 public:

@@ -19,15 +19,15 @@ public:
      * @param data The item to copy into the queue.
      * @return true if successful, false if the queue is full.
      */
-    virtual bool enqueue(const T data) = 0;
+    virtual bool enqueue(const T& data) = 0;
 
     /**
      * @brief Adds an item to the queue from interrupts
      * @param data The item to copy into the queue.
      * @return true if successful, false if the queue is full.
      */
-    virtual bool enqueueFromISR(const T data) = 0;
-    
+    virtual bool enqueueFromISR(const T& data) = 0;
+
     /**
      * @brief Removes an item from the queue.
      * @param outData Reference to store the popped item.
@@ -41,7 +41,7 @@ public:
      * @return size: the number of items in the queue.
      */
     virtual size_t size() const = 0;
-    
+
     /**
      * @brief Checks if the queue is full.
      * @return true if the queue is full, false otherwise.
