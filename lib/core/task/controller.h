@@ -2,7 +2,7 @@
 #define TASK_CONTROLLER_H
 
 #include <cstdint>
-#include <atomic>
+#include <cstddef>
 #include <map>
 
 #include <core/thread/i_thread_strategy.h>

@@ -9,13 +9,13 @@ namespace MOCKS {
 template<typename T>
 class NativeQueueStrategy : public Core::IQueue<T> {
 public:
-    bool enqueue(const T data) override {
+    bool enqueue(const T& data) override {
         m_queue.push(data);
         std::this_thread::sleep_for(std::chrono::milliseconds(1));
         return true;
     }
 
-    bool enqueueFromISR(const T data) override {
+    bool enqueueFromISR(const T& data) override {
         return enqueue(data);
     }
 

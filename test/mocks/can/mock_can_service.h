@@ -46,9 +46,8 @@ public:
         calls.send++;
         return on_send(frame);
     }
-    const Frame* read() override {
+    const void read() override {
         calls.read++;
-        return nullptr;
     }
     bool recover() override {
         calls.recover++;
