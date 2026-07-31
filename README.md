@@ -64,6 +64,7 @@ cd Core
 
 # 4. Build
 ./.scripts/build.sh
+./.scripts/bash/install.sh
 ```
 
 #### For Windows
@@ -143,8 +144,6 @@ The setup script will automatically:
 | Script | Purpose | Example Usage |
 |--------|---------|---------------|
 | `./.scripts/install.sh` | **Setup everything** | `./.scripts/install.sh` |
-| `./.scripts/test.sh` | **Run unit tests** | `./.scripts/test.sh --verbose` |
-| `./.scripts/build.sh` | **Build project** | `./.scripts/build.sh --upload` |
 | `./.scripts/uninstall.sh` | **Clean up** | `./.scripts/uninstall.sh` |
 
 📚 **For detailed script options:** See [`.scripts/README.md`](.scripts/README.md)
