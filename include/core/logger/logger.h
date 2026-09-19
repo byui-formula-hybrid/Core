@@ -39,7 +39,9 @@ public:
 
         // Parse the format string and variadic arguments (...) into one message
         va_list args;
+        // Converting the variable arguments into a list that print will understand.
         va_start(args, format);
+        // We are adding the variable argument list into a character buffer in our message property of the log entry
         vsnprintf(entry.msg, sizeof(entry.msg), format, args);
         va_end(args);
 
