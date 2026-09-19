@@ -2,8 +2,8 @@
 #ifndef DTIX50_H
 #define DTIX50_H
 
-#include "DTIX50/commands.h"
-#include "DTIX50/heartbeat.h"
-#include "DTIX50/messages.h"
+#include "../../lib/inverter/DTIX50/commands.h"
+#include "../../lib/inverter/DTIX50/heartbeat.h"
+#include "../../lib/inverter/DTIX50/messages.h"
 
 #endif // DTIX50_H

@@ -18,7 +18,7 @@ public:
         return 0;
     }
 
-    void join() override {
+    void kill() override {
         if(m_thread.joinable())
             m_thread.join();
     }

@@ -3,7 +3,6 @@
 
 #include <unity.h>
 
-void run_manager_can_tests();
-void run_can_coding_tests();
+void run_frame_tests();
 
 #endif // TEST_MAIN_H

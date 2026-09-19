@@ -8,14 +8,16 @@ namespace Core {
 
 /**
  * @brief RAII lock guard that works with any lock strategy
- * 
+ *
  * This class acquires the lock in its constructor and releases it in its destructor.
  * This ensures that the lock is always released, even if the function exits early or throws.
+ *
+ * TODO: Is this being used? We should probably use this
  */
 class LockGuard {
 private:
     iLockStrategy* strategy_;
-    
+
 public:
     /**
      * @brief Acquire the lock on construction
