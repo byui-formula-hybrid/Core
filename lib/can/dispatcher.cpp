@@ -10,8 +10,7 @@ Dispatcher* Dispatcher::get_instance() {
 void Dispatcher::enqueue(const Frame& data) {
     if (queue_rx == nullptr) {
         // Queue not set, cannot enqueue
-        //LOG_ERR("Dispatcher", "Queue not set, cannot enqueue frame with ID: %u", data.identifier);
-        //printf("Dispatcher: Queue not set, cannot enqeue frame with ID: %u\n", data.identifier);
+        LOG_ERR("Dispatcher", "Queue not set, cannot enqueue frame with ID: %u", data.identifier);
         return;
     }
 
@@ -23,16 +22,17 @@ void Dispatcher::dispatch(void* data) {
     while(true) {
         if (self->queue_rx == nullptr) {
             // Queue not set, cannot dispatch
-            //LOG_ERR("Dispatcher", "Queue not set, cannot dispatch frames");
-            printf("Dispatcher: Queue not set, unable to dispatch frames\n");
+            LOG_ERR("Dispatcher", "Queue not set, cannot dispatch frames");
             continue;
         }
 
         Frame data;
         if (self->queue_rx->dequeue(data)) {
-            printf("Recieved CAN Frame with id: %x", data.identifier);
-        //    if(data.identifier < 2048 && self->routes[data.identifier] != nullptr)
-        //        self->routes[data.identifier]->handle(data);
+            printf("Recieved CAN Frame with id: %x", data.identifier); // Temporary
+
+            // TODO: Not working
+            if(data.identifier < 2048 && self->routes[data.identifier] != nullptr)
+               self->routes[data.identifier]->handle(data);
         }
     }
 }

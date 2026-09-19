@@ -12,7 +12,6 @@
 
 namespace Core {
 
-// TODO: Use the flush method as necessary
 /**
 * @brief A simple logger class for handling log entries
 */
@@ -35,8 +34,10 @@ public:
         entry.line = line;
         entry.timestamp = instance.time_provider->get_timestamp(); // Implement based on ESP32 or STM32
         
+        // This uses sizeof entry.tag to avoid overflows and limits the tag size to 16 characters
         strncpy(entry.tag, tag, sizeof(entry.tag));
 
+        // Parse the format string and variadic arguments (...) into one message
         va_list args;
         va_start(args, format);
         vsnprintf(entry.msg, sizeof(entry.msg), format, args);
@@ -108,7 +109,7 @@ private:
     /**
      * @brief The queue for storing log entries.
      */
-    IQueue<LogEntry>* queue; 
+    IQueue<LogEntry>* queue = nullptr; 
     
     /**
      * @brief The logger backend for outputting log entries.
@@ -118,7 +119,7 @@ private:
     /**
      * @brief The time stamp provider for generating time stamps.
      */
-    ITimeStampProvider* time_provider;
+    ITimeStampProvider* time_provider = nullptr;
     
     /**
      * @brief The maximum timeout for log processing.

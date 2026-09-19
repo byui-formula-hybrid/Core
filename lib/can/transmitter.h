@@ -75,12 +75,12 @@ private:
     /**
      * @brief The queue for transmitting frames.
      */
-    Core::IQueue<Frame>* queue_tx;
+    Core::IQueue<Frame>* queue_tx = nullptr;
 
     /**
      * @brief The service for transmitting frames.
      */
-    Service* service;
+    Service* service = nullptr;
 };
 
 }

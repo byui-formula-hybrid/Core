@@ -27,8 +27,16 @@ public:
      */
     virtual bool tear_down() = 0;
 
+    /**
+     * @brief Starts listening on the CAN Bus whether via interrupt or a listening thread
+     * 
+     */
     virtual void stop_listening() = 0;
 
+    /**
+     * @brief Stops listening on the CAN Bus if needed
+     * 
+     */
     virtual void start_listening() = 0;
 
     /**
@@ -60,7 +68,7 @@ public:
     */
     virtual ~Service() = default;
 protected:
-    Dispatcher* m_dispatcher;
+    Dispatcher* m_dispatcher = nullptr;
 };
 
 

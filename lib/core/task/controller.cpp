@@ -39,8 +39,6 @@ bool TaskController::delete_task(int id) {
     return true;
 }
 
-
-
 void TaskController::set_max_tasks(size_t limit) {
     max_tasks = limit;
 }

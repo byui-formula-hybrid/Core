@@ -8,8 +8,6 @@
 
 #include "types.h"
 
-class watchdog;
-
 namespace CAN {
 
 /**
@@ -90,7 +88,7 @@ private:
     /**
     * @brief An array of pointers to handlers for each possible CAN ID.
     */
-    IHandler** routes;
+    IHandler** routes = nullptr;
 
     /**
     * @brief The maximum number of routes that can be registered.

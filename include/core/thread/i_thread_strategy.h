@@ -41,6 +41,10 @@ public:
         return m_handle;
     }
 protected:
+/**
+ * @brief Identifier for the task controller to track the thread
+ * 
+ */
     uint32_t m_handle;
 };
 
