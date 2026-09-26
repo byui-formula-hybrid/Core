@@ -15,9 +15,9 @@ void TaskController::setup_task(const char* name, int priority, int attrs) {
     task_setup = true;
 }
 
-int TaskController::create_task(iThreadStrategy* thread, taskFunc task, void* arg) {
-    if(num_of_tasks++ > max_tasks) return -1;
-    if(!task_setup) return -1;
+TaskResult TaskController::create_task(iThreadStrategy* thread, taskFunc task, void* arg) {
+    if(num_of_tasks++ > max_tasks) return TaskError::MAX_LIMIT;
+    if(!task_setup) return TaskError::THREAD_INIT;
     task_setup = false;
 
     thread->setup(setup_info.name, setup_info.priority, setup_info.attrs);

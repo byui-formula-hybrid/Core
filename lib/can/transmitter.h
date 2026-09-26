@@ -4,6 +4,7 @@
 #include <core/queue.h>
 #include <core/logger.h>
 
+#include "core/core_error.h"
 #include "service.h"
 #include "types.h"
 
@@ -39,7 +40,7 @@ public:
      * @param frame: The frame to send.
      * @return success: True if the frame was sent successfully, false otherwise.
      */
-    bool send(const Frame& frame);
+    Core::Result send(const Frame& frame);
 
     /**
      * @brief Sets the service for transmitting frames.
