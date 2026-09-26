@@ -1,4 +1,6 @@
 #include "transmitter.h"
+#include "core/core_error.h"
+#include "core/queue/i_queue.h"
 
 namespace CAN {
 
@@ -15,14 +17,20 @@ void Transmitter::set_queue(Core::IQueue<Frame>* queue) {
     queue_tx = queue;
 }
 
-bool Transmitter::send(const Frame& frame) {
+Core::Result Transmitter::send(const Frame& frame) {
     if (service == nullptr) {
         // Service not set, cannot send
         LOG_ERR("Transmitter", "Service not set, cannot send frame with ID: %u", frame.identifier);
-        return false;
+        return Core::Result(0, Core::ErrorType::CLASS_NOT_INITIALIZED);
     }
 
-    return queue_tx->enqueue(frame);
+    auto res = queue_tx->enqueue(frame);
+
+    if(res == Core::QueueError::SUCCESS)
+        return Core::Result(0, Core::ErrorType::SUCCESS);
+    else {
+        return Core::Result(static_cast<int>(res), Core::ErrorType::QUEUE_ERROR);
+    }
 }
 
 void Transmitter::transmit(void* data) {
@@ -53,7 +61,7 @@ void Transmitter::transmit(void* data) {
             continue;
 
         Frame frame;
-        if (self->queue_tx->dequeue(frame)) {
+        if (self->queue_tx->dequeue(frame) == Core::QueueError::SUCCESS) {
             self->service->send(frame);
         }
     }

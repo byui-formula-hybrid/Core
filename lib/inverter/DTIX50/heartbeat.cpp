@@ -28,9 +28,10 @@ void Heartbeat::start(Core::iThreadStrategy* thread_strategy) {
     m_thread_strategy = thread_strategy;
 
     // Start the heartbeat for drive enable
-    uint32_t handle = m_taskController->create_task(thread_strategy, Heartbeat::heartbeat, this);
+    auto handle = m_taskController->create_task(thread_strategy, Heartbeat::heartbeat, this);
 
-    m_thread_strategy->SetHandle(handle);
+    if(handle)
+        m_thread_strategy->SetHandle(handle.id());
 
     m_started = true;
 }

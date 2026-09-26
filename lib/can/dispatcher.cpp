@@ -1,4 +1,5 @@
 #include "dispatcher.h"
+#include "core/queue/i_queue.h"
 
 namespace CAN {
 
@@ -27,7 +28,7 @@ void Dispatcher::dispatch(void* data) {
         }
 
         Frame data;
-        if (self->queue_rx->dequeue(data)) {
+        if (self->queue_rx->dequeue(data) == Core::QueueError::SUCCESS ) {
             printf("Recieved CAN Frame with id: %x", data.identifier); // Temporary
 
             // TODO: Not working
