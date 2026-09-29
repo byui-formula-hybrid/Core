@@ -24,7 +24,7 @@ public:
     virtual uint32_t create(taskFunc task, void* argument) = 0;
     virtual void kill() = 0;
     virtual void sleep(const uint32_t millis) = 0;
-    
+
     /**
     * @brief Set the thread Handle
     * @param handle: the thread handle
@@ -43,7 +43,7 @@ public:
 protected:
 /**
  * @brief Identifier for the task controller to track the thread
- * 
+ *
  */
     uint32_t m_handle;
 };
