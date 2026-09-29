@@ -5,7 +5,8 @@
 #include <cstddef>
 #include <map>
 
-#include <core/thread/i_thread_strategy.h>
+#include <core/thread.h>
+#include <core/core_error.h>
 
 namespace Core {
 
@@ -28,9 +29,9 @@ public:
     /**
     * @brief Creates a new task and adds it to the controller's management. The task is identified by an identifier of type T, which is used to manage the task (e.g., for deletion). The specifics of how the task is created (e.g., the function it runs, its priority, stack size) can be determined by additional parameters or by a predefined configuration within the controller.
     * @param task: a function pointer or callable object that represents the task to be executed. This could be a lambda, a function pointer, or any callable that matches the expected signature for FreeRTOS tasks (e.g., void (*taskFunction)(void*)).
-    * @return the identifier of the task
+    * @return the identifier of the task or TaskError
     */
-    int create_task(iThreadStrategy* thread, taskFunc task, void* arg);
+    TaskResult create_task(iThreadStrategy* thread, taskFunc task, void* arg);
 
     /**
     * @brief Deletes a task from the controller's management.

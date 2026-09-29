@@ -4,6 +4,8 @@
 #include <cstddef>
 #include <cstdint>
 
+#include "../core_error.h"
+
 namespace Core {
 
 template<typename T>
@@ -17,24 +19,24 @@ public:
     /**
      * @brief Adds an item to the queue.
      * @param data The item to copy into the queue.
-     * @return true if successful, false if the queue is full.
+     * @return QueueError
      */
-    virtual bool enqueue(const T& data) = 0;
+    virtual QueueError enqueue(const T& data) = 0;
 
     /**
      * @brief Adds an item to the queue from interrupts
      * @param data The item to copy into the queue.
-     * @return true if successful, false if the queue is full.
+     * @return QueueError
      */
-    virtual bool enqueueFromISR(const T& data) = 0;
+    virtual QueueError enqueueFromISR(const T& data) = 0;
 
     /**
      * @brief Removes an item from the queue.
      * @param outData Reference to store the popped item.
      * @param timeout_ms How long to wait if the queue is empty (0 for non-blocking).
-     * @return true if an item was retrieved, false if it timed out.
+     * @return QueueError
      */
-    virtual bool dequeue(T& outData, uint32_t timeout_ms = 0) = 0;
+    virtual QueueError dequeue(T& outData, uint32_t timeout_ms = 0) = 0;
 
     /**
      * @brief Returns the number of items in the queue.
@@ -44,9 +46,9 @@ public:
 
     /**
      * @brief Checks if the queue is full.
-     * @return true if the queue is full, false otherwise.
+     * @return QueueError
      */
-    virtual bool is_full() = 0;
+    virtual QueueError is_full() = 0;
 };
 
 } // namespace Core
