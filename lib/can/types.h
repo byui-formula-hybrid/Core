@@ -1,6 +1,7 @@
 #ifndef CAN_TYPES_H
 #define CAN_TYPES_H
 
+#include <cstdint>
 #include <stdint.h>
 #include <cstring>
 
@@ -55,7 +56,7 @@ struct Frame {
     template<typename T>
     Frame(uint32_t identifier, T* message) {
         static_assert(sizeof(T) <= 8, "Message too large for CAN frame");
-        
+
         this->data_length_code = 8;
         this->identifier = identifier;
 
@@ -97,6 +98,17 @@ struct Frame {
         return (T*) data;
     }
 };
+
+//#define BtoL32(x) ((x >> 24) & 0xFF) | ((x << 8) & 0x00FF0000) | ((x >> 8) & 0x0000FF00) | ((x << 24) & 0xFF000000)
+//#define BtoL16(x) ((x & 0xFF) << 8) | ((x >> 8))
+
+constexpr uint32_t BtoL32(uint32_t x) {
+    return ((x >> 24) & 0xFF) | ((x << 8) & 0x00FF0000) | ((x >> 8) & 0x0000FF00) | ((x << 24) & 0xFF000000);
+}
+
+constexpr uint16_t BtoL16(uint16_t x) {
+    return ((x & 0xFF) << 8) | ((x >> 8));
+}
 
 /**
  * @brief Interface for handling CAN frames.
