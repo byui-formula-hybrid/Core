@@ -90,8 +90,8 @@ struct Message1F {
         return CAN::ByteSwap16(this->motor_position);
     }
 
-    constexpr bool getMotorMoving() const {
-        return !is_motor_still;
+    constexpr bool isMotorStill() const {
+        return is_motor_still;
     }
 };
 static_assert(sizeof(Message1F) == 0x8, "DTIX50::Message1F should be 8 bytes");
