@@ -1,11 +1,12 @@
 #include "heartbeat.h"
+#include "lib/inverter/DTIX50/commands.h"
 
 using namespace CAN;
 
 namespace Inverter {
 namespace DTIX50 {
 
-Heartbeat::Heartbeat(Transmitter* canTransmitter, std::unique_ptr<Core::iLockStrategy> lock_strategy) {
+Heartbeat::Heartbeat(Transmitter* canTransmitter, std::unique_ptr<Core::iLockStrategy> lock_strategy): enable(Command::SetDriveEnable(0x1)), disable(Command::SetDriveEnable(0x0)) {
     m_canTransmitter = canTransmitter;
     m_shouldStop_mut = std::move(lock_strategy);
 
@@ -17,9 +18,6 @@ Heartbeat::Heartbeat(Transmitter* canTransmitter, std::unique_ptr<Core::iLockStr
 
     m_shouldStop = false;
     m_started = false;
-
-    enable = { 0x01, 0xFFFFFFFFFFFFFF };
-    disable = { 0x00, 0xFFFFFFFFFFFFFF };
 }
 
 void Heartbeat::start(Core::iThreadStrategy* thread_strategy) {
@@ -52,10 +50,10 @@ void Heartbeat::heartbeat(void* s) {
     Heartbeat* self = (Heartbeat*)s;
 
     while(true) {
-        
+
         // Check if it's time to stop
         self->m_shouldStop_mut->lock();
-        if(self->m_shouldStop) 
+        if(self->m_shouldStop)
         {
             self->m_shouldStop_mut->unlock();
             // Send drive disable
@@ -64,12 +62,12 @@ void Heartbeat::heartbeat(void* s) {
             return;
         }
         self->m_shouldStop_mut->unlock();
-        
+
         // Send drive enable
         Frame frame(0x0C52, &self->enable);
-        
+
         self->m_canTransmitter->send(frame);
-        
+
         self->m_thread_strategy->sleep(250U);
     }
 }

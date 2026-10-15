@@ -1,3 +1,4 @@
+#include "lib/inverter/DTIX50/types.h"
 #include <unity.h>
 #include <cstring>
 
@@ -8,12 +9,13 @@ using namespace Inverter::Command;
 using namespace CAN;
 
 void test_SetACCurrent_command() {
-    SetACCurrent command = { 0x0064, 0xFFFFFFFFFFFF };
+    SetACCurrent command(0x0064);
 
     Frame frame(0x01, &command);
 
-    TEST_ASSERT_EQUAL(0x64, frame.data[0]);
-    TEST_ASSERT_EQUAL(0x00, frame.data[1]);
+    // Should get 0x03E8 since it is multiplied by 10 and in big endian
+    TEST_ASSERT_EQUAL(0x03, frame.data[0]);
+    TEST_ASSERT_EQUAL(0xE8, frame.data[1]);
     TEST_ASSERT_EQUAL(0xFF, frame.data[2]);
     TEST_ASSERT_EQUAL(0xFF, frame.data[3]);
     TEST_ASSERT_EQUAL(0xFF, frame.data[4]);
@@ -23,12 +25,13 @@ void test_SetACCurrent_command() {
 }
 
 void test_SetBrakeCurrent_command() {
-    SetBrakeCurrent command = { 0x0064, 0xFFFFFFFFFFFF };
+    SetBrakeCurrent command(0x0064);
 
     Frame frame(0x01, &command);
 
-    TEST_ASSERT_EQUAL(0x64, frame.data[0]);
-    TEST_ASSERT_EQUAL(0x00, frame.data[1]);
+    // Should get 0x03E8 since it is multiplied by 10 and in big endian
+    TEST_ASSERT_EQUAL(0x03, frame.data[0]);
+    TEST_ASSERT_EQUAL(0xE8, frame.data[1]);
     TEST_ASSERT_EQUAL(0xFF, frame.data[2]);
     TEST_ASSERT_EQUAL(0xFF, frame.data[3]);
     TEST_ASSERT_EQUAL(0xFF, frame.data[4]);
@@ -38,14 +41,14 @@ void test_SetBrakeCurrent_command() {
 }
 
 void test_SetSpeed_command() {
-    SetSpeed command = { 0x0064, 0xFFFFFFFF };
+    SetSpeed command(0x0064);
 
     Frame frame(0x01, &command);
 
-    TEST_ASSERT_EQUAL(0x64, frame.data[0]);
+    TEST_ASSERT_EQUAL(0x00, frame.data[0]);
     TEST_ASSERT_EQUAL(0x00, frame.data[1]);
     TEST_ASSERT_EQUAL(0x00, frame.data[2]);
-    TEST_ASSERT_EQUAL(0x00, frame.data[3]);
+    TEST_ASSERT_EQUAL(0x64, frame.data[3]);
     TEST_ASSERT_EQUAL(0xFF, frame.data[4]);
     TEST_ASSERT_EQUAL(0xFF, frame.data[5]);
     TEST_ASSERT_EQUAL(0xFF, frame.data[6]);
@@ -53,12 +56,13 @@ void test_SetSpeed_command() {
 }
 
 void test_SetPosition_command() {
-    SetPosition command = { 0x0167, 0xFFFFFFFFFFFF };
+    SetPosition command(0x0167);
 
     Frame frame(0x01, &command);
 
-    TEST_ASSERT_EQUAL(0x67, frame.data[0]);
-    TEST_ASSERT_EQUAL(0x01, frame.data[1]);
+    // Should get 0x0E06 since it is multiplied by 10 and in big endian
+    TEST_ASSERT_EQUAL(0x0E, frame.data[0]);
+    TEST_ASSERT_EQUAL(0x06, frame.data[1]);
     TEST_ASSERT_EQUAL(0xFF, frame.data[2]);
     TEST_ASSERT_EQUAL(0xFF, frame.data[3]);
     TEST_ASSERT_EQUAL(0xFF, frame.data[4]);
@@ -68,12 +72,13 @@ void test_SetPosition_command() {
 }
 
 void test_SetRelativeACCurrent_command() {
-    SetRelativeACCurrent command = { 0x0064, 0xFFFFFFFFFFFF };
+    SetRelativeACCurrent command(0x0064);
 
     Frame frame(0x01, &command);
 
-    TEST_ASSERT_EQUAL(0x64, frame.data[0]);
-    TEST_ASSERT_EQUAL(0x00, frame.data[1]);
+    // Should get 0x03E8 since it is multiplied by 10 and in big endian
+    TEST_ASSERT_EQUAL(0x03, frame.data[0]);
+    TEST_ASSERT_EQUAL(0xE8, frame.data[1]);
     TEST_ASSERT_EQUAL(0xFF, frame.data[2]);
     TEST_ASSERT_EQUAL(0xFF, frame.data[3]);
     TEST_ASSERT_EQUAL(0xFF, frame.data[4]);
@@ -83,12 +88,13 @@ void test_SetRelativeACCurrent_command() {
 }
 
 void test_SetRelativeBrakeCurrent_command() {
-    SetRelativeBrakeCurrent command = { 0x0064, 0xFFFFFFFFFFFF };
+    SetRelativeBrakeCurrent command(0x0064);
 
     Frame frame(0x01, &command);
 
-    TEST_ASSERT_EQUAL(0x64, frame.data[0]);
-    TEST_ASSERT_EQUAL(0x00, frame.data[1]);
+    // Should get 0x03E8 since it is multiplied by 10 and in big endian
+    TEST_ASSERT_EQUAL(0x03, frame.data[0]);
+    TEST_ASSERT_EQUAL(0xE8, frame.data[1]);
     TEST_ASSERT_EQUAL(0xFF, frame.data[2]);
     TEST_ASSERT_EQUAL(0xFF, frame.data[3]);
     TEST_ASSERT_EQUAL(0xFF, frame.data[4]);
@@ -98,14 +104,15 @@ void test_SetRelativeBrakeCurrent_command() {
 }
 
 void test_SetDigitalOutput_command() {
-    SetDigitalOutput command = { 0x00, 0x01, 0x00, 0x01, 0xFFFFFFFF};
+    Inverter::IOPins pins(0b1010);
+    SetDigitalOutput command(pins);
 
     Frame frame(0x01, &command);
 
-    TEST_ASSERT_EQUAL(0x00, frame.data[0]);
-    TEST_ASSERT_EQUAL(0x01, frame.data[1]);
-    TEST_ASSERT_EQUAL(0x00, frame.data[2]);
-    TEST_ASSERT_EQUAL(0x01, frame.data[3]);
+    TEST_ASSERT_EQUAL(0x00, frame.data[0]); // Pin 1 Off
+    TEST_ASSERT_EQUAL(0x01, frame.data[1]); // Pin 2 On
+    TEST_ASSERT_EQUAL(0x00, frame.data[2]); // Pin 3 Off
+    TEST_ASSERT_EQUAL(0x01, frame.data[3]); // Pin 4 On
     TEST_ASSERT_EQUAL(0xFF, frame.data[4]);
     TEST_ASSERT_EQUAL(0xFF, frame.data[5]);
     TEST_ASSERT_EQUAL(0xFF, frame.data[6]);
@@ -113,12 +120,13 @@ void test_SetDigitalOutput_command() {
 }
 
 void test_SetMaxACCurrent_command() {
-    SetMaxACCurrent command = { 0x0064, 0xFFFFFFFFFFFF };
+    SetMaxACCurrent command(0x0064);
 
     Frame frame(0x01, &command);
 
-    TEST_ASSERT_EQUAL(0x64, frame.data[0]);
-    TEST_ASSERT_EQUAL(0x00, frame.data[1]);
+    // Should get 0x03E8 since it is multiplied by 10 and in big endian
+    TEST_ASSERT_EQUAL(0x03, frame.data[0]);
+    TEST_ASSERT_EQUAL(0xE8, frame.data[1]);
     TEST_ASSERT_EQUAL(0xFF, frame.data[2]);
     TEST_ASSERT_EQUAL(0xFF, frame.data[3]);
     TEST_ASSERT_EQUAL(0xFF, frame.data[4]);
@@ -128,12 +136,13 @@ void test_SetMaxACCurrent_command() {
 }
 
 void test_SetMaxBrakeCurrent_command() {
-    SetMaxBrakeCurrent command = { 0x0064, 0xFFFFFFFFFFFF };
+    SetMaxBrakeCurrent command(0x0064);
 
     Frame frame(0x01, &command);
 
-    TEST_ASSERT_EQUAL(0x64, frame.data[0]);
-    TEST_ASSERT_EQUAL(0x00, frame.data[1]);
+    // Should get 0x03E8 since it is multiplied by 10 and in big endian
+    TEST_ASSERT_EQUAL(0x03, frame.data[0]);
+    TEST_ASSERT_EQUAL(0xE8, frame.data[1]);
     TEST_ASSERT_EQUAL(0xFF, frame.data[2]);
     TEST_ASSERT_EQUAL(0xFF, frame.data[3]);
     TEST_ASSERT_EQUAL(0xFF, frame.data[4]);
@@ -143,12 +152,13 @@ void test_SetMaxBrakeCurrent_command() {
 }
 
 void test_SetMaxDCCurrent_command() {
-    SetMaxDCCurrent command = { 0x0064, 0xFFFFFFFFFFFF };
+    SetMaxDCCurrent command(-100);
 
     Frame frame(0x01, &command);
 
-    TEST_ASSERT_EQUAL(0x64, frame.data[0]);
-    TEST_ASSERT_EQUAL(0x00, frame.data[1]);
+    // Should get 0xFC18 since it is multiplied by 10 and in big endian
+    TEST_ASSERT_EQUAL(0xFC, frame.data[0]);
+    TEST_ASSERT_EQUAL(0x18, frame.data[1]);
     TEST_ASSERT_EQUAL(0xFF, frame.data[2]);
     TEST_ASSERT_EQUAL(0xFF, frame.data[3]);
     TEST_ASSERT_EQUAL(0xFF, frame.data[4]);
@@ -158,12 +168,13 @@ void test_SetMaxDCCurrent_command() {
 }
 
 void test_SetMaxBrakeDCCurrent_command() {
-    SetMaxBrakeDCCurrent command = { 0x0064, 0xFFFFFFFFFFFF };
+    SetMaxBrakeDCCurrent command(-100);
 
     Frame frame(0x01, &command);
 
-    TEST_ASSERT_EQUAL(0x64, frame.data[0]);
-    TEST_ASSERT_EQUAL(0x00, frame.data[1]);
+    // Should get 0x03E8 since it is multiplied by 10 and in big endian
+    TEST_ASSERT_EQUAL(0xFC, frame.data[0]);
+    TEST_ASSERT_EQUAL(0x18, frame.data[1]);
     TEST_ASSERT_EQUAL(0xFF, frame.data[2]);
     TEST_ASSERT_EQUAL(0xFF, frame.data[3]);
     TEST_ASSERT_EQUAL(0xFF, frame.data[4]);
@@ -173,7 +184,7 @@ void test_SetMaxBrakeDCCurrent_command() {
 }
 
 void test_SetDriveEnable_command() {
-    SetDriveEnable command = { 0x01, 0xFFFFFFFFFFFFFF };
+    SetDriveEnable command(0x01);
 
     Frame frame(0x01, &command);
 

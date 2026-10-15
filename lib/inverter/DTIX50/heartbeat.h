@@ -7,7 +7,6 @@
 #include <core_can.h>
 #include <core/task.h>
 #include "commands.h"
-#include "messages.h"
 
 using namespace CAN;
 
