@@ -99,15 +99,32 @@ struct Frame {
     }
 };
 
-//#define BtoL32(x) ((x >> 24) & 0xFF) | ((x << 8) & 0x00FF0000) | ((x >> 8) & 0x0000FF00) | ((x << 24) & 0xFF000000)
-//#define BtoL16(x) ((x & 0xFF) << 8) | ((x >> 8))
-
-constexpr uint32_t BtoL32(uint32_t x) {
+/**
+ * @brief Convert 32bit unsigned integers between endianness
+ */
+constexpr uint32_t ByteSwap32(uint32_t x) {
     return ((x >> 24) & 0xFF) | ((x << 8) & 0x00FF0000) | ((x >> 8) & 0x0000FF00) | ((x << 24) & 0xFF000000);
 }
 
-constexpr uint16_t BtoL16(uint16_t x) {
+/**
+ * @brief Convert 32bit signed integers between endianness
+ */
+constexpr int32_t SByteSwap32(uint32_t x) {
+    return static_cast<int32_t>(ByteSwap32(x));
+}
+
+/**
+ * @brief Convert 16bit unsigned integers between endianness
+ */
+constexpr uint16_t ByteSwap16(uint16_t x) {
     return ((x & 0xFF) << 8) | ((x >> 8));
+}
+
+/**
+ * @brief Convert 16bit signed integers between endianness
+ */
+constexpr int16_t SByteSwap16(uint16_t x) {
+    return static_cast<int16_t>(ByteSwap16(x));
 }
 
 /**

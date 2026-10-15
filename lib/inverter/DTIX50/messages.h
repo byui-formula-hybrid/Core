@@ -59,32 +59,6 @@ enum class FaultCodes : uint8_t {
 };
 
 /**
- * @brief This is used for input and output pins on the inverter
- */
-struct IOPins {
-    bool pin1: 1;
-    bool pin2: 1;
-    bool pin3: 1;
-    bool pin4: 1;
-
-    explicit constexpr IOPins(uint8_t raw) :
-        pin1(raw & 0x1),
-        pin2(raw & 0x2),
-        pin3(raw & 0x4),
-        pin4(raw & 0x8)
-    {}
-};
-// Wish I could check for just 4 bits
-static_assert(sizeof(IOPins) == 0x1, "DTIX50::IOPins should be 1 byte");
-
-// Quick compile-time test to verify that our pins map correctly
-constexpr IOPins test(0b1010);
-static_assert(!test.pin1, "pin1 did not map correctly");
-static_assert( test.pin2, "pin2 did not map correctly");
-static_assert(!test.pin3, "pin3 did not map correctly");
-static_assert( test.pin4, "pin4 did not map correctly");
-
-/**
  * ID: 0x1F
  * @name General data 6
  * @param control_mode: Describes the control mode of the inverter - Mainly used in multicontroller configuration
@@ -109,11 +83,11 @@ struct Message1F {
     }
 
     constexpr uint16_t getTargetIq() const {
-        return CAN::BtoL16(this->target_iq);
+        return CAN::ByteSwap16(this->target_iq);
     }
 
     constexpr uint16_t getMotorPosition() const {
-        return CAN::BtoL16(this->motor_position);
+        return CAN::ByteSwap16(this->motor_position);
     }
 
     constexpr bool getMotorMoving() const {
@@ -137,15 +111,15 @@ struct Message20 {
     uint64_t input_voltage : 16;
 
     constexpr uint32_t getERPM() const {
-        return CAN::BtoL32(this->erpm);
+        return CAN::ByteSwap32(this->erpm);
     }
 
-    constexpr uint16_t getDutyCycle() const {
-        return CAN::BtoL16(this->duty_cycle);
+    constexpr int16_t getDutyCycle() const {
+        return CAN::SByteSwap16(this->duty_cycle);
     }
 
     constexpr uint16_t getInputVoltage() const {
-        return CAN::BtoL16(this->input_voltage);
+        return CAN::ByteSwap16(this->input_voltage);
     }
 };
 static_assert(sizeof(Message20) == 0x8, "DTIX50::Message20 should be 8 bytes");
@@ -165,12 +139,12 @@ struct Message21 {
     uint64_t dc_current : 16;
     uint64_t reserved : 32;
 
-    constexpr uint16_t getACCurrent() const {
-        return CAN::BtoL16(this->ac_current);
+    constexpr int16_t getACCurrent() const {
+        return CAN::SByteSwap16(this->ac_current);
     }
 
-    constexpr uint16_t getDCCurrent() const {
-        return CAN::BtoL16(this->dc_current);
+    constexpr int16_t getDCCurrent() const {
+        return CAN::SByteSwap16(this->dc_current);
     }
 };
 static_assert(sizeof(Message21) == 0x8, "DTIX50::Message21 should be 8 bytes");
@@ -190,11 +164,11 @@ struct Message22 {
     uint64_t reserved : 24;
 
     constexpr uint16_t getControllerTemp() const {
-        return CAN::BtoL16(this->controller_temp);
+        return CAN::ByteSwap16(this->controller_temp);
     }
 
     constexpr uint16_t getMotorTemp() const {
-        return CAN::BtoL16(this->motor_temp);
+        return CAN::ByteSwap16(this->motor_temp);
     }
 
     constexpr FaultCodes getFaultCode() const {
@@ -214,11 +188,11 @@ struct Message23 {
     uint64_t iq : 32;
 
     constexpr uint32_t getID() const {
-        return CAN::BtoL32(this->id);
+        return CAN::ByteSwap32(this->id);
     }
 
     constexpr uint32_t getIQ() const {
-        return CAN::BtoL32(this->iq);
+        return CAN::ByteSwap32(this->iq);
     }
 };
 static_assert(sizeof(Message23) == 0x8, "DTIX50::Message23 should be 8 bytes");
@@ -366,19 +340,19 @@ struct Message25 {
    uint64_t av_min_ac_current : 16;
 
    constexpr uint16_t getMaxACCurrent() const {
-       return CAN::BtoL16(this->max_ac_current);
+       return CAN::ByteSwap16(this->max_ac_current);
    }
 
    constexpr uint16_t getAvailableMaxACCurrent() const {
-       return CAN::BtoL16(this->av_max_ac_current);
+       return CAN::ByteSwap16(this->av_max_ac_current);
    }
 
    constexpr uint16_t getMinACCurrent() const {
-       return CAN::BtoL16(this->min_ac_current);
+       return CAN::ByteSwap16(this->min_ac_current);
    }
 
    constexpr uint16_t getAvailableMinACCurrent() const {
-       return CAN::BtoL16(this->av_min_ac_current);
+       return CAN::ByteSwap16(this->av_min_ac_current);
    }
 };
 static_assert(sizeof(Message25) == 0x8, "DTIX50::Message25 should be 8 bytes");
@@ -402,19 +376,19 @@ struct Message26 {
    uint64_t av_min_dc_current : 16;
 
    constexpr uint16_t getMaxDCCurrent() const {
-       return CAN::BtoL16(this->max_dc_current);
+       return CAN::ByteSwap16(this->max_dc_current);
    }
 
    constexpr uint16_t getAvailableMaxDCCurrent() const {
-       return CAN::BtoL16(this->av_max_dc_current);
+       return CAN::ByteSwap16(this->av_max_dc_current);
    }
 
    constexpr uint16_t getMinDCCurrent() const {
-       return CAN::BtoL16(this->min_dc_current);
+       return CAN::ByteSwap16(this->min_dc_current);
    }
 
    constexpr uint16_t getAvailableMinDCCurrent() const {
-       return CAN::BtoL16(this->av_min_dc_current);
+       return CAN::ByteSwap16(this->av_min_dc_current);
    }
 };
 static_assert(sizeof(Message26) == 0x8, "DTIX50::Message25 should be 8 bytes");
