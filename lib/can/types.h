@@ -2,7 +2,6 @@
 #define CAN_TYPES_H
 
 #include <cstdint>
-#include <stdint.h>
 #include <cstring>
 
 namespace CAN {

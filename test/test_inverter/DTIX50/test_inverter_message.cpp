@@ -1,4 +1,3 @@
-#include "types.h"
 #include <unity.h>
 #include <cstring>
 
@@ -25,14 +24,14 @@ void test_message1F_encode_decode() {
 }
 
 void test_message20_encode_decode() {
-    Message20 message_in = { CAN::ByteSwap32(0x01234567), CAN::ByteSwap16(-100), CAN::ByteSwap16(0x6543) };
+    Message20 message_in = { CAN::ByteSwap32(0x01234567), CAN::ByteSwap16(0x9CFF), CAN::ByteSwap16(0x6543) };
 
     Frame frame(0x22, &message_in);
 
     auto message_out = frame.decode<Message20>();
 
     TEST_ASSERT_EQUAL(0x01234567, message_out->getERPM());
-    TEST_ASSERT_EQUAL(-100, message_out->getDutyCycle());
+    TEST_ASSERT_EQUAL((int16_t)0x9CFF, message_out->getDutyCycle());
     TEST_ASSERT_EQUAL(0x6543, message_out->getInputVoltage());
 }
 
@@ -68,8 +67,8 @@ void test_message23_encode_decode() {
 
     auto message_out = frame.decode<Message23>();
 
-    TEST_ASSERT_EQUAL(0x12345678, message_out->getID());
-    TEST_ASSERT_EQUAL(0x98765432, message_out->getIQ());
+    TEST_ASSERT_EQUAL((int32_t)0x12345678, message_out->getID());
+    TEST_ASSERT_EQUAL((int32_t)0x98765432, message_out->getIQ());
 }
 
 void test_message24_encode_decode() {
@@ -80,7 +79,7 @@ void test_message24_encode_decode() {
     auto message_out = frame.decode<Message24>();
 
     TEST_ASSERT_EQUAL(0x36, message_out->getThrottle());
-    TEST_ASSERT_EQUAL(0x90, message_out->getBrake());
+    TEST_ASSERT_EQUAL((int8_t)0x90, message_out->getBrake());
     TEST_ASSERT_EQUAL(0x6, message_out->getDigitalInputs());
     TEST_ASSERT_EQUAL(0x0, message_out->getInputPins().pin1);
     TEST_ASSERT_EQUAL(0x1, message_out->getInputPins().pin2);

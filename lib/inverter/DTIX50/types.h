@@ -23,12 +23,11 @@ struct IOPins {
 // Wish I could check for just 4 bits
 static_assert(sizeof(IOPins) == 0x1, "DTIX50::IOPins should be 1 byte");
 
-// Quick compile-time test to verify that our pins map correctly
-constexpr IOPins test(0b1010);
-static_assert(!test.pin1, "pin1 did not map correctly");
-static_assert( test.pin2, "pin2 did not map correctly");
-static_assert(!test.pin3, "pin3 did not map correctly");
-static_assert( test.pin4, "pin4 did not map correctly");
+// Quick compile-time test to verify that our pins map correctly, some enviroments may use a compiler that doesn't guarantee the order of the bitfields
+static_assert(!IOPins(0b1010).pin1, "pin1 did not map correctly");
+static_assert(IOPins(0b1010).pin2, "pin2 did not map correctly");
+static_assert(!IOPins(0b1010).pin3, "pin3 did not map correctly");
+static_assert(IOPins(0b1010).pin4, "pin4 did not map correctly");
 }
 
 #endif

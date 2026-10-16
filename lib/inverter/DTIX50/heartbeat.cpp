@@ -1,5 +1,6 @@
 #include "heartbeat.h"
-#include "lib/inverter/DTIX50/commands.h"
+
+#include "commands.h"
 
 using namespace CAN;
 

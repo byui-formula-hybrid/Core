@@ -1,12 +1,12 @@
 #ifndef INVERTER_DTIX50_HEARTBEAT_H
 #define INVERTER_DTIX50_HEARTBEAT_H
 
-#include <memory>
+#include "commands.h"
 
 #include <core.h>
 #include <core_can.h>
 #include <core/task.h>
-#include "commands.h"
+#include <memory>
 
 using namespace CAN;
 

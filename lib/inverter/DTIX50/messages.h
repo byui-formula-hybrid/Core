@@ -3,8 +3,9 @@
 // https://zapdrive.eu/docs/assets/common/can_docs/v25/DTI%20CAN%20manual%20V2.5.pdf
 
 #include "types.h"
-#include <cstdint>
+
 #include <core_can.h>
+#include <cstdint>
 #include <cstring>
 
 namespace Inverter {
@@ -82,8 +83,8 @@ struct Message1F {
         return this->control_mode;
     }
 
-    constexpr uint16_t getTargetIq() const {
-        return CAN::ByteSwap16(this->target_iq);
+    constexpr int16_t getTargetIq() const {
+        return CAN::SByteSwap16(this->target_iq);
     }
 
     constexpr uint16_t getMotorPosition() const {
@@ -110,16 +111,16 @@ struct Message20 {
     uint64_t duty_cycle : 16;
     uint64_t input_voltage : 16;
 
-    constexpr uint32_t getERPM() const {
-        return CAN::ByteSwap32(this->erpm);
+    constexpr int32_t getERPM() const {
+        return CAN::SByteSwap32(this->erpm);
     }
 
     constexpr int16_t getDutyCycle() const {
         return CAN::SByteSwap16(this->duty_cycle);
     }
 
-    constexpr uint16_t getInputVoltage() const {
-        return CAN::ByteSwap16(this->input_voltage);
+    constexpr int16_t getInputVoltage() const {
+        return CAN::SByteSwap16(this->input_voltage);
     }
 };
 static_assert(sizeof(Message20) == 0x8, "DTIX50::Message20 should be 8 bytes");
@@ -163,12 +164,12 @@ struct Message22 {
     FaultCodes fault_code : 8;
     uint64_t reserved : 24;
 
-    constexpr uint16_t getControllerTemp() const {
-        return CAN::ByteSwap16(this->controller_temp);
+    constexpr int16_t getControllerTemp() const {
+        return CAN::SByteSwap16(this->controller_temp);
     }
 
-    constexpr uint16_t getMotorTemp() const {
-        return CAN::ByteSwap16(this->motor_temp);
+    constexpr int16_t getMotorTemp() const {
+        return CAN::SByteSwap16(this->motor_temp);
     }
 
     constexpr FaultCodes getFaultCode() const {
@@ -187,12 +188,12 @@ struct Message23 {
     uint64_t id : 32;
     uint64_t iq : 32;
 
-    constexpr uint32_t getID() const {
-        return CAN::ByteSwap32(this->id);
+    constexpr int32_t getID() const {
+        return CAN::SByteSwap32(this->id);
     }
 
-    constexpr uint32_t getIQ() const {
-        return CAN::ByteSwap32(this->iq);
+    constexpr int32_t getIQ() const {
+        return CAN::SByteSwap32(this->iq);
     }
 };
 static_assert(sizeof(Message23) == 0x8, "DTIX50::Message23 should be 8 bytes");
@@ -244,11 +245,11 @@ struct Message24 {
     uint64_t reservedFF : 8;
     uint64_t can_map_version : 8;
 
-    constexpr uint8_t getThrottle() const {
+    constexpr int8_t getThrottle() const {
         return this->throttle_signal;
     }
 
-    constexpr uint8_t getBrake() const {
+    constexpr int8_t getBrake() const {
         return this->brake_signal;
     }
 
@@ -339,20 +340,20 @@ struct Message25 {
    uint64_t min_ac_current : 16;
    uint64_t av_min_ac_current : 16;
 
-   constexpr uint16_t getMaxACCurrent() const {
-       return CAN::ByteSwap16(this->max_ac_current);
+   constexpr int16_t getMaxACCurrent() const {
+       return CAN::SByteSwap16(this->max_ac_current);
    }
 
-   constexpr uint16_t getAvailableMaxACCurrent() const {
-       return CAN::ByteSwap16(this->av_max_ac_current);
+   constexpr int16_t getAvailableMaxACCurrent() const {
+       return CAN::SByteSwap16(this->av_max_ac_current);
    }
 
-   constexpr uint16_t getMinACCurrent() const {
-       return CAN::ByteSwap16(this->min_ac_current);
+   constexpr int16_t getMinACCurrent() const {
+       return CAN::SByteSwap16(this->min_ac_current);
    }
 
-   constexpr uint16_t getAvailableMinACCurrent() const {
-       return CAN::ByteSwap16(this->av_min_ac_current);
+   constexpr int16_t getAvailableMinACCurrent() const {
+       return CAN::SByteSwap16(this->av_min_ac_current);
    }
 };
 static_assert(sizeof(Message25) == 0x8, "DTIX50::Message25 should be 8 bytes");
@@ -375,23 +376,23 @@ struct Message26 {
    uint64_t min_dc_current : 16;
    uint64_t av_min_dc_current : 16;
 
-   constexpr uint16_t getMaxDCCurrent() const {
-       return CAN::ByteSwap16(this->max_dc_current);
+   constexpr int16_t getMaxDCCurrent() const {
+       return CAN::SByteSwap16(this->max_dc_current);
    }
 
-   constexpr uint16_t getAvailableMaxDCCurrent() const {
-       return CAN::ByteSwap16(this->av_max_dc_current);
+   constexpr int16_t getAvailableMaxDCCurrent() const {
+       return CAN::SByteSwap16(this->av_max_dc_current);
    }
 
-   constexpr uint16_t getMinDCCurrent() const {
-       return CAN::ByteSwap16(this->min_dc_current);
+   constexpr int16_t getMinDCCurrent() const {
+       return CAN::SByteSwap16(this->min_dc_current);
    }
 
-   constexpr uint16_t getAvailableMinDCCurrent() const {
-       return CAN::ByteSwap16(this->av_min_dc_current);
+   constexpr int16_t getAvailableMinDCCurrent() const {
+       return CAN::SByteSwap16(this->av_min_dc_current);
    }
 };
-static_assert(sizeof(Message26) == 0x8, "DTIX50::Message25 should be 8 bytes");
+static_assert(sizeof(Message26) == 0x8, "DTIX50::Message26 should be 8 bytes");
 
 }; // Inverter
 

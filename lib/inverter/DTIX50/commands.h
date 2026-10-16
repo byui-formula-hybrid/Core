@@ -28,7 +28,7 @@ struct SetACCurrent {
     uint64_t ac_current : 16;
     uint64_t reserved : 48;
 
-    constexpr SetACCurrent(int16_t ac_current): ac_current(CAN::ByteSwap16(ac_current * 10)), reserved(0xFFFFFFFFFFFFULL) {}
+    constexpr SetACCurrent(int16_t ac_current): ac_current(CAN::SByteSwap16(ac_current * 10)), reserved(0xFFFFFFFFFFFFULL) {}
 };
 
 /**
@@ -43,7 +43,7 @@ struct SetBrakeCurrent {
     uint64_t brake_current : 16;
     uint64_t reserved : 48;
 
-    constexpr SetBrakeCurrent(uint16_t brake_current): brake_current(CAN::ByteSwap16(brake_current * 10)), reserved(0xFFFFFFFFFFFFULL) {}
+    constexpr SetBrakeCurrent(int16_t brake_current): brake_current(CAN::SByteSwap16(brake_current * 10)), reserved(0xFFFFFFFFFFFFULL) {}
 };
 
 /**
@@ -59,7 +59,7 @@ struct SetSpeed {
     uint64_t erpm : 32;
     uint64_t reserved : 32;
 
-    constexpr SetSpeed(int32_t erpm) : erpm(CAN::ByteSwap32(erpm)), reserved(0xFFFFFFFFU) {}
+    constexpr SetSpeed(int32_t erpm) : erpm(CAN::SByteSwap32(erpm)), reserved(0xFFFFFFFFU) {}
 };
 
 /**
@@ -74,7 +74,7 @@ struct SetPosition {
     uint64_t position : 16;
     uint64_t reserved : 48;
 
-    constexpr SetPosition(uint16_t position): position(CAN::ByteSwap16(position * 10)), reserved(0xFFFFFFFFFFFFULL) {}
+    constexpr SetPosition(int16_t position): position(CAN::SByteSwap16(position * 10)), reserved(0xFFFFFFFFFFFFULL) {}
 };
 
 
@@ -93,7 +93,7 @@ struct SetRelativeACCurrent {
     uint64_t relative_ac_current : 16;
     uint64_t reserved : 48;
 
-    constexpr SetRelativeACCurrent(int16_t percent): relative_ac_current(CAN::ByteSwap16(percent * 10)), reserved(0xFFFFFFFFFFFFULL) {}
+    constexpr SetRelativeACCurrent(int16_t percent): relative_ac_current(CAN::SByteSwap16(percent * 10)), reserved(0xFFFFFFFFFFFFULL) {}
 };
 
 /**
@@ -111,7 +111,7 @@ struct SetRelativeBrakeCurrent {
     uint64_t relative_brake_current : 16;
     uint64_t reserved : 48;
 
-    constexpr SetRelativeBrakeCurrent(uint16_t percent): relative_brake_current(CAN::ByteSwap16(percent * 10)), reserved(0xFFFFFFFFFFFFULL) {}
+    constexpr SetRelativeBrakeCurrent(int16_t percent): relative_brake_current(CAN::SByteSwap16(percent * 10)), reserved(0xFFFFFFFFFFFFULL) {}
 };
 
 /**
@@ -149,7 +149,7 @@ struct SetMaxACCurrent {
     uint64_t max_ac_current : 16;
     uint64_t reserved : 48;
 
-    constexpr SetMaxACCurrent(uint16_t max_ac_current): max_ac_current(CAN::ByteSwap16(max_ac_current * 10)), reserved(0xFFFFFFFFFFFFULL) {}
+    constexpr SetMaxACCurrent(int16_t max_ac_current): max_ac_current(CAN::SByteSwap16(max_ac_current * 10)), reserved(0xFFFFFFFFFFFFULL) {}
 };
 
 /**
@@ -164,7 +164,7 @@ struct SetMaxBrakeCurrent {
     uint64_t max_brake_current : 16;
     uint64_t reserved : 48;
 
-    constexpr SetMaxBrakeCurrent(int16_t max_brake_current): max_brake_current(CAN::ByteSwap16(max_brake_current * 10)), reserved(0xFFFFFFFFFFFFULL) {}
+    constexpr SetMaxBrakeCurrent(int16_t max_brake_current): max_brake_current(CAN::SByteSwap16(max_brake_current * 10)), reserved(0xFFFFFFFFFFFFULL) {}
 };
 
 /**
@@ -179,7 +179,7 @@ struct SetMaxDCCurrent {
     uint64_t max_dc_current : 16;
     uint64_t reserved : 48;
 
-    constexpr SetMaxDCCurrent(uint16_t max_dc_current): max_dc_current(CAN::ByteSwap16(max_dc_current * 10)), reserved(0xFFFFFFFFFFFFULL) {}
+    constexpr SetMaxDCCurrent(int16_t max_dc_current): max_dc_current(CAN::SByteSwap16(max_dc_current * 10)), reserved(0xFFFFFFFFFFFFULL) {}
 };
 
 
@@ -196,7 +196,7 @@ struct SetMaxBrakeDCCurrent {
     uint64_t max_brake_dc_current : 16;
     uint64_t reserved : 48;
 
-    constexpr SetMaxBrakeDCCurrent(int16_t max_brake_dc_current): max_brake_dc_current(CAN::ByteSwap16(max_brake_dc_current * 10)), reserved(0xFFFFFFFFFFFFULL) {}
+    constexpr SetMaxBrakeDCCurrent(int16_t max_brake_dc_current): max_brake_dc_current(CAN::SByteSwap16(max_brake_dc_current * 10)), reserved(0xFFFFFFFFFFFFULL) {}
 };
 
 /**
