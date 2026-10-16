@@ -7,113 +7,68 @@
 using namespace Inverter;
 using namespace CAN;
 
-// The inverter expects the information in BIG endian, but for now we are just testing little endian values
+// The inverter expects the information in BIG endian, so we use ByteSwap to convert to BigEndian so that it's easier to read what is expected
 
 void test_message1F_encode_decode() {
-    Message1F message_in = { ControlMode::CONTROL_MODE_SPEED, 0x03B6, 0x0167, false, 0x7FFFFF };
+    Message1F message_in = { ControlMode::CONTROL_MODE_SPEED, CAN::ByteSwap16(0x03B6), CAN::ByteSwap16(0x0167), false, 0x7FFFFF };
 
     Frame frame(0x22, &message_in);
 
-    TEST_ASSERT_EQUAL(0x01, frame.data[0]);
-    TEST_ASSERT_EQUAL(0xB6, frame.data[1]);
-    TEST_ASSERT_EQUAL(0x03, frame.data[2]);
-    TEST_ASSERT_EQUAL(0x67, frame.data[3]);
-    TEST_ASSERT_EQUAL(0x01, frame.data[4]);
-    TEST_ASSERT_EQUAL(0xFE, frame.data[5]);
-    TEST_ASSERT_EQUAL(0xFF, frame.data[6]);
-    TEST_ASSERT_EQUAL(0xFF, frame.data[7]);
-
     auto message_out = frame.decode<Message1F>();
 
-    TEST_ASSERT_EQUAL(ControlMode::CONTROL_MODE_SPEED, message_out->control_mode);
-    TEST_ASSERT_EQUAL(950, message_out->target_iq);
-    TEST_ASSERT_EQUAL(359, message_out->motor_position);
-    TEST_ASSERT_EQUAL(false, message_out->is_motor_still);
+    TEST_ASSERT_EQUAL(ControlMode::CONTROL_MODE_SPEED, message_out->getControlMode());
+    TEST_ASSERT_EQUAL(950, message_out->getTargetIq());
+    TEST_ASSERT_EQUAL(359, message_out->getMotorPosition());
+    TEST_ASSERT_EQUAL(false, message_out->isMotorStill());
     TEST_ASSERT_EQUAL(0x7FFFFF, message_out->reserved);
 }
 
 void test_message20_encode_decode() {
-    Message20 message_in = { 0x01234567, 0x9876, 0x6543 };
+    Message20 message_in = { CAN::ByteSwap32(0x01234567), CAN::ByteSwap16(0x9CFF), CAN::ByteSwap16(0x6543) };
 
     Frame frame(0x22, &message_in);
-
-    TEST_ASSERT_EQUAL(0x67, frame.data[0]);
-    TEST_ASSERT_EQUAL(0x45, frame.data[1]);
-    TEST_ASSERT_EQUAL(0x23, frame.data[2]);
-    TEST_ASSERT_EQUAL(0x01, frame.data[3]);
-    TEST_ASSERT_EQUAL(0x76, frame.data[4]);
-    TEST_ASSERT_EQUAL(0x98, frame.data[5]);
-    TEST_ASSERT_EQUAL(0x43, frame.data[6]);
-    TEST_ASSERT_EQUAL(0x65, frame.data[7]);
 
     auto message_out = frame.decode<Message20>();
 
-    TEST_ASSERT_EQUAL(0x01234567, message_out->erpm);
-    TEST_ASSERT_EQUAL(0x9876, message_out->duty_cycle);
-    TEST_ASSERT_EQUAL(0x6543, message_out->input_voltage);
+    TEST_ASSERT_EQUAL(0x01234567, message_out->getERPM());
+    TEST_ASSERT_EQUAL((int16_t)0x9CFF, message_out->getDutyCycle());
+    TEST_ASSERT_EQUAL(0x6543, message_out->getInputVoltage());
 }
 
 void test_message21_encode_decode() {
-    Message21 message_in = { 0x6543, 0x6758, 0xFFFFFFFF };
+    Message21 message_in = { CAN::ByteSwap16(0x6543), CAN::ByteSwap16(0x6758), 0xFFFFFFFF };
 
     Frame frame(0x22, &message_in);
 
-    TEST_ASSERT_EQUAL(0x43, frame.data[0]);
-    TEST_ASSERT_EQUAL(0x65, frame.data[1]);
-    TEST_ASSERT_EQUAL(0x58, frame.data[2]);
-    TEST_ASSERT_EQUAL(0x67, frame.data[3]);
-    TEST_ASSERT_EQUAL(0xFF, frame.data[4]);
-    TEST_ASSERT_EQUAL(0xFF, frame.data[5]);
-    TEST_ASSERT_EQUAL(0xFF, frame.data[6]);
-    TEST_ASSERT_EQUAL(0xFF, frame.data[7]);
-
     auto message_out = frame.decode<Message21>();
 
-    TEST_ASSERT_EQUAL(0x6543, message_out->ac_current);
-    TEST_ASSERT_EQUAL(0x6758, message_out->dc_current);
+    TEST_ASSERT_EQUAL(0x6543, message_out->getACCurrent());
+    TEST_ASSERT_EQUAL(0x6758, message_out->getDCCurrent());
     TEST_ASSERT_EQUAL(0xFFFFFFFF, message_out->reserved);
 }
 
 void test_message22_encode_decode() {
-    Message22 message_in = { 0x0032, 0x0102, FaultCodes::NONE, 0xFFFFFF };
+    Message22 message_in = { CAN::ByteSwap16(0x0032), CAN::ByteSwap16(0x0102), FaultCodes::NONE, 0xFFFFFF };
 
     Frame frame(0x22, &message_in);
 
-    TEST_ASSERT_EQUAL(0x32, frame.data[0]);
-    TEST_ASSERT_EQUAL(0x00, frame.data[1]);
-    TEST_ASSERT_EQUAL(0x02, frame.data[2]);
-    TEST_ASSERT_EQUAL(0x01, frame.data[3]);
-    TEST_ASSERT_EQUAL(0x00, frame.data[4]);
-    TEST_ASSERT_EQUAL(0xFF, frame.data[5]);
-    TEST_ASSERT_EQUAL(0xFF, frame.data[6]);
-    TEST_ASSERT_EQUAL(0xFF, frame.data[7]);
-
     auto message_out = frame.decode<Message22>();
 
-    TEST_ASSERT_EQUAL(0x0032, message_out->controller_temp);
-    TEST_ASSERT_EQUAL(0x0102, message_out->motor_temp);
-    TEST_ASSERT_EQUAL(FaultCodes::NONE, message_out->fault_code);
+    TEST_ASSERT_EQUAL(0x0032, message_out->getControllerTemp());
+    TEST_ASSERT_EQUAL(0x0102, message_out->getMotorTemp());
+    TEST_ASSERT_EQUAL(FaultCodes::NONE, message_out->getFaultCode());
     TEST_ASSERT_EQUAL(0xFFFFFF, message_out->reserved);
 }
 
 void test_message23_encode_decode() {
-    Message23 message_in = { 0x12345678, 0x98765432 };
+    Message23 message_in = { CAN::ByteSwap32(0x12345678), CAN::ByteSwap32(0x98765432) };
 
     Frame frame(0x22, &message_in);
 
-    TEST_ASSERT_EQUAL(0x78, frame.data[0]);
-    TEST_ASSERT_EQUAL(0x56, frame.data[1]);
-    TEST_ASSERT_EQUAL(0x34, frame.data[2]);
-    TEST_ASSERT_EQUAL(0x12, frame.data[3]);
-    TEST_ASSERT_EQUAL(0x32, frame.data[4]);
-    TEST_ASSERT_EQUAL(0x54, frame.data[5]);
-    TEST_ASSERT_EQUAL(0x76, frame.data[6]);
-    TEST_ASSERT_EQUAL(0x98, frame.data[7]);
-
     auto message_out = frame.decode<Message23>();
 
-    TEST_ASSERT_EQUAL(0x12345678, message_out->id);
-    TEST_ASSERT_EQUAL(0x98765432, message_out->iq);
+    TEST_ASSERT_EQUAL((int32_t)0x12345678, message_out->getID());
+    TEST_ASSERT_EQUAL((int32_t)0x98765432, message_out->getIQ());
 }
 
 void test_message24_encode_decode() {
@@ -121,80 +76,61 @@ void test_message24_encode_decode() {
 
     Frame frame(0x22, &message_in);
 
-    TEST_ASSERT_EQUAL(0x36, frame.data[0]);
-    TEST_ASSERT_EQUAL(0x90, frame.data[1]);
-    TEST_ASSERT_EQUAL(0x76, frame.data[2]);
-    TEST_ASSERT_EQUAL(0x01, frame.data[3]);
-    TEST_ASSERT_EQUAL(0xCB, frame.data[4]);
-    TEST_ASSERT_EQUAL(0x04, frame.data[5]);
-    TEST_ASSERT_EQUAL(0xFF, frame.data[6]);
-    TEST_ASSERT_EQUAL(0x19, frame.data[7]);
-
     auto message_out = frame.decode<Message24>();
 
-    TEST_ASSERT_EQUAL(0x36, message_out->throttle_signal);
-    TEST_ASSERT_EQUAL(0x90, message_out->brake_signal);
-    TEST_ASSERT_EQUAL(0x6, message_out->digital_inputs);
-    TEST_ASSERT_EQUAL(0x7, message_out->digital_outputs);
-    TEST_ASSERT_EQUAL(0x01, message_out->drive_enable);
-    TEST_ASSERT_EQUAL(0x1, message_out->capacitor_temp_limit);
-    TEST_ASSERT_EQUAL(0x1, message_out->dc_current_limit);
-    TEST_ASSERT_EQUAL(0x0, message_out->drive_enable_limit);
-    TEST_ASSERT_EQUAL(0x1, message_out->igbt_accel_limit);
-    TEST_ASSERT_EQUAL(0x0, message_out->igbt_temp_limit);
-    TEST_ASSERT_EQUAL(0x0, message_out->input_voltage_limit);
-    TEST_ASSERT_EQUAL(0x1, message_out->motor_accel_temp_limit);
-    TEST_ASSERT_EQUAL(0x1, message_out->motor_temp_limit);
-    TEST_ASSERT_EQUAL(0x0, message_out->rpm_min_limit);
-    TEST_ASSERT_EQUAL(0x0, message_out->rpm_max_limit);
-    TEST_ASSERT_EQUAL(0x1, message_out->power_limit);
+    TEST_ASSERT_EQUAL(0x36, message_out->getThrottle());
+    TEST_ASSERT_EQUAL((int8_t)0x90, message_out->getBrake());
+    TEST_ASSERT_EQUAL(0x6, message_out->getDigitalInputs());
+    TEST_ASSERT_EQUAL(0x0, message_out->getInputPins().pin1);
+    TEST_ASSERT_EQUAL(0x1, message_out->getInputPins().pin2);
+    TEST_ASSERT_EQUAL(0x1, message_out->getInputPins().pin3);
+    TEST_ASSERT_EQUAL(0x0, message_out->getInputPins().pin4);
+    TEST_ASSERT_EQUAL(0x7, message_out->getDigitalOutputs());
+    TEST_ASSERT_EQUAL(0x1, message_out->getOutputPins().pin1);
+    TEST_ASSERT_EQUAL(0x1, message_out->getOutputPins().pin2);
+    TEST_ASSERT_EQUAL(0x1, message_out->getOutputPins().pin3);
+    TEST_ASSERT_EQUAL(0x0, message_out->getOutputPins().pin4);
+    TEST_ASSERT_EQUAL(0x01, message_out->getDriveEnable());
+    TEST_ASSERT_EQUAL(0x1, message_out->isCapacitorTempLimited());
+    TEST_ASSERT_EQUAL(0x1, message_out->isDCCurrentLimited());
+    TEST_ASSERT_EQUAL(0x0, message_out->isDriveEnableLimited());
+    TEST_ASSERT_EQUAL(0x1, message_out->isIGBTAccelLimited());
+    TEST_ASSERT_EQUAL(0x0, message_out->isIGBTTempLimited());
+    TEST_ASSERT_EQUAL(0x0, message_out->isInputVoltageLimited());
+    TEST_ASSERT_EQUAL(0x1, message_out->isMotorAccelTempLimited());
+    TEST_ASSERT_EQUAL(0x1, message_out->isMotorTempLimited());
+    TEST_ASSERT_EQUAL(0x0, message_out->hasRPMMin());
+    TEST_ASSERT_EQUAL(0x0, message_out->hasRPMMax());
+    TEST_ASSERT_EQUAL(0x1, message_out->hasPowerLimit());
     TEST_ASSERT_EQUAL(0x0, message_out->reserved0);
     TEST_ASSERT_EQUAL(0xFF, message_out->reservedFF);
-    TEST_ASSERT_EQUAL(0x19, message_out->can_map_version);
+    TEST_ASSERT_EQUAL(0x19, message_out->getCANMapVersion());
 }
 
 void test_message25_encode_decode() {
-    Message25 message_in = { 0x4030, 0x1030, 0x0103, 0x0103 };
+    Message25 message_in = { CAN::ByteSwap16(0x4030), CAN::ByteSwap16(0x1030), CAN::ByteSwap16(0x0103), CAN::ByteSwap16(0x0105) };
 
     Frame frame(0x22, &message_in);
-
-    TEST_ASSERT_EQUAL(0x30, frame.data[0]);
-    TEST_ASSERT_EQUAL(0x40, frame.data[1]);
-    TEST_ASSERT_EQUAL(0x30, frame.data[2]);
-    TEST_ASSERT_EQUAL(0x10, frame.data[3]);
-    TEST_ASSERT_EQUAL(0x03, frame.data[4]);
-    TEST_ASSERT_EQUAL(0x01, frame.data[5]);
-    TEST_ASSERT_EQUAL(0x03, frame.data[6]);
-    TEST_ASSERT_EQUAL(0x01, frame.data[7]);
 
     auto message_out = frame.decode<Message25>();
 
-    TEST_ASSERT_EQUAL(0x4030, message_out->max_ac_current);
-    TEST_ASSERT_EQUAL(0x1030, message_out->av_max_ac_current);
-    TEST_ASSERT_EQUAL(0x0103, message_out->min_ac_current);
-    TEST_ASSERT_EQUAL(0x0103, message_out->av_min_ac_current);
+    TEST_ASSERT_EQUAL(0x4030, message_out->getMaxACCurrent());
+    TEST_ASSERT_EQUAL(0x1030, message_out->getAvailableMaxACCurrent());
+    TEST_ASSERT_EQUAL(0x0103, message_out->getMinACCurrent());
+    TEST_ASSERT_EQUAL(0x0105, message_out->getAvailableMinACCurrent());
 }
 
 void test_message26_encode_decode() {
-    Message26 message_in = { 0x0503, 0x0320, 0x0100, 0x00EF };
+    Message26 message_in = { CAN::ByteSwap16(0x0503), CAN::ByteSwap16(0x0320), CAN::ByteSwap16(0x0100), CAN::ByteSwap16(0x00EF) };
 
     Frame frame(0x22, &message_in);
 
-    TEST_ASSERT_EQUAL(0x03, frame.data[0]);
-    TEST_ASSERT_EQUAL(0x05, frame.data[1]);
-    TEST_ASSERT_EQUAL(0x20, frame.data[2]);
-    TEST_ASSERT_EQUAL(0x03, frame.data[3]);
-    TEST_ASSERT_EQUAL(0x00, frame.data[4]);
-    TEST_ASSERT_EQUAL(0x01, frame.data[5]);
-    TEST_ASSERT_EQUAL(0xEF, frame.data[6]);
-    TEST_ASSERT_EQUAL(0x00, frame.data[7]);
-
     auto message_out = frame.decode<Message26>();
 
-    TEST_ASSERT_EQUAL(0x0503, message_out->max_dc_current);
-    TEST_ASSERT_EQUAL(0x0320, message_out->av_max_dc_current);
-    TEST_ASSERT_EQUAL(0x0100, message_out->min_dc_current);
-    TEST_ASSERT_EQUAL(0x00EF, message_out->av_min_dc_current);
+    TEST_ASSERT_EQUAL(0x0503, message_out->getMaxDCCurrent());
+    TEST_ASSERT_EQUAL(0x0320, message_out->getAvailableMaxDCCurrent());
+    TEST_ASSERT_EQUAL(0x0100, message_out->getMinDCCurrent());
+    TEST_ASSERT_EQUAL(0x00EF, message_out->getAvailableMinDCCurrent());
 }
 
 

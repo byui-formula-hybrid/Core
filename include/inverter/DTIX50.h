@@ -5,5 +5,6 @@
 #include "../../lib/inverter/DTIX50/commands.h"
 #include "../../lib/inverter/DTIX50/heartbeat.h"
 #include "../../lib/inverter/DTIX50/messages.h"
+#include "../../lib/inverter/DTIX50/types.h"
 
 #endif // DTIX50_H
