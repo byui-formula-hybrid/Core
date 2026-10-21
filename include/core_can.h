@@ -2,6 +2,23 @@
 #ifndef CORE_CAN_H
 #define CORE_CAN_H
 
+#if defined(DEBUG) || defined(ENABLE_VALIDATE_CAN)
+
+[[noreturn]] extern void error_handler();
+
+#define VALIDATE_CAN(condition)         \
+            do {                        \
+                if(!(condition)) {      \
+                    error_handler();    \
+                }                       \
+            } while(false)
+
+#else
+
+#define VALIDATE_CAN(condition) do {} while(false)
+
+#endif
+
 // NOTE: Due to the inclusion of multiple lib folders in hardware, these need to be relative
 #include "../lib/can/dispatcher.h"
 #include "../lib/can/service.h"

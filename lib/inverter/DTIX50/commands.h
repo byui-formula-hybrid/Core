@@ -3,6 +3,7 @@
 
 #include "types.h"
 
+#include <cassert>
 #include <cstdint>
 #include <core_can.h>
 
@@ -28,7 +29,11 @@ struct SetACCurrent {
     uint64_t ac_current : 16;
     uint64_t reserved : 48;
 
-    constexpr SetACCurrent(int16_t ac_current): ac_current(CAN::SByteSwap16(ac_current * 10)), reserved(0xFFFFFFFFFFFFULL) {}
+    constexpr SetACCurrent(int16_t current): ac_current(0), reserved(0xFFFFFFFFFFFFULL) {
+        VALIDATE_CAN(current >= -3276 && current <= 3276);
+
+        this->ac_current = CAN::SByteSwap16(current * 10);
+    }
 };
 
 /**
@@ -43,7 +48,11 @@ struct SetBrakeCurrent {
     uint64_t brake_current : 16;
     uint64_t reserved : 48;
 
-    constexpr SetBrakeCurrent(int16_t brake_current): brake_current(CAN::SByteSwap16(brake_current * 10)), reserved(0xFFFFFFFFFFFFULL) {}
+    constexpr SetBrakeCurrent(int16_t current): brake_current(0), reserved(0xFFFFFFFFFFFFULL) {
+        VALIDATE_CAN(current >= 0 && current <= 3276);
+
+        this->brake_current = CAN::ByteSwap16(current * 10);
+    }
 };
 
 /**
@@ -59,7 +68,11 @@ struct SetSpeed {
     uint64_t erpm : 32;
     uint64_t reserved : 32;
 
-    constexpr SetSpeed(int32_t erpm) : erpm(CAN::SByteSwap32(erpm)), reserved(0xFFFFFFFFU) {}
+    constexpr SetSpeed(int32_t erpm) : erpm(0), reserved(0xFFFFFFFFU) {
+        // The only validation from the documents is that the value is 32bit
+
+        this->erpm = CAN::SByteSwap32(erpm);
+    }
 };
 
 /**
@@ -74,7 +87,11 @@ struct SetPosition {
     uint64_t position : 16;
     uint64_t reserved : 48;
 
-    constexpr SetPosition(int16_t position): position(CAN::SByteSwap16(position * 10)), reserved(0xFFFFFFFFFFFFULL) {}
+    constexpr SetPosition(int16_t position): position(0), reserved(0xFFFFFFFFFFFFULL) {
+        VALIDATE_CAN(position >= -3276 && position <= 3276);
+
+        this->position = CAN::SByteSwap16(position*10);
+    }
 };
 
 
@@ -93,7 +110,11 @@ struct SetRelativeACCurrent {
     uint64_t relative_ac_current : 16;
     uint64_t reserved : 48;
 
-    constexpr SetRelativeACCurrent(int16_t percent): relative_ac_current(CAN::SByteSwap16(percent * 10)), reserved(0xFFFFFFFFFFFFULL) {}
+    constexpr SetRelativeACCurrent(int16_t percent): relative_ac_current(0), reserved(0xFFFFFFFFFFFFULL) {
+        VALIDATE_CAN(percent >= -100 && percent <= 100);
+
+        this->relative_ac_current = CAN::SByteSwap16(percent*10);
+    }
 };
 
 /**
@@ -111,7 +132,11 @@ struct SetRelativeBrakeCurrent {
     uint64_t relative_brake_current : 16;
     uint64_t reserved : 48;
 
-    constexpr SetRelativeBrakeCurrent(int16_t percent): relative_brake_current(CAN::SByteSwap16(percent * 10)), reserved(0xFFFFFFFFFFFFULL) {}
+    constexpr SetRelativeBrakeCurrent(int16_t percent): relative_brake_current(0), reserved(0xFFFFFFFFFFFFULL) {
+        VALIDATE_CAN(percent >= 0 && percent <= 100);
+
+        this->relative_brake_current = CAN::SByteSwap16(percent*10);
+    }
 };
 
 /**
@@ -123,18 +148,20 @@ struct SetRelativeBrakeCurrent {
  * @param reserved: Not documented, likely treated like other unused fields. Fill with FFs.
  **/
 struct SetDigitalOutput {
-    uint64_t digital_output_1 : 8;
-    uint64_t digital_output_2 : 8;
-    uint64_t digital_output_3 : 8;
-    uint64_t digital_output_4 : 8;
-    uint64_t reserved : 32;
+    uint64_t digital_output_1 : 1;
+    uint64_t digital_output_2 : 1;
+    uint64_t digital_output_3 : 1;
+    uint64_t digital_output_4 : 1;
+    uint64_t unused_byte_0: 4;
+    uint64_t reserved : 56;
 
     constexpr SetDigitalOutput(IOPins pins) :
                 digital_output_1(pins.pin1),
                 digital_output_2(pins.pin2),
                 digital_output_3(pins.pin3),
                 digital_output_4(pins.pin4),
-                reserved(0xFFFFFFFFu) {}
+                unused_byte_0(0), // First four bytes are part of the first byte, so not sure if it should be 0s or 1s
+                reserved(0x0FFFFFFFFFFFFFFULL) {}
 };
 
 /**
@@ -149,7 +176,11 @@ struct SetMaxACCurrent {
     uint64_t max_ac_current : 16;
     uint64_t reserved : 48;
 
-    constexpr SetMaxACCurrent(int16_t max_ac_current): max_ac_current(CAN::SByteSwap16(max_ac_current * 10)), reserved(0xFFFFFFFFFFFFULL) {}
+    constexpr SetMaxACCurrent(int16_t max_ac_current): max_ac_current(0), reserved(0xFFFFFFFFFFFFULL) {
+        VALIDATE_CAN(max_ac_current >= -3276 && max_ac_current <= 3276);
+
+        this->max_ac_current = CAN::SByteSwap16(max_ac_current*10);
+    }
 };
 
 /**
@@ -164,7 +195,11 @@ struct SetMaxBrakeCurrent {
     uint64_t max_brake_current : 16;
     uint64_t reserved : 48;
 
-    constexpr SetMaxBrakeCurrent(int16_t max_brake_current): max_brake_current(CAN::SByteSwap16(max_brake_current * 10)), reserved(0xFFFFFFFFFFFFULL) {}
+    constexpr SetMaxBrakeCurrent(int16_t max_brake_current): max_brake_current(0), reserved(0xFFFFFFFFFFFFULL) {
+        VALIDATE_CAN(max_brake_current >= -3276 && max_brake_current < 0);
+
+        this->max_brake_current = CAN::SByteSwap16(max_brake_current * 10);
+    }
 };
 
 /**
@@ -179,7 +214,11 @@ struct SetMaxDCCurrent {
     uint64_t max_dc_current : 16;
     uint64_t reserved : 48;
 
-    constexpr SetMaxDCCurrent(int16_t max_dc_current): max_dc_current(CAN::SByteSwap16(max_dc_current * 10)), reserved(0xFFFFFFFFFFFFULL) {}
+    constexpr SetMaxDCCurrent(int16_t max_dc_current): max_dc_current(0), reserved(0xFFFFFFFFFFFFULL) {
+        VALIDATE_CAN(max_dc_current >= -3276 && max_dc_current <= 3276);
+
+        this->max_dc_current = CAN::SByteSwap16(max_dc_current * 10);
+    }
 };
 
 
@@ -196,7 +235,11 @@ struct SetMaxBrakeDCCurrent {
     uint64_t max_brake_dc_current : 16;
     uint64_t reserved : 48;
 
-    constexpr SetMaxBrakeDCCurrent(int16_t max_brake_dc_current): max_brake_dc_current(CAN::SByteSwap16(max_brake_dc_current * 10)), reserved(0xFFFFFFFFFFFFULL) {}
+    constexpr SetMaxBrakeDCCurrent(int16_t max_brake_dc_current): max_brake_dc_current(0), reserved(0xFFFFFFFFFFFFULL) {
+        VALIDATE_CAN(max_brake_dc_current >= -3276 && max_brake_dc_current < 0);
+
+        this->max_brake_dc_current = CAN::SByteSwap16(max_brake_dc_current * 10);
+    }
 };
 
 /**
@@ -211,7 +254,7 @@ struct SetDriveEnable {
     uint64_t drive_enable : 8;
     uint64_t reserved : 56;
 
-    constexpr SetDriveEnable(uint8_t drive_enable): drive_enable(drive_enable), reserved(0xFFFFFFFFFFFFFFULL) {}
+    constexpr SetDriveEnable(bool drive_enable): drive_enable(drive_enable), reserved(0xFFFFFFFFFFFFFFULL) {}
 };
 
 }; // Command

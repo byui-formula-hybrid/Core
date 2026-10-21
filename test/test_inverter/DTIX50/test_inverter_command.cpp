@@ -108,10 +108,10 @@ void test_SetDigitalOutput_command() {
 
     Frame frame(0x01, &command);
 
-    TEST_ASSERT_EQUAL(0x00, frame.data[0]); // Pin 1 Off
-    TEST_ASSERT_EQUAL(0x01, frame.data[1]); // Pin 2 On
-    TEST_ASSERT_EQUAL(0x00, frame.data[2]); // Pin 3 Off
-    TEST_ASSERT_EQUAL(0x01, frame.data[3]); // Pin 4 On
+    TEST_ASSERT_EQUAL(0b00001010, frame.data[0]); // Pin 1 Off, Pin 2 On, Pin 3 Off, Pin 4 On
+    TEST_ASSERT_EQUAL(0xFF, frame.data[1]);
+    TEST_ASSERT_EQUAL(0xFF, frame.data[2]);
+    TEST_ASSERT_EQUAL(0xFF, frame.data[3]);
     TEST_ASSERT_EQUAL(0xFF, frame.data[4]);
     TEST_ASSERT_EQUAL(0xFF, frame.data[5]);
     TEST_ASSERT_EQUAL(0xFF, frame.data[6]);
