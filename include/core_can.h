@@ -3,7 +3,15 @@
 #define CORE_CAN_H
 
 #if defined(DEBUG) || defined(ENABLE_VALIDATE_CAN)
+#if defined(IS_NATIVE)
 
+#include <unity.h>
+#define VALIDATE_CAN(condition) \
+            do { \
+                TEST_ASSERT_TRUE_MESSAGE((condition), "CAN Validation failed: "#condition); \
+            } while(false)
+
+#else
 [[noreturn]] extern void error_handler();
 
 #define VALIDATE_CAN(condition)         \
@@ -12,6 +20,7 @@
                     error_handler();    \
                 }                       \
             } while(false)
+#endif
 
 #else
 

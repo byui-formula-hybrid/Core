@@ -1,3 +1,4 @@
+#include <cstdint>
 #include <unity.h>
 #include <cstring>
 
@@ -135,13 +136,13 @@ void test_SetMaxACCurrent_command() {
 }
 
 void test_SetMaxBrakeCurrent_command() {
-    SetMaxBrakeCurrent command(0x0064);
+    SetMaxBrakeCurrent command(-100);
 
     Frame frame(0x01, &command);
 
-    // Should get 0x03E8 since it is multiplied by 10 and in big endian
-    TEST_ASSERT_EQUAL(0x03, frame.data[0]);
-    TEST_ASSERT_EQUAL(0xE8, frame.data[1]);
+    // Should get 0xFC18 since it is multiplied by 10 and in big endian
+    TEST_ASSERT_EQUAL(0xFC, frame.data[0]);
+    TEST_ASSERT_EQUAL(0x18, frame.data[1]);
     TEST_ASSERT_EQUAL(0xFF, frame.data[2]);
     TEST_ASSERT_EQUAL(0xFF, frame.data[3]);
     TEST_ASSERT_EQUAL(0xFF, frame.data[4]);

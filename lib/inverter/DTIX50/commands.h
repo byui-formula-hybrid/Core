@@ -3,7 +3,6 @@
 
 #include "types.h"
 
-#include <cassert>
 #include <cstdint>
 #include <core_can.h>
 
