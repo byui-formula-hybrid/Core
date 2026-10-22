@@ -152,13 +152,13 @@ void test_SetMaxBrakeCurrent_command() {
 }
 
 void test_SetMaxDCCurrent_command() {
-    SetMaxDCCurrent command(-100);
+    SetMaxDCCurrent command(0x01F4);
 
     Frame frame(0x01, &command);
 
     // Should get 0xFC18 since it is multiplied by 10 and in big endian
-    TEST_ASSERT_EQUAL(0xFC, frame.data[0]);
-    TEST_ASSERT_EQUAL(0x18, frame.data[1]);
+    TEST_ASSERT_EQUAL(0x13, frame.data[0]);
+    TEST_ASSERT_EQUAL(0x88, frame.data[1]);
     TEST_ASSERT_EQUAL(0xFF, frame.data[2]);
     TEST_ASSERT_EQUAL(0xFF, frame.data[3]);
     TEST_ASSERT_EQUAL(0xFF, frame.data[4]);
@@ -172,7 +172,7 @@ void test_SetMaxBrakeDCCurrent_command() {
 
     Frame frame(0x01, &command);
 
-    // Should get 0x03E8 since it is multiplied by 10 and in big endian
+    // Should get 0xFC18 since it is multiplied by 10 and in big endian
     TEST_ASSERT_EQUAL(0xFC, frame.data[0]);
     TEST_ASSERT_EQUAL(0x18, frame.data[1]);
     TEST_ASSERT_EQUAL(0xFF, frame.data[2]);

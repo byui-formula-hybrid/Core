@@ -159,7 +159,7 @@ struct SetDigitalOutput {
                 digital_output_2(pins.pin2),
                 digital_output_3(pins.pin3),
                 digital_output_4(pins.pin4),
-                unused_byte_0(0), // First four bytes are part of the first byte, so not sure if it should be 0s or 1s
+                unused_byte_0(0), // These four bits are part of the first byte, so not sure if it should be 0s or 1s
                 reserved(0x0FFFFFFFFFFFFFFULL) {}
 };
 

@@ -12,7 +12,9 @@
             } while(false)
 
 #else
-[[noreturn]] extern void error_handler();
+
+// Error_Handler should never return, it really should force a shutdown if we get here or just hang in debug situation
+[[noreturn]] extern void Error_Handler(); // Use extern so that the linker will look for a matching function
 
 #define VALIDATE_CAN(condition)         \
             do {                        \
