@@ -2,7 +2,7 @@
 #ifndef CORE_CAN_H
 #define CORE_CAN_H
 
-#if defined(DEBUG) || defined(ENABLE_VALIDATE_CAN)
+#if defined(ENABLE_VALIDATE_CAN)
 #if defined(IS_NATIVE)
 
 #include <unity.h>
