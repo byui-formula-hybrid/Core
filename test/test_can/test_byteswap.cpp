@@ -1,5 +1,6 @@
 #include "test_main.h"
 #include "unity.h"
+#include "unity_internals.h"
 
 #include <cstdint>
 #include <core_can.h>
@@ -60,8 +61,8 @@ void test_sswapbyte32() {
 
 
 void run_byteswap_tests() {
-    test_swapbyte16();
-    test_sswapbyte16();
-    test_swapbyte32();
-    test_sswapbyte32();
+    RUN_TEST(test_swapbyte16);
+    RUN_TEST(test_sswapbyte16);
+    RUN_TEST(test_swapbyte32);
+    RUN_TEST(test_sswapbyte32);
 }
