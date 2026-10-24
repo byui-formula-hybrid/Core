@@ -19,7 +19,7 @@
 #define VALIDATE_CAN(condition)         \
             do {                        \
                 if(!(condition)) {      \
-                    error_handler();    \
+                    Error_Handler();    \
                 }                       \
             } while(false)
 #endif
