@@ -171,74 +171,23 @@ void test_encode_decode_message_355() {
     TEST_ASSERT_EQUAL(0x123456789ABC, message_out->reserved);
 }
 
-void test_encode_decode_message_1806E7F4() {
-    Message1806E7F4 message_in = { 0xAABB, 0xCC, 0x123456789A };
-    Frame frame(0x1806E7F4, &message_in);
+void run_encode_decode_message_18FF50E5() {
+    Message18FF50E5 message_in = { 0xAABB, 0xCCDD, 0xEE, 0x112233 };
+    Frame frame(0x18FF50E5, &message_in);
     TEST_ASSERT_EQUAL(0xBB, frame.data[0]);
     TEST_ASSERT_EQUAL(0xAA, frame.data[1]);
-    TEST_ASSERT_EQUAL(0xCC, frame.data[2]);
-    TEST_ASSERT_EQUAL(0x9A, frame.data[3]);
-    TEST_ASSERT_EQUAL(0x78, frame.data[4]);
-    TEST_ASSERT_EQUAL(0x56, frame.data[5]);
-    TEST_ASSERT_EQUAL(0x34, frame.data[6]);
-    TEST_ASSERT_EQUAL(0x12, frame.data[7]);
-
-    auto message_out = frame.decode<Message1806E7F4>();
-    TEST_ASSERT_EQUAL(0xAABB, message_out->maxPackVoltage);
-    TEST_ASSERT_EQUAL(0xCC, message_out->customFlag);
-    TEST_ASSERT_EQUAL(0x123456789A, message_out->reserved);
-}
-
-void test_encode_decode_message_1806E5F4() {
-    Message1806E5F4 message_in = { 0xBEEF, 0xDD, 0x1122334455 };
-    Frame frame(0x1806E5F4, &message_in);
-    TEST_ASSERT_EQUAL(0xEF, frame.data[0]);
-    TEST_ASSERT_EQUAL(0xBE, frame.data[1]);
     TEST_ASSERT_EQUAL(0xDD, frame.data[2]);
-    TEST_ASSERT_EQUAL(0x55, frame.data[3]);
-    TEST_ASSERT_EQUAL(0x44, frame.data[4]);
-    TEST_ASSERT_EQUAL(0x33, frame.data[5]);
-    TEST_ASSERT_EQUAL(0x22, frame.data[6]);
-    TEST_ASSERT_EQUAL(0x11, frame.data[7]);
-
-    auto message_out = frame.decode<Message1806E5F4>();
-    TEST_ASSERT_EQUAL(0xBEEF, message_out->maxCellVoltage);
-    TEST_ASSERT_EQUAL(0xDD, message_out->customFlag);
-    TEST_ASSERT_EQUAL(0x1122334455, message_out->reserved);
-}
-
-void test_encode_decode_message_1806E9F4() {
-    Message1806E9F4 message_in = { 0xCAFE, 0xEE, 0xAABBCCDDEE };
-    Frame frame(0x1806E9F4, &message_in);
-    TEST_ASSERT_EQUAL(0xFE, frame.data[0]);
-    TEST_ASSERT_EQUAL(0xCA, frame.data[1]);
-    TEST_ASSERT_EQUAL(0xEE, frame.data[2]);
-    TEST_ASSERT_EQUAL(0xEE, frame.data[3]);
-    TEST_ASSERT_EQUAL(0xDD, frame.data[4]);
-    TEST_ASSERT_EQUAL(0xCC, frame.data[5]);
-    TEST_ASSERT_EQUAL(0xBB, frame.data[6]);
-    TEST_ASSERT_EQUAL(0xAA, frame.data[7]);
-
-    auto message_out = frame.decode<Message1806E9F4>();
-    TEST_ASSERT_EQUAL(0xCAFE, message_out->maxCellVoltage);
-    TEST_ASSERT_EQUAL(0xEE, message_out->customFlag);
-    TEST_ASSERT_EQUAL(0xAABBCCDDEE, message_out->reserved);
-}
-
-void run_encode_decode_message_18FF50E5() {
-    Message18FF50E5 message_in = { 0x1122334455667788 };
-    Frame frame(0x18FF50E5, &message_in);
-    TEST_ASSERT_EQUAL(0x88, frame.data[0]);
-    TEST_ASSERT_EQUAL(0x77, frame.data[1]);
-    TEST_ASSERT_EQUAL(0x66, frame.data[2]);
-    TEST_ASSERT_EQUAL(0x55, frame.data[3]);
-    TEST_ASSERT_EQUAL(0x44, frame.data[4]);
+    TEST_ASSERT_EQUAL(0xCC, frame.data[3]);
+    TEST_ASSERT_EQUAL(0xEE, frame.data[4]);
     TEST_ASSERT_EQUAL(0x33, frame.data[5]);
     TEST_ASSERT_EQUAL(0x22, frame.data[6]);
     TEST_ASSERT_EQUAL(0x11, frame.data[7]);
 
     auto message_out = frame.decode<Message18FF50E5>();
-    TEST_ASSERT_EQUAL(0x1122334455667788, message_out->reserved);
+    TEST_ASSERT_EQUAL(0xAABB, message_out->outputVoltage);
+    TEST_ASSERT_EQUAL(0xCCDD, message_out->outputCurrent);
+    TEST_ASSERT_EQUAL(0xEE, message_out->statusFlags);
+    TEST_ASSERT_EQUAL(0x112233, message_out->reserved);
 }
 
 void run_message_tests() {
@@ -251,8 +200,5 @@ void run_message_tests() {
     RUN_TEST(test_encode_decode_message_202);
     RUN_TEST(test_encode_decode_message_351);
     RUN_TEST(test_encode_decode_message_355);
-    RUN_TEST(test_encode_decode_message_1806E7F4);
-    RUN_TEST(test_encode_decode_message_1806E5F4);
-    RUN_TEST(test_encode_decode_message_1806E9F4);
     RUN_TEST(run_encode_decode_message_18FF50E5);
 }

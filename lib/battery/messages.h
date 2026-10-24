@@ -12,10 +12,12 @@
  **/ 
 struct Message1{
     uint64_t packVoltage: 16;
-    uint64_t packCurrent: 16;
+    int64_t packCurrent: 16; // driving->positive, charging->negative
     uint64_t packAmpHours: 16;
     uint64_t reserved: 16;
 };
+
+static_assert(sizeof(Message1) == 8, "Message1 size is not 8 bytes");
 
 /**
  * ID: 0x002
@@ -77,10 +79,11 @@ struct Message5 {
 struct Message6 {
     uint64_t packDCL : 8;
     uint64_t packCCL : 8;
-    uint64_t packCurrent : 16;
-    uint64_t avgCurrent : 16;
+    int64_t packCurrent : 16;  // driving->positive, charging->negative
+    int64_t avgCurrent : 16;   // driving->positive, charging->negative
     uint64_t reserved : 16;
 };
+static_assert(sizeof(Message6) == 8, "Message6 size is not 8 bytes");
 
 /**
  * ID: 0x202
@@ -121,53 +124,20 @@ struct Message355 {
 };
 
 /**
- * ID: 0x1806E7F4
- * @name Maximum Pack Voltage + Custom Flag
- * @param maxPackVoltage: Maximum pack voltage in mV
- * @param customFlag: User defined flag
- */
-struct Message1806E7F4 {
-    uint64_t maxPackVoltage : 16;
-    uint64_t customFlag : 8;
-    uint64_t reserved : 40;
-};
-
-// TODO: This message is sepcific for something but is also a copy of 1806E7F4.
-// TODO: This message details needs to be modified if these two messages are for specific cell sets
-/**
- * ID: 0x1806E5F4
- * @name Maximum Cell Voltage + Custom Flag
- * @param maxCellVoltage: Maximum cell voltage in mV
- * @param customFlag: User defined flag
- */
-struct Message1806E5F4 {
-    uint64_t maxCellVoltage : 16;
-    uint64_t customFlag : 8;
-    uint64_t reserved : 40;
-};
-
-// TODO: Look up the specific details of this message and modify the struct accordingly. 
-// TODO: This is currently a copy of 1806E7F4, but it may have different parameters if it's for specific cell sets.
-/**
- * ID: 0x1806E9F4
- * @name Maximum Cell Voltage + Custom Flag
- * @param maxCellVoltage: Maximum cell voltage in mV
- * @param customFlag: User defined flag
- */
-struct Message1806E9F4 {
-    uint64_t maxCellVoltage : 16;
-    uint64_t customFlag : 8;
-    uint64_t reserved : 40;
-};
-
-/**
  * ID: 0x18FF50E5
- * @name Blank Message
- * @note Used for logging presence on the bus.
+ * @name Charger Output Status
+ * @param outputVoltage: Charger output voltage (0.1 V per count)
+ * @param outputCurrent: Charger output current (0.1 A per count)
+ * @param statusFlags: Charger status bitmask (fault/over-temperature/etc.)
+ * @note big-endian charger-protocol frame, recall this message is big-endian on the wire, unlike the BMS frames
  */
 struct Message18FF50E5 {
-    // No data parameters defined
-    uint64_t reserved : 64;
+    uint64_t outputVoltage : 16;
+    uint64_t outputCurrent : 16;
+    uint64_t statusFlags : 8;
+    uint64_t reserved : 24;
 };
+
+static_assert(sizeof(Message18FF50E5) == 8, "Message18FF50E5 size is not 8 bytes");
 
 #endif // BATTERY_MESSAGES_H
