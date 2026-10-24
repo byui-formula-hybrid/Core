@@ -8,6 +8,8 @@
 #include <cstdint>
 #include <cstring>
 
+// TODO: We need to check if values we receive are multiplied by 10 and build in division by 10, if needed
+
 namespace Inverter {
 
 /**
