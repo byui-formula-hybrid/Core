@@ -14,5 +14,6 @@ void tearDown(void) {
 int main() {
     UNITY_BEGIN();
     run_frame_tests();
+    run_byteswap_tests();
     return UNITY_END();
 }
