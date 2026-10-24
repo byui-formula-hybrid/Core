@@ -1,7 +1,7 @@
 #ifndef CAN_TYPES_H
 #define CAN_TYPES_H
 
-#include <stdint.h>
+#include <cstdint>
 #include <cstring>
 
 namespace CAN {
@@ -55,7 +55,7 @@ struct Frame {
     template<typename T>
     Frame(uint32_t identifier, T* message) {
         static_assert(sizeof(T) <= 8, "Message too large for CAN frame");
-        
+
         this->data_length_code = 8;
         this->identifier = identifier;
 
@@ -97,6 +97,34 @@ struct Frame {
         return (T*) data;
     }
 };
+
+/**
+ * @brief Convert 32bit unsigned integers between endianness
+ */
+constexpr uint32_t ByteSwap32(uint32_t x) {
+    return ((x >> 24) & 0xFF) | ((x << 8) & 0x00FF0000) | ((x >> 8) & 0x0000FF00) | ((x << 24) & 0xFF000000);
+}
+
+/**
+ * @brief Convert 32bit signed integers between endianness
+ */
+constexpr int32_t SByteSwap32(uint32_t x) {
+    return static_cast<int32_t>(ByteSwap32(x));
+}
+
+/**
+ * @brief Convert 16bit unsigned integers between endianness
+ */
+constexpr uint16_t ByteSwap16(uint16_t x) {
+    return ((x & 0xFF) << 8) | ((x >> 8));
+}
+
+/**
+ * @brief Convert 16bit signed integers between endianness
+ */
+constexpr int16_t SByteSwap16(uint16_t x) {
+    return static_cast<int16_t>(ByteSwap16(x));
+}
 
 /**
  * @brief Interface for handling CAN frames.
